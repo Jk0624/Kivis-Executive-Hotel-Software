@@ -12,6 +12,17 @@ import ReceptionistRooms from "../pages/receptionist/Rooms";
 import RoomDetails from "../pages/receptionist/RoomDetails";
 import Guest from "../pages/receptionist/Guest";
 import Notifications from "../pages/receptionist/NotificationPage";
+import AdminDashboard from "../pages/admin/Dashboard";
+import AdminRooms from "../pages/admin/Rooms";
+import AdminBookings from "../pages/admin/Bookings";
+import AdminGuests from "../pages/admin/Guests";
+import GuestProfile from "../pages/admin/GuestProfile";
+import AdminReceptionists from "../pages/admin/Receptionists";
+import AdminAccessDevices from "../pages/admin/AccessDevices";
+import ViewAccessDevice from "../pages/admin/ViewAccessDevice";
+import SecurityAudit from "../pages/admin/SecurityAudit";
+import Profile from "../pages/admin/Profile";
+
 
 function AppRouter() {
   return (
@@ -30,23 +41,43 @@ function AppRouter() {
 
         <Route path="/receptionist/checkout"element={<CheckOut />} />
 
-        <Route path="/receptionist/rooms" element={<ReceptionistRooms />}
-        />
+        <Route path="/receptionist/rooms" element={<ReceptionistRooms />}/>
 
         <Route path="/receptionist/booking-extension"element={<BookingExtension />}/>
 
         <Route path="/receptionist/guests" element={<Guest />} />
 
-        <Route
-  path="/receptionist/notifications"
-  element={<Notifications />}
-/>
+        <Route path="/receptionist/notifications" element={<Notifications />}/>
 
-        <Route path="/receptionist/rooms/:roomNumber"
-  element={<RoomDetails />}
- />
+        <Route path="/receptionist/rooms/:roomNumber" element={<RoomDetails />} />
+
+        <Route
+          path="/admin/dashboard" element={<AdminDashboard />} />
+
+        <Route path="/admin/rooms" element={<AdminRooms />}
+        />
+
+        <Route path="/admin/bookings" element={<AdminBookings />}/>
+
+        <Route path="/admin/guests" element={<AdminGuests />}/>
+
+        <Route path="/admin/guests/profile" element={<GuestProfile />} />
+
+        <Route path="/admin/receptionists"
+          element={<AdminReceptionists />}/>
+
+        <Route path="/admin/access-devices" element={<AdminAccessDevices />} />
+
+        <Route path="/admin/access-devices/:macAddress" element={<ViewAccessDevice />} />
+
+        <Route path="/admin/security-audit" element={<SecurityAudit />} />
+
+        <Route path="/admin/profile" element={<Profile />} />
+
+
         
       </Routes>
+
     </BrowserRouter>
   );
 }

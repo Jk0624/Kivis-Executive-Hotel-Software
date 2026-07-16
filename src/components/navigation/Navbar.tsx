@@ -76,7 +76,7 @@ const handleHomeClick = () => {
         <div className="flex items-center gap-3">
 
           <Link
-            to="/login"
+            to="/signin"
             className="rounded-lg border border-blue-700 px-4 py-2 font-medium text-blue-700 transition hover:bg-blue-50"
           >
             Sign In
@@ -89,12 +89,7 @@ const handleHomeClick = () => {
             Sign Up
           </Link>
 
-          <Link
-            to="/my-bookings"
-            className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-slate-700 transition hover:bg-gray-100"
-          >
-            My Bookings
-          </Link>
+          
 
         </div>
 

@@ -19,12 +19,18 @@ function Rooms() {
 
         <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {rooms.map((room) => (
-            <RoomCard
-              key={room.name}
-              name={room.name}
-              price={room.price}
-            />
-          ))}
+          <RoomCard 
+            key={room.id} 
+            id={room.id}
+            name={room.name}
+            type={room.type}
+            price={room.price}
+            image={room.images[0]}
+            guests={room.guests}
+            description={room.description}
+            amenities={room.amenities}
+          />
+        ))}
         </div>
       </section>
     </MainLayout>

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Hotel,
   Phone,
@@ -7,6 +7,16 @@ import {
 } from "lucide-react";
 
 function Footer() {
+  const location = useLocation();
+
+const handleHomeClick = () => {
+  if (location.pathname === "/") {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+};
   return (
     <footer className="bg-slate-900 text-white">
 
@@ -44,23 +54,49 @@ function Footer() {
           <ul className="mt-5 space-y-3 text-slate-300">
 
             <li>
-              <Link to="/">Home</Link>
+              <Link
+                to="/"
+                onClick={handleHomeClick}
+                className="transition hover:text-yellow-400"
+              >
+                Home
+              </Link>
             </li>
 
             <li>
-              <Link to="/rooms">Rooms</Link>
+              <Link
+                to="/rooms"
+                className="transition hover:text-yellow-400"
+              >
+                Rooms
+              </Link>
             </li>
 
             <li>
-              <Link to="/gallery">Gallery</Link>
+              <Link
+                to="/gallery"
+                className="transition hover:text-yellow-400"
+              >
+                Gallery
+              </Link>
             </li>
 
             <li>
-              <a href="#about">About</a>
+              <Link
+                to="/about"
+                className="transition hover:text-yellow-400"
+              >
+                About
+              </Link>
             </li>
 
             <li>
-              <a href="#contact">Contact</a>
+              <Link
+                to="/#contact"
+                className="transition hover:text-yellow-400"
+              >
+                Contact
+              </Link>
             </li>
 
           </ul>
@@ -119,21 +155,21 @@ function Footer() {
                     href="#"
                     className="font-medium text-yellow-400 transition hover:underline"
                 >
-                    Facebook
+                    Facebook coming soon
                 </a>
 
                 <a
                     href="#"
                     className="font-medium text-yellow-400 transition hover:underline"
                 >
-                    Instagram
+                    Instagram coming soon
                 </a>
 
                 <a
                     href="#"
                     className="font-medium text-yellow-400 transition hover:underline"
                 >
-                    X
+                    X coming soon
                 </a>
 
             </div>

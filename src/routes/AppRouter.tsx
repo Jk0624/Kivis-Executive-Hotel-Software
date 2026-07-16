@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ScrollToTop from "../components/navigation/ScrollToTop";
 import Home from "../pages/public/Home";
 import Rooms from "../pages/public/Rooms";
 import Dashboard from "../pages/receptionist/Dashboard";
@@ -26,10 +27,18 @@ import Gallery from "../pages/public/Gallery";
 import ScrollToHash from "../components/navigation/ScrollToHash";
 import About from "../pages/public/About";
 
+import PublicRoomDetails from "../pages/public/RoomDetails";
+
+import SignUp from "../pages/public/SignUp";
+import SignIn from "../pages/public/SignIn";
+
+import OTPVerification from "../pages/public/OTPVerification";
+
 
 function AppRouter() {
   return (
     <BrowserRouter>
+    <ScrollToTop />
     <ScrollToHash />
       <Routes>
 
@@ -85,6 +94,17 @@ function AppRouter() {
         path="/about"
         element={<About />}
         />
+
+        <Route path="/rooms/:id"
+          element={<PublicRoomDetails />} />
+
+        <Route path="/signup" element={<SignUp />}/>
+
+        <Route path="/signin" element={<SignIn />}/>
+
+        <Route path="/verify-otp" element={<OTPVerification />} />
+
+        
 
 
         

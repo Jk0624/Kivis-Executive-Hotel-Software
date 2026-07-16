@@ -22,11 +22,15 @@ import AdminAccessDevices from "../pages/admin/AccessDevices";
 import ViewAccessDevice from "../pages/admin/ViewAccessDevice";
 import SecurityAudit from "../pages/admin/SecurityAudit";
 import Profile from "../pages/admin/Profile";
+import Gallery from "../pages/public/Gallery";
+import ScrollToHash from "../components/navigation/ScrollToHash";
+import About from "../pages/public/About";
 
 
 function AppRouter() {
   return (
     <BrowserRouter>
+    <ScrollToHash />
       <Routes>
 
         <Route path="/" element={<Home />} />
@@ -73,6 +77,14 @@ function AppRouter() {
         <Route path="/admin/security-audit" element={<SecurityAudit />} />
 
         <Route path="/admin/profile" element={<Profile />} />
+
+        <Route path="/gallery" element={<Gallery />}
+        />
+
+        <Route
+        path="/about"
+        element={<About />}
+        />
 
 
         

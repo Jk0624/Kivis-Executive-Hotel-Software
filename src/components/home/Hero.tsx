@@ -1,29 +1,52 @@
 import { useNavigate } from "react-router-dom";
 
 function Hero() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700 px-6 text-center">
-    
-      <h1 className="text-6xl font-bold text-white">
-        Kivis Executive Hotel
-      </h1>
+    <section
+      id="home"
+      className="flex min-h-screen items-center justify-center bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 px-6"
+    >
+      <div className="mx-auto max-w-5xl text-center">
 
-      <p className="mt-6 text-2xl font-medium text-yellow-400">
-        Luxury • Comfort • Excellence
-      </p>
+        <p className="text-lg font-semibold uppercase tracking-[0.3em] text-yellow-400">
+          Experience Smart Luxury
+        </p>
 
-      <p className="mt-4 max-w-2xl text-center text-lg leading-8 text-gray-200">
-        Experience premium hospitality with elegant rooms,
-        exceptional service, and smart room access technology.
-      </p>
-      <button
-        onClick={() => navigate("/rooms")}
-        className="mt-10 rounded-xl bg-yellow-500 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:shadow-2xl"
-        >
-        Book Your Stay
-    </button>
+        <h1 className="mt-6 text-6xl font-extrabold leading-tight text-white md:text-7xl">
+          Welcome to
+          <br />
+          <span className="text-yellow-400">
+            Kiviz Executive Hotel
+          </span>
+        </h1>
 
+        <p className="mx-auto mt-8 max-w-3xl text-xl leading-9 text-slate-300">
+          Enjoy elegant accommodation powered by secure smart room access,
+          exceptional hospitality, and modern comfort designed to make every
+          stay unforgettable.
+        </p>
+
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
+
+          <button
+            onClick={() => navigate("/rooms")}
+            className="rounded-xl bg-yellow-500 px-8 py-4 text-lg font-semibold text-white transition hover:bg-yellow-400"
+          >
+            Book Your Stay
+          </button>
+
+          <button
+            onClick={() => navigate("/rooms")}
+            className="rounded-xl border border-white px-8 py-4 text-lg font-semibold text-white transition hover:bg-white hover:text-slate-900">
+            Explore Rooms
+          </button>
+          
+
+        </div>
+
+      </div>
     </section>
   );
 }

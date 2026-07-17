@@ -34,6 +34,8 @@ import SignIn from "../pages/public/SignIn";
 
 import OTPVerification from "../pages/public/OTPVerification";
 
+import Booking from "../pages/booking/Booking";
+
 
 function AppRouter() {
   return (
@@ -103,6 +105,8 @@ function AppRouter() {
         <Route path="/signin" element={<SignIn />}/>
 
         <Route path="/verify-otp" element={<OTPVerification />} />
+
+        <Route path="/booking" element={<Booking />} />
 
         
 

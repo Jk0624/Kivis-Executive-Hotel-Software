@@ -24,7 +24,7 @@ const handleHomeClick = () => {
           <Hotel className="h-8 w-8 text-yellow-500" />
 
           <h2 className="text-2xl font-bold text-blue-900">
-            Kiviz Executive Hotel
+            Kiviz Executive Lodge
           </h2>
 
         </div>

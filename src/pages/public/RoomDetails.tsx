@@ -1,11 +1,13 @@
 import RoomCard from "../../components/rooms/RoomCard";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import { getRoomById, getRooms } from "../../services/roomService";
 
+
 function RoomDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const room = getRoomById(Number(id));
   const relatedRooms = getRooms().filter(
@@ -48,8 +50,16 @@ function RoomDetails() {
     <MainLayout>
 
       <section className="bg-slate-100 px-6 py-16">
+        <div className="mx-auto mb-8 max-w-7xl">
+  <Link
+    to="/rooms"
+    className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-3 font-medium text-slate-700 transition hover:border-blue-700 hover:text-blue-700"
+  >
+    ← Back to Rooms
+  </Link>
+</div>
 
-  <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
+  <div className="mx-auto grid max-w-7xl items-start gap-12 lg:grid-cols-2">
 
     {/* Room Image */}
 
@@ -112,6 +122,9 @@ function RoomDetails() {
       </p>
 
       <button
+        onClick={() =>
+          navigate(`/signin?redirect=/booking?roomId=${room.id}`)
+        }
         className="mt-10 rounded-xl bg-blue-700 px-10 py-4 text-lg font-semibold text-white transition hover:bg-blue-800"
       >
         Book This Room

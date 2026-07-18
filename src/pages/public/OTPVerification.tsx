@@ -1,4 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 import { X } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
 import OTPInput from "../../components/auth/OTPInput";
@@ -9,6 +11,8 @@ function OTPVerification() {
 
   const flow = location.state?.flow || "signin";
   const phone = location.state?.phone || "+233 24 XXX 4567";
+
+  const [otp, setOtp] = useState("");
 
   return (
     <MainLayout>
@@ -72,7 +76,7 @@ function OTPVerification() {
           {/* OTP */}
 
           <div className="mt-10">
-            <OTPInput />
+            <OTPInput onComplete={setOtp} />
           </div>
 
           {/* Timers */}
@@ -88,10 +92,47 @@ function OTPVerification() {
           {/* Verify */}
 
           <button
-            className="mt-8 w-full rounded-xl bg-yellow-500 py-3 text-lg font-semibold text-white transition hover:bg-yellow-400"
-          >
-            Verify
-          </button>
+              onClick={async () => {
+                if (otp.length !== 6) {
+                  alert("Please enter the 6-digit OTP.");
+                  return;
+                }
+
+                try {
+                  const response = await axios.post(
+                    "http://localhost:3001/auth/verify-otp",
+                    {
+                      phone,
+                      otp,
+                    }
+                  );
+
+                  const data = response.data;
+
+                  // Save JWT
+                  localStorage.setItem("token", data.accessToken);
+
+                  if (data.isNewUser) {
+                    navigate("/signup", {
+                      state: {
+                        token: data.accessToken,
+                        phone,
+                      },
+                    });
+                  } else {
+                    alert("Login successful!");
+
+                    navigate("/");
+                  }
+                } catch (error) {
+                  console.error(error);
+                  alert("Invalid OTP.");
+                }
+              }}
+              className="mt-8 w-full rounded-xl bg-yellow-500 py-3 text-lg font-semibold text-white transition hover:bg-yellow-400"
+            >
+              Verify
+            </button>
 
           <p className="mt-6 text-center text-sm text-gray-200">
             Wrong phone number?{" "}

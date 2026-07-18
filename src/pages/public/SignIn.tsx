@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Phone, PhoneCall, X } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
@@ -59,20 +60,29 @@ function SignIn() {
 
           <form
             className="mt-8 space-y-6"
-            onSubmit={(e) => {
-                e.preventDefault();
+            onSubmit={async (e) => {
+              e.preventDefault();
 
-                if (!phone) {
+              if (!phone) {
                 alert("Please enter your phone number.");
                 return;
-                }
+              }
+
+              try {
+                await axios.post("http://localhost:3001/auth/request-otp", {
+                  phone,
+                });
 
                 navigate("/verify-otp", {
-                state: {
+                  state: {
                     flow: "signin",
                     phone,
-                },
+                  },
                 });
+              } catch (error) {
+                console.error(error);
+                alert("Failed to send OTP. Please try again.");
+              }
             }}
             >
 

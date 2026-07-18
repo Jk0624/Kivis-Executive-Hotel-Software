@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { User, Mail, Phone, X } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
 
@@ -56,20 +57,34 @@ function SignUp() {
           {/* Form */}
           <form
             className="mt-8 space-y-5"
-            onSubmit={(e) => {
-                e.preventDefault();
+            onSubmit={async (e) => {
+              e.preventDefault();
 
-                if (!fullName || !email || !phone) {
+              if (!fullName || !email || !phone) {
                 alert("Please complete all fields.");
                 return;
-                }
+              }
+
+              try {
+                await axios.post("http://localhost:3001/auth/request-otp", {
+                  name: fullName,
+                  email,
+                  phone,
+                  mode: "SIGN_UP",
+                });
 
                 navigate("/verify-otp", {
-                state: {
+                  state: {
                     flow: "signup",
+                    name: fullName,
+                    email,
                     phone,
-                },
+                  },
                 });
+              } catch (error) {
+                console.error(error);
+                alert("Failed to send OTP. Please try again.");
+              }
             }}
             >
 
@@ -170,7 +185,7 @@ function SignUp() {
               type="submit"
               className="mt-4 w-full rounded-xl bg-yellow-500 py-3 text-lg font-semibold text-white transition hover:bg-yellow-400"
             >
-              Verify Phone Number
+              Send SMS code
             </button>
           </form>
 

@@ -1,83 +1,135 @@
-function BookingDetails() {
+interface BookingDetailsProps {
+  bookingId: string;
+  onClose: () => void;
+}
+
+function BookingDetails({
+  bookingId,
+  onClose,
+}: BookingDetailsProps) {
   return (
     <div className="mt-8 space-y-6">
 
       {/* Booking Information */}
       <div className="rounded-xl bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-2xl font-bold text-slate-900">
+
+        <div className="mb-4 flex items-center justify-between">
+
+        <h2 className="text-2xl font-bold text-slate-900">
           Booking Information
         </h2>
 
+        <button
+          onClick={onClose}
+          className="rounded-lg border border-red-500 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
+        >
+          Close
+        </button>
+
+      </div>
+
         <div className="grid gap-4 md:grid-cols-2">
-          <p><strong>Booking ID:</strong> BK-10245</p>
-          <p><strong>Booking Date:</strong> 10 July 2026</p>
+
           <p>
-            <strong>Payment:</strong>{" "}
-            <span className="font-semibold text-green-600">
-              Verified
-            </span>
+            <strong>Booking Reference:</strong> {bookingId}
           </p>
+
           <p>
             <strong>Status:</strong>{" "}
             <span className="font-semibold text-blue-600">
-              Reserved
+              PAID
             </span>
           </p>
+
+          <p>
+            <strong>Check-In:</strong> 20 July 2026
+          </p>
+
+          <p>
+            <strong>Check-Out:</strong> 23 July 2026
+          </p>
+
         </div>
+
       </div>
 
       {/* Guest Information */}
       <div className="rounded-xl bg-white p-6 shadow-md">
+
         <h2 className="mb-4 text-2xl font-bold text-slate-900">
           Guest Information
         </h2>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <p><strong>Name:</strong> John Mensah</p>
-          <p><strong>Phone:</strong> +233 24 123 4567</p>
-          <p><strong>Email:</strong> john@email.com</p>
-          <p><strong>Nationality:</strong> Ghanaian</p>
-        </div>
-      </div>
 
-      {/* Stay Information */}
-      <div className="rounded-xl bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-2xl font-bold text-slate-900">
-          Stay Information
-        </h2>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <p><strong>Room:</strong> Executive Room</p>
-          <p><strong>Guests:</strong> 2</p>
-          <p><strong>Check-in:</strong> 15 July 2026</p>
-          <p><strong>Check-out:</strong> 18 July 2026</p>
-        </div>
-      </div>
-
-      {/* Smart Access */}
-      <div className="rounded-xl bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-2xl font-bold text-slate-900">
-          Smart Access
-        </h2>
-
-        <div className="grid gap-4 md:grid-cols-2">
           <p>
-            <strong>PIN Status:</strong>{" "}
+            <strong>Name:</strong> John Mensah
+          </p>
+
+          <p>
+            <strong>Phone:</strong> +233 24 123 4567
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* Room Information */}
+      <div className="rounded-xl bg-white p-6 shadow-md">
+
+        <h2 className="mb-4 text-2xl font-bold text-slate-900">
+          Room Information
+        </h2>
+
+        <div className="grid gap-4 md:grid-cols-2">
+
+          <p>
+            <strong>Room Number:</strong> 101
+          </p>
+
+          <p>
+            <strong>Room Type:</strong> Executive Room
+          </p>
+
+          <p>
+            <strong>Room Price:</strong> GH₵ 850.00
+          </p>
+
+        </div>
+
+      </div>
+
+
+
+      {/* Payment Information */}
+      <div className="rounded-xl bg-white p-6 shadow-md">
+
+        <h2 className="mb-4 text-2xl font-bold text-slate-900">
+          Payment Information
+        </h2>
+
+        <div className="grid gap-4 md:grid-cols-2">
+
+          <p>
+            <strong>Status:</strong>{" "}
             <span className="font-semibold text-green-600">
-              Sent to Guest
+              SUCCESS
             </span>
           </p>
 
           <p>
-            <strong>RFID Status:</strong>{" "}
-            <span className="font-semibold text-red-600">
-              Not Assigned
-            </span>
+            <strong>Method:</strong> Mobile Money
           </p>
-        </div>
-      </div>
 
-    </div>
+          <p>
+            <strong>Amount:</strong> GH₵ 2,550.00
+          </p>
+
+        </div>
+
+      </div>
+</div>
+      
   );
 }
 

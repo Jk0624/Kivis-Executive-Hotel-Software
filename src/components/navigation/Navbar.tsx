@@ -1,17 +1,54 @@
 import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Hotel } from "lucide-react";
+import axios from "axios";
 
 function Navbar() {
   const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
 
-const handleHomeClick = () => {
-  if (location.pathname === "/") {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }
-};
+  useEffect(() => {
+  const fetchProfile = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setIsLoggedIn(false);
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        "http://localhost:3001/auth/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setIsLoggedIn(true);
+      setUserName(response.data.user.name || "My Account");
+    } catch (error) {
+      console.error(error);
+
+      localStorage.removeItem("token");
+      setIsLoggedIn(false);
+      setUserName("");
+    }
+  };
+
+  fetchProfile();
+}, []);
+
+  const handleHomeClick = () => {
+    if (location.pathname === "/") {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-md">
 
@@ -75,21 +112,29 @@ const handleHomeClick = () => {
 
         <div className="flex items-center gap-3">
 
-          <Link
-            to="/signin"
-            className="rounded-lg border border-blue-700 px-4 py-2 font-medium text-blue-700 transition hover:bg-blue-50"
-          >
-            Sign In
-          </Link>
+          {isLoggedIn ? (
+            <button
+              className="rounded-lg bg-blue-700 px-4 py-2 font-medium text-white transition hover:bg-blue-800"
+            >
+              {userName}
+            </button>
+          ) : (
+            <>
+              <Link
+                to="/signin"
+                className="rounded-lg border border-blue-700 px-4 py-2 font-medium text-blue-700 transition hover:bg-blue-50"
+              >
+                Sign In
+              </Link>
 
-          <Link
-            to="/signup"
-            className="rounded-lg bg-blue-700 px-4 py-2 font-medium text-white transition hover:bg-blue-800"
-          >
-            Sign Up
-          </Link>
-
-          
+              <Link
+                to="/signup"
+                className="rounded-lg bg-blue-700 px-4 py-2 font-medium text-white transition hover:bg-blue-800"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
 
         </div>
 

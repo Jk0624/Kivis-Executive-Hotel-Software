@@ -70,8 +70,9 @@ function SignIn() {
 
               try {
                 await axios.post("http://localhost:3001/auth/request-otp", {
-                  phone,
-                });
+                    phone,
+                    mode: "SIGN_IN",
+                  });
 
                 navigate("/verify-otp", {
                   state: {
@@ -122,7 +123,7 @@ function SignIn() {
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-yellow-500 py-3 text-lg font-semibold text-white transition hover:bg-yellow-400"
             >
               <PhoneCall size={20} />
-              Verify Phone Number
+              Send SMS Code
             </button>
 
           </form>

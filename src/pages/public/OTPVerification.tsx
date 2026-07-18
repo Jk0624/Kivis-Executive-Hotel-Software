@@ -10,7 +10,9 @@ function OTPVerification() {
   const location = useLocation();
 
   const flow = location.state?.flow || "signin";
-  const phone = location.state?.phone || "+233 24 XXX 4567";
+  const name = location.state?.name || "";
+  const email = location.state?.email || "";
+  const phone = location.state?.phone || "";
 
   const [otp, setOtp] = useState("");
 
@@ -99,12 +101,24 @@ function OTPVerification() {
                 }
 
                 try {
+                  const payload =
+                    flow === "signup"
+                      ? {
+                          name,
+                          phone,
+                          email,
+                          otp,
+                          mode: "SIGN_UP",
+                        }
+                      : {
+                          phone,
+                          otp,
+                          mode: "SIGN_IN",
+                        };
+
                   const response = await axios.post(
                     "http://localhost:3001/auth/verify-otp",
-                    {
-                      phone,
-                      otp,
-                    }
+                    payload
                   );
 
                   const data = response.data;
@@ -112,18 +126,31 @@ function OTPVerification() {
                   // Save JWT
                   localStorage.setItem("token", data.accessToken);
 
-                  if (data.isNewUser) {
-                    navigate("/signup", {
-                      state: {
-                        token: data.accessToken,
-                        phone,
+                  const profileResponse = await axios.get(
+                    "http://localhost:3001/auth/profile",
+                    {
+                      headers: {
+                        Authorization: `Bearer ${data.accessToken}`,
                       },
-                    });
-                  } else {
-                    alert("Login successful!");
+                    }
+                  );
 
+                  const role = profileResponse.data.user.role;
+
+                  alert(
+                    flow === "signup"
+                      ? "Registration successful!"
+                      : "Login successful!"
+                  );
+
+                  if (role === "RECEPTIONIST") {
+                    navigate("/receptionist/dashboard");
+                  } else if (role === "ADMIN") {
+                    navigate("/admin/dashboard");
+                  } else {
                     navigate("/");
                   }
+
                 } catch (error) {
                   console.error(error);
                   alert("Invalid OTP.");

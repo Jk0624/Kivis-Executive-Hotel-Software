@@ -114,21 +114,6 @@ function Sidebar() {
 
           <li>
             <NavLink
-              to="/receptionist/rfid"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              🪪 RFID Management
-            </NavLink>
-          </li>
-
-          <li>
-            <NavLink
               to="/receptionist/rooms"
               className={({ isActive }) =>
                 `block rounded-lg px-3 py-2 transition ${

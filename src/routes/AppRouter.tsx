@@ -5,7 +5,7 @@ import Rooms from "../pages/public/Rooms";
 import Dashboard from "../pages/receptionist/Dashboard";
 import Bookings from "../pages/receptionist/Bookings";
 import WalkIn from "../pages/receptionist/Walkin";
-import AssignRFID from "../pages/receptionist/AssignRFID";
+
 import CheckIn from "../pages/receptionist/CheckIn";
 import CheckOut from "../pages/receptionist/CheckOut";
 import BookingExtension from "../pages/receptionist/BookingExtensionPage";
@@ -50,7 +50,7 @@ function AppRouter() {
         <Route path="/receptionist/bookings" element={<Bookings />} />
         <Route path="/receptionist/walkin" element={<WalkIn />} />
 
-        <Route path="/receptionist/rfid" element={<AssignRFID />} />
+        
 
         <Route path="/receptionist/checkin"element={<CheckIn />} />
 

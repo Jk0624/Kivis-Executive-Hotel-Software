@@ -1,7 +1,84 @@
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import api from "../../services/api";
 
 function BookingExtension() {
+  const [phone, setPhone] = useState("");
+  const [booking, setBooking] = useState<any | null>(null);
+  const [newCheckOutDate, setNewCheckOutDate] = useState("");
+  const [preview, setPreview] = useState<any | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
+
+const searchBooking = async () => {
+  try {
+    const response = await api.get(
+      `/reception/booking-extension/search?phone=${encodeURIComponent(phone)}`
+    );
+
+    setBooking(response.data.booking);
+    setPreview(null);
+    setNewCheckOutDate("");
+  } catch (error: any) {
+    setBooking(null);
+    setPreview(null);
+    setNewCheckOutDate("");
+    alert(
+      error.response?.data?.message ||
+      "Booking not found."
+    );
+  }
+};
+const previewExtension = async () => {
+  if (!booking) {
+    return;
+  }
+
+  try {
+    const response = await api.post(
+      "/reception/booking-extension/preview",
+      {
+        bookingReference: booking.bookingReference,
+        newCheckOutDate,
+      }
+    );
+
+    setPreview(response.data.preview);
+  } catch (error: any) {
+    setPreview(null);
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to preview booking extension."
+    );
+  }
+};
+
+const confirmExtension = async () => {
+  if (!booking || !preview) {
+    return;
+  }
+
+  try {
+    const response = await api.post(
+      "/reception/booking-extension/confirm",
+      {
+        bookingReference: booking.bookingReference,
+        newCheckOutDate,
+        amount: preview.additionalAmount,
+      }
+    );
+
+    toast.success(response.data.message);
+  } catch (error: any) {
+    toast.error(
+      error.response?.data?.message ||
+      "Failed to confirm booking extension."
+    );
+  }
+};
+
+
   return (
     <ReceptionistLayout>
 
@@ -26,10 +103,15 @@ function BookingExtension() {
           <input
             type="text"
             placeholder="Enter guest's phone number"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             className="flex-1 rounded-lg border border-gray-300 px-4 py-3"
           />
 
-          <button className="rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800">
+          <button
+            onClick={searchBooking}
+            className="rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
+          >
             Search
           </button>
 
@@ -40,7 +122,8 @@ function BookingExtension() {
 
       {/* Booking Details */}
 
-      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+      {booking && (
+        <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
 
         <h2 className="mb-6 text-2xl font-semibold">
             Booking Details
@@ -48,151 +131,180 @@ function BookingExtension() {
 
         <div className="grid gap-6 md:grid-cols-2">
 
-            <p><strong>Booking ID:</strong> BK-202600125</p>
+          <p>
+            <strong>Booking ID:</strong> {booking.bookingReference}
+          </p>
 
-            <p><strong>Guest Name:</strong> John Mensah</p>
+          <p>
+            <strong>Guest Name:</strong> {booking.guest.name}
+          </p>
 
-            <p><strong>Phone Number:</strong> 0241234567</p>
+          <p>
+            <strong>Phone Number:</strong> {booking.guest.phone}
+          </p>
 
-            <p><strong>Room:</strong> 101 - Executive Room</p>
+          <p>
+            <strong>Room:</strong> {booking.room.roomNo} - {booking.room.type}
+          </p>
 
-            <p><strong>Current Check-in:</strong> 20 July 2026</p>
+          <p>
+            <strong>Current Check-in:</strong>{" "}
+            {new Date(booking.checkIn).toLocaleDateString()}
+          </p>
 
-            <p><strong>Current Check-out:</strong> 23 July 2026</p>
+          <p>
+            <strong>Current Check-out:</strong>{" "}
+            {new Date(booking.checkOut).toLocaleDateString()}
+          </p>
 
-            <p>
+          <p>
             <strong>Status:</strong>{" "}
             <span className="font-semibold text-green-600">
-                Checked In
+              Checked In
             </span>
-            </p>
+          </p>
 
         </div>
 
      </div>
+      )}
 
 
-     {/* Extension Details */}
 
-<div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+    {/* Extension Details */}
 
-  <h2 className="mb-6 text-2xl font-semibold">
-    Extension Details
-  </h2>
+    {booking && (
+      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
 
-  <div>
-  <label className="mb-2 block font-medium">
-    New Check-out Date
-  </label>
+            <h2 className="mb-6 text-2xl font-semibold">
+              Extension Details
+            </h2>
 
-  <div className="flex items-end gap-4">
+            <div>
+                  <label className="mb-2 block font-medium">
+                    New Check-out Date
+                  </label>
 
-    <input
-      type="date"
-      className="flex-1 rounded-lg border border-gray-300 px-4 py-3"
-    />
+                  <div className="flex items-end gap-4">
 
-    <button className="rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800">
-      Preview Extension
-    </button>
+                      <input
+                        type="date"
+                        value={newCheckOutDate}
+                        onChange={(e) => setNewCheckOutDate(e.target.value)}
+                        className="flex-1 rounded-lg border border-gray-300 px-4 py-3"
+                      />
 
-  </div>
-</div>
+                      <button
+                        onClick={previewExtension}
+                        className="rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
+                      >
+                        Preview Extension
+                      </button>
 
-</div>
+                  </div>
+            </div>
 
-{/* Extension Preview */}
+      </div>
+    )}
 
-<div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+    {/* Extension Preview */}
 
-  <h2 className="mb-6 text-2xl font-semibold">
-    Extension Preview
-  </h2>
+    {preview && (
+      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
 
-  <div className="grid gap-6 md:grid-cols-3">
+            <h2 className="mb-6 text-2xl font-semibold">
+              Extension Preview
+            </h2>
 
-    <div className="rounded-lg bg-slate-100 p-6 text-center">
+      <div className="grid gap-6 md:grid-cols-3">
 
-      <h3 className="text-lg font-semibold">
-        Nightly Rate
-      </h3>
+        <div className="rounded-lg bg-slate-100 p-6 text-center">
 
-      <p className="mt-3 text-3xl font-bold text-blue-700">
-        GHS 350
-      </p>
+          <h3 className="text-lg font-semibold">
+            Nightly Rate
+          </h3>
+
+          <p className="mt-3 text-3xl font-bold text-blue-700">
+            GHS {preview.nightlyRate}
+          </p>
+
+        </div>
+
+        <div className="rounded-lg bg-slate-100 p-6 text-center">
+
+          <h3 className="text-lg font-semibold">
+            Additional Nights
+          </h3>
+
+          <p className="mt-3 text-3xl font-bold text-blue-700">
+            {preview.additionalNights}
+          </p>
+
+        </div>
+
+        <div className="rounded-lg bg-slate-100 p-6 text-center">
+
+          <h3 className="text-lg font-semibold">
+            Additional Amount
+          </h3>
+
+          <p className="mt-3 text-3xl font-bold text-green-700">
+            GHS {preview.additionalAmount}
+          </p>
+
+        </div>
+
+      </div>
 
     </div>
-
-    <div className="rounded-lg bg-slate-100 p-6 text-center">
-
-      <h3 className="text-lg font-semibold">
-        Additional Nights
-      </h3>
-
-      <p className="mt-3 text-3xl font-bold text-blue-700">
-        2
-      </p>
-
-    </div>
-
-    <div className="rounded-lg bg-slate-100 p-6 text-center">
-
-      <h3 className="text-lg font-semibold">
-        Additional Amount
-      </h3>
-
-      <p className="mt-3 text-3xl font-bold text-green-700">
-        GHS 700
-      </p>
-
-    </div>
-
-  </div>
-
-</div>
+    )}
 
 
 {/* Confirm Extension */}
 
-<div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+{preview && (
+    <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
 
-  <h2 className="mb-6 text-2xl font-semibold">
-    Confirm Extension
-  </h2>
+    <h2 className="mb-6 text-2xl font-semibold">
+      Confirm Extension
+    </h2>
 
-  <div>
+    <div>
 
-  <label className="mb-2 block font-medium">
-    Payment Method
-  </label>
+      <label className="mb-2 block font-medium">
+        Payment Method
+      </label>
 
-  <div className="flex items-end gap-4">
+      <div className="flex items-end gap-4">
 
-    <select className="flex-1 rounded-lg border border-gray-300 px-4 py-3">
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="flex-1 rounded-lg border border-gray-300 px-4 py-3"
+            >
 
-      <option>Cash</option>
+              <option>Cash</option>
 
-      {/* Future Payment Methods */}
+              {/* Future Payment Methods */}
 
-      {/* <option>Mobile Money</option> */}
+              {/* <option>Mobile Money</option> */}
 
-      {/* <option>Debit/Credit Card</option> */}
+              {/* <option>Debit/Credit Card</option> */}
 
-    </select>
+            </select>
 
-    <button
-  onClick={() =>
-    toast.success("Booking Extended Successfully")
-  }
-  className="rounded-lg bg-green-700 px-8 py-3 font-semibold text-white hover:bg-green-800"
->
-  Confirm Extension
-</button>
+            <button
+              onClick={confirmExtension}
+              className="rounded-lg bg-green-700 px-8 py-3 font-semibold text-white hover:bg-green-800"
+            >
+              Confirm Extension
+            </button>
+
+      </div>
 
   </div>
-
-</div>
-</div>
+  </div>
+)}
 
     </ReceptionistLayout>
   );

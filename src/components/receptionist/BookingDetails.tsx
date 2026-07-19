@@ -1,10 +1,10 @@
 interface BookingDetailsProps {
-  bookingId: string;
+  booking: any;
   onClose: () => void;
 }
 
 function BookingDetails({
-  bookingId,
+  booking,
   onClose,
 }: BookingDetailsProps) {
   return (
@@ -31,22 +31,24 @@ function BookingDetails({
         <div className="grid gap-4 md:grid-cols-2">
 
           <p>
-            <strong>Booking Reference:</strong> {bookingId}
+            <strong>Booking Reference:</strong> {booking.bookingId}
           </p>
 
           <p>
             <strong>Status:</strong>{" "}
             <span className="font-semibold text-blue-600">
-              PAID
+              {booking.status}
             </span>
           </p>
 
           <p>
-            <strong>Check-In:</strong> 20 July 2026
+            <strong>Check-In:</strong>{" "}
+            {new Date(booking.checkIn).toLocaleDateString()}
           </p>
 
           <p>
-            <strong>Check-Out:</strong> 23 July 2026
+            <strong>Check-Out:</strong>{" "}
+            {new Date(booking.checkOut).toLocaleDateString()}
           </p>
 
         </div>
@@ -63,11 +65,11 @@ function BookingDetails({
         <div className="grid gap-4 md:grid-cols-2">
 
           <p>
-            <strong>Name:</strong> John Mensah
+            <strong>Name:</strong> {booking.user.name}
           </p>
 
           <p>
-            <strong>Phone:</strong> +233 24 123 4567
+            <strong>Phone:</strong> {booking.user.phone}
           </p>
 
         </div>
@@ -84,15 +86,15 @@ function BookingDetails({
         <div className="grid gap-4 md:grid-cols-2">
 
           <p>
-            <strong>Room Number:</strong> 101
+            <strong>Room Number:</strong> {booking.room.roomNo}
           </p>
 
           <p>
-            <strong>Room Type:</strong> Executive Room
+            <strong>Room Type:</strong> {booking.room.type}
           </p>
 
           <p>
-            <strong>Room Price:</strong> GH₵ 850.00
+            <strong>Room Price:</strong> GH₵ {booking.room.price.toFixed(2)}
           </p>
 
         </div>
@@ -113,16 +115,25 @@ function BookingDetails({
           <p>
             <strong>Status:</strong>{" "}
             <span className="font-semibold text-green-600">
-              SUCCESS
+              {booking.payments.length > 0
+                ? booking.payments[0].status
+                : "No Payment"}
             </span>
           </p>
 
           <p>
-            <strong>Method:</strong> Mobile Money
+            <strong>Method:</strong>{" "}
+            {booking.payments.length > 0
+              ? booking.payments[0].method
+              : "N/A"}
           </p>
 
           <p>
-            <strong>Amount:</strong> GH₵ 2,550.00
+            <strong>Amount:</strong>{" "}
+            GH₵{" "}
+            {booking.payments.length > 0
+              ? booking.payments[0].amount.toFixed(2)
+              : "0.00"}
           </p>
 
         </div>

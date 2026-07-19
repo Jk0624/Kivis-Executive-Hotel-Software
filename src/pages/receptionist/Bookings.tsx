@@ -1,43 +1,40 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import api from "../../services/api";
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
 import BookingDetails from "../../components/receptionist/BookingDetails";
 
 
 
 
-const bookings = [
-  {
-    bookingId: "BK-100001",
-    guest: "John Mensah",
-    phone: "0241234567",
-    room: "101",
-    checkIn: "20 Jul 2026",
-    status: "PAID",
-  },
-  {
-    bookingId: "BK-100002",
-    guest: "Mary Asante",
-    phone: "0559876543",
-    room: "203",
-    checkIn: "22 Jul 2026",
-    status: "CHECKED_IN",
-  },
-  {
-    bookingId: "BK-100003",
-    guest: "Daniel Owusu",
-    phone: "0201112233",
-    room: "104",
-    checkIn: "25 Jul 2026",
-    status: "PENDING",
-  },
-];
 
 function Bookings() {
 
   const [selectedBooking, setSelectedBooking] =
-    useState<string | null>(null);
+  useState<any | null>(null);
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [, setLoading] = useState(true);
   const detailsRef = useRef<HTMLDivElement>(null);  
   const bookingsRef = useRef<HTMLDivElement>(null);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+  const fetchBookings = async () => {
+    try {
+      const response = await api.get("/reception/bookings");
+
+      console.log(response.data);
+
+      setBookings(response.data.bookings);
+    } catch (error) {
+      console.error("Failed to load bookings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchBookings();
+}, []);
+
   return (
     <ReceptionistLayout>
 
@@ -49,7 +46,10 @@ function Bookings() {
         Search and manage guest bookings using the booking ID or phone number.
       </p>
 
-      <div className="mt-10 rounded-xl bg-white p-8 shadow-md">
+      <div
+        ref={bookingsRef}
+        className="mt-10 rounded-xl bg-white p-8 shadow-md"
+      >
 
         <h2 className="text-2xl font-semibold">
           Search Booking
@@ -59,20 +59,60 @@ function Bookings() {
 
           <input
             type="text"
-            placeholder="Enter Booking ID..."
+            value={search}
+            onChange={async (e) => {
+              const value = e.target.value;
+              setSearch(value);
+
+              if (value.trim() === "") {
+                try {
+                  setLoading(true);
+
+                  const response = await api.get("/reception/bookings");
+                  setBookings(response.data.bookings);
+                } catch (error) {
+                  console.error("Failed to reload bookings:", error);
+                } finally {
+                  setLoading(false);
+                }
+              }
+            }}
+            placeholder="Enter Booking ID or Phone Number..."
             className="flex-1 rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
           />
 
-          <button className="rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800">
-            Search
-          </button>
+          <button
+              onClick={async () => {
+                try {
+                  setLoading(true);
+
+                  if (search.trim() === "") {
+                    const response = await api.get("/reception/bookings");
+                    setBookings(response.data.bookings);
+                  } else {
+                    const response = await api.get(
+                      `/reception/bookings/search?search=${encodeURIComponent(search)}`
+                    );
+
+                    setBookings(response.data.bookings);
+                  }
+                } catch (error) {
+                  console.error("Search failed:", error);
+                  alert("Failed to search bookings.");
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              className="rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
+            >
+              Search
+            </button>
 
         </div>
 
       </div>
 
       <div
-        ref={bookingsRef}
         className="mt-10 rounded-xl bg-white p-8 shadow-md"
       >
 
@@ -105,16 +145,23 @@ function Bookings() {
                 className="border-b hover:bg-gray-50"
               >
                 <td className="py-4">{booking.bookingId}</td>
-                <td>{booking.guest}</td>
-                <td>{booking.phone}</td>
-                <td>{booking.room}</td>
-                <td>{booking.checkIn}</td>
+
+                <td>{booking.user.name}</td>
+
+                <td>{booking.user.phone}</td>
+
+                <td>{booking.room.roomNo}</td>
+
+                <td>
+                  {new Date(booking.checkIn).toLocaleDateString()}
+                </td>
+
                 <td>{booking.status}</td>
 
                 <td>
                   <button
                     onClick={() => {
-                      setSelectedBooking(booking.bookingId);
+                      setSelectedBooking(booking);
 
                       setTimeout(() => {
                         detailsRef.current?.scrollIntoView({
@@ -144,8 +191,17 @@ function Bookings() {
     {selectedBooking && (
       <div ref={detailsRef}>
         <BookingDetails
-          bookingId={selectedBooking}
-          onClose={() => setSelectedBooking(null)}
+          booking={selectedBooking}
+          onClose={() => {
+            setSelectedBooking(null);
+
+            setTimeout(() => {
+              bookingsRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }, 100);
+          }}
         />
       </div>
     )}

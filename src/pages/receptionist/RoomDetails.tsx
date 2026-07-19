@@ -1,8 +1,38 @@
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../services/api";
 
 function RoomDetails() {
+  const { roomNumber } = useParams();
+
+  const navigate = useNavigate();
+
+  const [room, setRoom] = useState<any | null>(null);
+
+  useEffect(() => { 
+    const fetchRoom = async () => {
+      try {
+        const response = await api.get(`/reception/rooms/${roomNumber}`);
+        setRoom(response.data.room);
+      } catch (error) {
+        console.error("Failed to load room:", error);
+      }
+    };
+
+    if (roomNumber) {
+      fetchRoom();
+    }
+  }, [roomNumber]);
   return (
     <ReceptionistLayout>
+
+      <button
+        onClick={() => navigate("/receptionist/rooms")}
+        className="mb-4 rounded-lg bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+      >
+        ← Back to Rooms
+      </button>
 
       <h1 className="text-4xl font-bold text-slate-900">
         Room Details
@@ -22,16 +52,16 @@ function RoomDetails() {
 
   <div className="grid gap-6 md:grid-cols-2">
 
-    <p><strong>Room Number:</strong> 101</p>
+    <p><strong>Room Number:</strong> {room?.roomNo}</p>
 
-    <p><strong>Room Type:</strong> Executive Room</p>
+    <p><strong>Room Type:</strong> {room?.type}</p>
 
-    <p><strong>Price:</strong> GHS 350 / Night</p>
+    <p><strong>Price:</strong> GHS {room?.price} / Night</p>
 
     <p>
       <strong>Status:</strong>{" "}
       <span className="font-semibold text-green-600">
-        Available
+        {room?.status}
       </span>
     </p>
 
@@ -39,42 +69,6 @@ function RoomDetails() {
 
 </div>
 
-{/* Smart Access */}
-
-<div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-
-  <h2 className="mb-6 text-2xl font-semibold">
-    Smart Access
-  </h2>
-
-  <div className="grid gap-6 md:grid-cols-2">
-
-    <p><strong>Assigned RFID:</strong> 24:61:DF:00</p>
-
-    <p>
-      <strong>RFID Status:</strong>{" "}
-      <span className="font-semibold text-green-600">
-        Active
-      </span>
-    </p>
-
-    <p>
-      <strong>Door Lock:</strong>{" "}
-      <span className="font-semibold text-green-600">
-        Online
-      </span>
-    </p>
-
-    <p>
-      <strong>PIN Access:</strong>{" "}
-      <span className="font-semibold text-green-600">
-        Enabled
-      </span>
-    </p>
-
-  </div>
-
-</div>
 
     </ReceptionistLayout>
   );

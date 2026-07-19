@@ -1,8 +1,23 @@
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
 function Rooms() {
     const navigate = useNavigate();
+    const [rooms, setRooms] = useState<any[]>([]);
+    useEffect(() => {
+      const fetchRooms = async () => {
+        try {
+          const response = await api.get("/reception/rooms");
+          setRooms(response.data.rooms);
+        } catch (error) {
+          console.error("Failed to load rooms:", error);
+        }
+      };
+
+      fetchRooms();
+    }, []);
   return (
     <ReceptionistLayout>
       <h1 className="text-4xl font-bold text-slate-900">
@@ -14,150 +29,56 @@ function Rooms() {
       </p>
 
       <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 
-  {/* Room Card */}
+          <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                      {rooms.map((room) => (
+              <div
+                key={room.roomNo}
+                className="rounded-xl bg-white p-5 shadow-md"
+              >
+                <h2 className="text-xl font-bold text-slate-900">
+                  Room {room.roomNo}
+                </h2>
 
-  <div className="rounded-xl bg-white p-5 shadow-md">
+                <p className="mt-1 text-gray-600">
+                  {room.type}
+                </p>
 
-  <h2 className="text-xl font-bold text-slate-900">
-    Room 101
-  </h2>
+                <p className="mt-2 text-lg font-semibold">
+                  GHS {room.price} / Night
+                </p>
 
-  <p className="mt-1 text-gray-600">
-    Executive Room
-  </p>
+                <div className="mt-3 flex justify-center">
+                  <span
+                    className={`rounded-full px-4 py-2 text-sm font-semibold ${
+                      room.status === "AVAILABLE"
+                        ? "bg-green-100 text-green-700"
+                        : room.status === "OCCUPIED"
+                        ? "bg-red-100 text-red-700"
+                        : room.status === "RESERVED"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {room.status}
+                  </span>
+                </div>
 
-  <p className="mt-2 text-lg font-semibold">
-    GHS 350 / Night
-  </p>
+                <div className="mt-5 flex justify-center">
+                  <button
+                    onClick={() =>
+                      navigate(`/receptionist/rooms/${room.id}`)
+                    }
+                    className="rounded-lg bg-blue-700 px-8 py-2 font-semibold text-white hover:bg-blue-800"
+                  >
+                    View
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
 
-  <div className="mt-3 flex justify-center">
-
-    <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-      Available
-    </span>
-
-  </div>
-
-  <div className="mt-5 flex justify-center">
-
-    <button
-  onClick={() => navigate("/receptionist/rooms/101")}
-  className="rounded-lg bg-blue-700 px-8 py-2 font-semibold text-white hover:bg-blue-800"
->
-  View
-</button>
-
-  </div>
-
-</div>
-
-
-{/* Room 102 */}
-
-<div className="rounded-xl bg-white p-5 shadow-md">
-
-  <h2 className="text-xl font-bold text-slate-900">
-    Room 102
-  </h2>
-
-  <p className="mt-1 text-gray-600">
-    Executive Room
-  </p>
-
-  <p className="mt-2 text-lg font-semibold">
-    💰 GHS 350 / Night
-  </p>
-
-  <div className="mt-3 flex justify-center">
-
-    <span className="rounded-full bg-red-100 px-4 py-2 text-sm font-semibold text-red-700">
-      Occupied
-    </span>
-
-  </div>
-
-  <div className="mt-5 flex justify-center">
-
-    <button className="rounded-lg bg-blue-700 px-8 py-2 font-semibold text-white hover:bg-blue-800">
-      View
-    </button>
-
-  </div>
-
-</div>
-
-{/* Room 201 */}
-
-<div className="rounded-xl bg-white p-5 shadow-md">
-
-  <h2 className="text-xl font-bold text-slate-900">
-    Room 201
-  </h2>
-
-  <p className="mt-1 text-gray-600">
-    Deluxe Room
-  </p>
-
-  <p className="mt-2 text-lg font-semibold">
-    💰 GHS 450 / Night
-  </p>
-
-  <div className="mt-3 flex justify-center">
-
-    <span className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-semibold text-yellow-700">
-      Reserved
-    </span>
-
-  </div>
-
-  <div className="mt-5 flex justify-center">
-
-    <button className="rounded-lg bg-blue-700 px-8 py-2 font-semibold text-white hover:bg-blue-800">
-      View
-    </button>
-
-  </div>
-
-</div>
-
-{/* Room 301 */}
-
-<div className="rounded-xl bg-white p-5 shadow-md">
-
-  <h2 className="text-xl font-bold text-slate-900">
-    Room 301
-  </h2>
-
-  <p className="mt-1 text-gray-600">
-    Standard Room
-  </p>
-
-  <p className="mt-2 text-lg font-semibold">
-    💰 GHS 250 / Night
-  </p>
-
-  <div className="mt-3 flex justify-center">
-
-    <span className="rounded-full bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700">
-      Maintenance
-    </span>
-
-  </div>
-
-  <div className="mt-5 flex justify-center">
-
-    <button className="rounded-lg bg-blue-700 px-8 py-2 font-semibold text-white hover:bg-blue-800">
-      View
-    </button>
-
-  </div>
-
-</div>
-
-</div>
-</div>
+      </div>
 
     </ReceptionistLayout>
   );

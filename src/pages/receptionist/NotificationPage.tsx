@@ -1,6 +1,39 @@
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
+import { useEffect, useState } from "react";
+import api from "../../services/api";
+
 
 function Notifications() {
+  const [notifications, setNotifications] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await api.get("/notifications/reception");
+        setNotifications(response.data.notifications);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+
+  const hideNotification = async (id: string) => {
+  try {
+    await api.patch(`/notifications/${id}/hide`);
+
+    setNotifications((current) =>
+      current.filter(
+        (notification) => notification.id !== id
+      )
+    );
+  } catch (error) {
+    console.error("Failed to hide notification:", error);
+  }
+};
+
+
   return (
     <ReceptionistLayout>
 
@@ -19,32 +52,32 @@ function Notifications() {
         </h2>
 
         <div className="space-y-4">
+          {notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className="relative rounded-lg border p-4"
+            >
+              <button
+                onClick={() => hideNotification(notification.id)}
+                className="absolute right-3 top-3 text-xl font-bold text-gray-400 transition-colors hover:text-red-600"
+                title="Hide notification"
+              >
+                ×
+              </button>
 
-          <div className="rounded-lg border p-4">
-            <p className="font-semibold">✅ Guest Checked In</p>
-            <p className="text-sm text-gray-500">
-              12 July 2026 • 10:30 AM
-            </p>
-          </div>
+              <p className="font-semibold">
+                {notification.title}
+              </p>
 
-          <div className="rounded-lg border p-4">
-            <p className="font-semibold">
-              ✅ Booking Extended Successfully
-            </p>
-            <p className="text-sm text-gray-500">
-              12 July 2026 • 10:15 AM
-            </p>
-          </div>
+              <p className="mt-1 text-gray-700">
+                {notification.message}
+              </p>
 
-          <div className="rounded-lg border p-4">
-            <p className="font-semibold">
-              ✅ RFID Registered
-            </p>
-            <p className="text-sm text-gray-500">
-              12 July 2026 • 09:45 AM
-            </p>
-          </div>
-
+              <p className="mt-2 text-sm text-gray-500">
+                {new Date(notification.createdAt).toLocaleString()}
+              </p>
+            </div>
+          ))}
         </div>
 
       </div>

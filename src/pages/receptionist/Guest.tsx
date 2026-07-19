@@ -1,6 +1,21 @@
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
+import { useEffect, useState } from "react";
+import api from "../../services/api";
 
 function Guest() {
+  const [guests, setGuests] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchGuests = async () => {
+      try {
+        const response = await api.get("/reception/guests");
+        setGuests(response.data.guests);
+      } catch (error) {
+        console.error("Failed to fetch guests:", error);
+      }
+    };
+
+    fetchGuests();
+  }, []);
   return (
     <ReceptionistLayout>
 
@@ -89,6 +104,8 @@ function Guest() {
 
           <th className="p-3 text-left">Booking ID</th>
 
+          <th className="p-3 text-left">Payment Status</th>
+
           <th className="p-3 text-left">Status</th>
 
           <th className="p-3 text-left">PIN</th>
@@ -100,44 +117,42 @@ function Guest() {
       </thead>
 
       <tbody>
+  {guests.map((guest) => (
+    <tr key={guest.bookingId}>
+      <td className="p-3">{guest.guestName}</td>
 
-        <tr>
+      <td className="p-3">{guest.phoneNumber}</td>
 
-          <td className="p-3">John Mensah</td>
+      <td className="p-3">{guest.roomNumber}</td>
 
-          <td className="p-3">0241234567</td>
+      <td className="p-3">{guest.bookingId}</td>
 
-          <td className="p-3">101</td>
+      <td className="p-3 font-semibold">
+        {guest.paymentStatus}
+      </td>
 
-          <td className="p-3">BK-202600125</td>
+      <td className="p-3 font-semibold">
+        {guest.bookingStatus}
+      </td>
 
-          <td className="p-3 text-green-600 font-semibold">
-            Checked In
-          </td>
+      <td className="p-3">
+        {guest.hasAccessPin ? "Available" : "Not Available"}
+      </td>
 
-          <td className="p-3">
-            ••••••
-          </td>
+      <td className="p-3">
+        <div className="flex gap-2">
+          <button className="rounded bg-blue-700 px-3 py-2 text-white">
+            Resend PIN
+          </button>
 
-          <td className="p-3">
-
-            <div className="flex gap-2">
-
-              <button className="rounded bg-blue-700 px-3 py-2 text-white">
-                Resend PIN
-              </button>
-
-              <button className="rounded bg-green-700 px-3 py-2 text-white">
-                Reveal PIN
-              </button>
-
-            </div>
-
-          </td>
-
-        </tr>
-
-      </tbody>
+          <button className="rounded bg-green-700 px-3 py-2 text-white">
+            Reveal PIN
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
 
     </table>
 

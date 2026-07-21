@@ -8,6 +8,7 @@ type RoomCardProps = {
   image: string;
   guests: number;
   description: string;
+  
   amenities: string[];
 };
 
@@ -39,6 +40,10 @@ function RoomCard({
         <h2 className="mt-4 text-2xl font-bold text-slate-900">
           {name}
         </h2>
+
+        <p className="mt-2 text-slate-600">
+          {description}
+        </p>
 
 
         <p className="mt-2 text-slate-600">

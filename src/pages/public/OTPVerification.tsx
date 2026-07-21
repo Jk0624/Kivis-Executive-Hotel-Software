@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
@@ -13,7 +13,6 @@ function OTPVerification() {
   const name = location.state?.name || "";
   const email = location.state?.email || "";
   const phone = location.state?.phone || "";
-
   const [otp, setOtp] = useState("");
 
   return (

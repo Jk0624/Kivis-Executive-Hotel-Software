@@ -1,4 +1,3 @@
-import { Building2, ShieldCheck, Sparkles } from "lucide-react";
 
 function About() {
   return (

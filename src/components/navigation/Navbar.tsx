@@ -124,14 +124,14 @@ function Navbar() {
                 to="/signin"
                 className="rounded-lg border border-blue-700 px-4 py-2 font-medium text-blue-700 transition hover:bg-blue-50"
               >
-                Sign In
+                Log In
               </Link>
 
               <Link
                 to="/signup"
                 className="rounded-lg bg-blue-700 px-4 py-2 font-medium text-white transition hover:bg-blue-800"
               >
-                Sign Up
+                Create Account
               </Link>
             </>
           )}

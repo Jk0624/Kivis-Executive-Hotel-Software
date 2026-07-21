@@ -126,16 +126,7 @@ function OTPVerification() {
                   // Save JWT
                   localStorage.setItem("token", data.accessToken);
 
-                  const profileResponse = await axios.get(
-                    "http://localhost:3001/auth/profile",
-                    {
-                      headers: {
-                        Authorization: `Bearer ${data.accessToken}`,
-                      },
-                    }
-                  );
-
-                  const role = profileResponse.data.user.role;
+                  const role = data.user.role;
 
                   alert(
                     flow === "signup"

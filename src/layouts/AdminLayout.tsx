@@ -12,7 +12,7 @@ function AdminLayout({ children }: AdminLayoutProps) {
 
     <AdminSidebar />
 
-    <main className="flex-1 p-8">
+    <main className="ml-64 flex-1 overflow-y-auto p-8 pt-32">
 
     <AdminHeader />
 

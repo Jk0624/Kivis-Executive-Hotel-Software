@@ -195,7 +195,7 @@ function SignUp() {
               to="/signin"
               className="font-semibold text-yellow-400 hover:underline"
             >
-              Sign In
+              Log In
             </Link>
           </p>
         </div>

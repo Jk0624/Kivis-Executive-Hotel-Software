@@ -1,9 +1,25 @@
 import AdminLayout from "../../layouts/AdminLayout";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import api from "../../services/api";
 
 
 function Guests() {
     const navigate = useNavigate();
+    const [guests, setGuests] = useState<any[]>([]);
+
+    const fetchGuests = async () => {
+      try {
+        const response = await api.get("/admin/guests");
+        setGuests(response.data.guests);
+      } catch (error) {
+        console.error("Failed to fetch guests:", error);
+      }
+    };
+
+useEffect(() => {
+  fetchGuests();
+}, []);
   return (
     <AdminLayout>
 
@@ -42,33 +58,28 @@ function Guests() {
               </tr>
 
             </thead>
+                <tbody>
+                  {guests.map((guest) => (
+                    <tr key={guest.id} className="border-b">
+                      <td className="p-3">{guest.name}</td>
 
-            <tbody>
+                      <td className="p-3">{guest.phone}</td>
 
-              <tr className="border-b">
+                      <td className="p-3">{guest.email}</td>
 
-                <td className="p-3">John Mensah</td>
+                      <td className="p-3">{guest._count.bookings}</td>
 
-                <td className="p-3">0241234567</td>
-
-                <td className="p-3">john@email.com</td>
-
-                <td className="p-3">5</td>
-
-                <td className="p-3">
-
-                  <button
-                    onClick={() => navigate("/admin/guests/profile")}
-                    className="rounded-lg bg-blue-700 px-4 py-2 text-white hover:bg-blue-800"
-                    >
-                    View
-                  </button>
-
-                </td>
-
-              </tr>
-
-            </tbody>
+                      <td className="p-3">
+                        <button
+                          onClick={() => navigate(`/admin/guests/${guest.id}`)}
+                          className="rounded-lg bg-blue-700 px-4 py-2 text-white hover:bg-blue-800"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
 
           </table>
 

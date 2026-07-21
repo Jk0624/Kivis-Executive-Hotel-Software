@@ -10,14 +10,14 @@ const navigate = useNavigate();
   
   return (
 
-    <aside className="flex h-full flex-col bg-slate-900 text-white">
+    <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col bg-slate-900 text-white">
 
   {/* Logo */}
 
   <div className="border-b border-slate-700 p-6">
 
     <h1 className="text-2xl font-bold">
-      Kiviz Executive Hotel
+      Kiviz Executive Lodge
     </h1>
 
     <p className="mt-2 text-sm text-slate-400">

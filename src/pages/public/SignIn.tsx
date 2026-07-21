@@ -134,7 +134,7 @@ function SignIn() {
               to="/signup"
               className="font-semibold text-yellow-400 hover:underline"
             >
-              Sign Up
+              Create account
             </Link>
           </p>
 

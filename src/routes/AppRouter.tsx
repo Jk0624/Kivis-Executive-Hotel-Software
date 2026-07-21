@@ -76,7 +76,10 @@ function AppRouter() {
 
         <Route path="/admin/guests" element={<AdminGuests />}/>
 
-        <Route path="/admin/guests/profile" element={<GuestProfile />} />
+        <Route
+          path="/admin/guests/:guestId"
+          element={<GuestProfile />}
+        />
 
         <Route path="/admin/receptionists"
           element={<AdminReceptionists />}/>

@@ -1,6 +1,51 @@
 import AdminLayout from "../../layouts/AdminLayout";
+import { useEffect, useState } from "react";
+import api from "../../services/api";
 
 function Dashboard() {
+  const [summary, setSummary] = useState<any | null>(null);
+  const [header, setHeader] = useState<any | null>(null);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+
+  useEffect(() => {
+  const fetchDashboardSummary = async () => {
+    try {
+      const response = await api.get("/admin/dashboard/summary");
+      setSummary(response.data);
+    } catch (error) {
+      console.error("Failed to fetch dashboard summary:", error);
+    }
+  };
+  fetchDashboardSummary();
+}, []);
+
+useEffect(() => {
+  const fetchDashboardHeader = async () => {
+    try {
+      const response = await api.get("/admin/dashboard/header");
+      setHeader(response.data.user);
+    } catch (error) {
+      console.error("Failed to fetch dashboard header:", error);
+    }
+  };
+
+  fetchDashboardHeader();
+}, []);  
+
+useEffect(() => {
+  const fetchRecentActivity = async () => {
+    try {
+      const response = await api.get("/admin/dashboard/recent-activity");
+      setRecentActivity(response.data);
+    } catch (error) {
+      console.error("Failed to fetch recent activity:", error);
+    }
+  };
+
+  fetchRecentActivity();
+}, []);
+
+  
   return (
     <AdminLayout>
 
@@ -9,7 +54,7 @@ function Dashboard() {
       </h1>
 
       <h2 className="mt-2 text-2xl font-semibold text-blue-700">
-        OWN001
+        {header?.name ?? "Administrator"}
       </h2>
 
       <p className="mt-2 text-gray-600">
@@ -26,7 +71,7 @@ function Dashboard() {
         </h3>
 
         <p className="mt-4 text-4xl font-bold text-blue-700">
-        25
+        {summary?.totalRooms ?? 0}
         </p>
     </div>
 
@@ -36,7 +81,7 @@ function Dashboard() {
         </h3>
 
         <p className="mt-4 text-4xl font-bold text-blue-700">
-        120
+          {summary?.totalBookings ?? 0}
         </p>
     </div>
 
@@ -46,7 +91,7 @@ function Dashboard() {
         </h3>
 
         <p className="mt-4 text-4xl font-bold text-blue-700">
-        78
+          {summary?.totalGuests ?? 0}
         </p>
     </div>
 
@@ -56,7 +101,7 @@ function Dashboard() {
         </h3>
 
         <p className="mt-4 text-4xl font-bold text-blue-700">
-        4
+          {summary?.totalReceptionists ?? 0}
         </p>
 
     </div>
@@ -67,7 +112,7 @@ function Dashboard() {
             </h3>
 
             <p className="mt-4 text-4xl font-bold text-blue-700">
-            25
+              {summary?.totalDevices ?? 0}
             </p>
         </div>
 
@@ -109,13 +154,42 @@ function Dashboard() {
     Recent System Activity
   </h2>
 
-  <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
+  <div className="space-y-4">
+  {recentActivity.length === 0 ? (
+    <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
+      <p className="text-lg text-gray-500">
+        No recent activity.
+      </p>
+    </div>
+  ) : (
+    recentActivity.map((activity) => (
+      <div
+        key={activity.bookingReference}
+        className="flex items-center justify-between rounded-lg border p-4"
+      >
+        <div>
+          <p className="font-semibold">
+            {activity.guestName}
+          </p>
 
-    <p className="text-lg text-gray-500">
-      Coming Soon
-    </p>
+          <p className="text-sm text-gray-600">
+            Booking: {activity.bookingReference} • Room {activity.roomNumber}
+          </p>
+        </div>
 
-  </div>
+        <div className="text-right">
+          <p className="font-medium">
+            {activity.status}
+          </p>
+
+          <p className="text-sm text-gray-500">
+            {new Date(activity.updatedAt).toLocaleString()}
+          </p>
+        </div>
+      </div>
+    ))
+  )}
+</div>
 
 </div>
 

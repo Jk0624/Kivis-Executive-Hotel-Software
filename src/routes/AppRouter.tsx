@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdminBookingDetails from "../pages/admin/BookingDetails";
 import ScrollToTop from "../components/navigation/ScrollToTop";
 import Home from "../pages/public/Home";
 import Rooms from "../pages/public/Rooms";
@@ -15,6 +16,7 @@ import Guest from "../pages/receptionist/Guest";
 import Notifications from "../pages/receptionist/NotificationPage";
 import AdminDashboard from "../pages/admin/Dashboard";
 import AdminRooms from "../pages/admin/Rooms";
+import AdminRoomDetails from "../pages/admin/RoomDetails";
 import AdminBookings from "../pages/admin/Bookings";
 import AdminGuests from "../pages/admin/Guests";
 import GuestProfile from "../pages/admin/GuestProfile";
@@ -74,11 +76,20 @@ function AppRouter() {
 
         <Route path="/admin/bookings" element={<AdminBookings />}/>
 
+        <Route
+          path="/admin/bookings/:bookingId"
+          element={<AdminBookingDetails />}
+        />
+
         <Route path="/admin/guests" element={<AdminGuests />}/>
 
         <Route
           path="/admin/guests/:guestId"
           element={<GuestProfile />}
+        />
+        <Route
+        path="/admin/rooms/:roomId"
+        element={<AdminRoomDetails />}
         />
 
         <Route path="/admin/receptionists"

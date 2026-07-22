@@ -15,9 +15,11 @@ import RoomDetails from "../pages/receptionist/RoomDetails";
 import Guest from "../pages/receptionist/Guest";
 import Notifications from "../pages/receptionist/NotificationPage";
 import AdminDashboard from "../pages/admin/Dashboard";
+import Revenue from "../pages/admin/Revenue";
 import AdminRooms from "../pages/admin/Rooms";
 import AdminRoomDetails from "../pages/admin/RoomDetails";
 import AdminBookings from "../pages/admin/Bookings";
+import PaymentDetails from "../pages/admin/PaymentDetails";
 import AdminGuests from "../pages/admin/Guests";
 import GuestProfile from "../pages/admin/GuestProfile";
 import AdminReceptionists from "../pages/admin/Receptionists";
@@ -71,6 +73,11 @@ function AppRouter() {
         <Route
           path="/admin/dashboard" element={<AdminDashboard />} />
 
+        <Route
+          path="/admin/revenue"
+          element={<Revenue />}
+        />
+
         <Route path="/admin/rooms" element={<AdminRooms />}
         />
 
@@ -79,6 +86,11 @@ function AppRouter() {
         <Route
           path="/admin/bookings/:bookingId"
           element={<AdminBookingDetails />}
+        />
+
+        <Route
+          path="/admin/payments/:paymentId"
+          element={<PaymentDetails />}
         />
 
         <Route path="/admin/guests" element={<AdminGuests />}/>
@@ -97,7 +109,10 @@ function AppRouter() {
 
         <Route path="/admin/access-devices" element={<AdminAccessDevices />} />
 
-        <Route path="/admin/access-devices/:macAddress" element={<ViewAccessDevice />} />
+       <Route
+          path="/admin/access-devices/:id"
+          element={<ViewAccessDevice />}
+        />
 
         <Route path="/admin/security-audit" element={<SecurityAudit />} />
 

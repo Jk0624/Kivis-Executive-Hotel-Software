@@ -9,7 +9,7 @@ function BookingDetails() {
 const [booking, setBooking] = useState<any>(null);
 const [timeline, setTimeline] = useState<any[]>([]);
 
-const fetchBooking = async () => {
+const fetchBooking = async () => { 
   try {
     const response = await api.get(
       `/admin/bookings/${bookingId}`
@@ -32,6 +32,39 @@ const fetchTimeline = async () => {
     setTimeline(response.data.timeline);
   } catch (error) {
     console.error("Timeline error:", error);
+  }
+};
+
+
+const cancelBooking = async () => {
+  if (!bookingId) return;
+
+  const reason = window.prompt(
+    "Enter a reason for cancelling this booking (optional):"
+  );
+
+  const confirmed = window.confirm(
+    "Are you sure you want to cancel this booking?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await api.patch(`/admin/bookings/${bookingId}/cancel`, {
+      reason: reason || undefined,
+    });
+
+    await fetchBooking();
+    await fetchTimeline();
+
+    alert("Booking cancelled successfully.");
+  } catch (error: any) {
+    console.error(error);
+
+    alert(
+      error?.response?.data?.message ||
+        "Failed to cancel booking."
+    );
   }
 };
 
@@ -147,6 +180,20 @@ useEffect(() => {
 
   </div>
 )}
+
+{booking &&
+  (booking.status === "PENDING" ||
+    booking.status === "PAID") && (
+    <div className="mt-6">
+      <button
+  onClick={cancelBooking}
+  className="rounded-lg bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700"
+>
+  Cancel Booking
+</button>
+    </div>
+)}
+
 {booking && (
   <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
 

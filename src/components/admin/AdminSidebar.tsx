@@ -52,6 +52,23 @@ const navigate = useNavigate();
       <li>
 
         <NavLink
+          to="/admin/revenue"
+          className={({ isActive }) =>
+            `block rounded-lg px-3 py-2 transition ${
+              isActive
+                ? "bg-blue-600 text-white"
+                : "hover:bg-slate-800"
+            }`
+          }
+        >
+          💳 Revenue & Payments
+        </NavLink>
+
+      </li>
+
+      <li>
+
+        <NavLink
           to="/admin/rooms"
           className={({ isActive }) =>
             `block rounded-lg px-3 py-2 transition ${

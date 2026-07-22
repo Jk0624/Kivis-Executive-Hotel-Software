@@ -1,118 +1,259 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
-import { useState } from "react";
-import EditDeviceDrawer from "../../components/admin/EditDevicedrawer";
-import DeleteDeviceModal from "../../components/admin/DeleteDeviceModal";
+import api from "../../services/api";
 
-function ViewAccessDevice() {
-    const [showEditDrawer, setShowEditDrawer] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
+interface AccessDevice {
+  id: string;
+  deviceId: string;
+  apiKey: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+
+  room: {
+    roomNo: string;
+    type: string;
+    status: string;
+  };
+}
+
+export default function ViewAccessDevice() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [device, setDevice] =
+    useState<AccessDevice | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+    if (id) {
+      fetchDevice();
+    }
+  }, [id]);
+
+  const fetchDevice = async () => {
+    try {
+      setLoading(true);
+
+      const response = await api.get(
+        `/admin/access-devices/${id}`
+      );
+
+      setDevice(response.data.accessDevice);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to load access device.");
+      navigate("/admin/access-devices");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleStatus = async () => {
+    if (!device) return;
+
+    try {
+      if (device.isActive) {
+        await api.patch(
+          `/admin/access-devices/${device.id}/disable`
+        );
+      } else {
+        await api.patch(
+          `/admin/access-devices/${device.id}/enable`
+        );
+      }
+
+      fetchDevice();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update device.");
+    }
+  };
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="py-20 text-center text-gray-500">
+          Loading access device...
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (!device) {
+    return (
+      <AdminLayout>
+        <div className="py-20 text-center">
+          Device not found.
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout>
 
-      <h1 className="text-4xl font-bold text-slate-900">
-        Access Device
-      </h1>
+      <div className="mb-8 flex items-center justify-between">
 
-      <p className="mt-3 text-gray-600">
-        View and manage the selected ESP32 smart access device.
-      </p>
+        <div>
 
-      {/* Device Information */}
+          <h1 className="text-4xl font-bold text-slate-900">
+            Access Device
+          </h1>
 
-      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-
-        <h2 className="mb-6 text-2xl font-semibold">
-          Device Information
-        </h2>
-
-        <div className="grid gap-6 md:grid-cols-2">
-
-          <p><strong>MAC Address:</strong> 24:6F:28:AB:CD:EF</p>
-
-          <p><strong>Room:</strong> K101</p>
-
-          <p><strong>Room Type:</strong> Executive</p>
-
-          <p><strong>Created Date:</strong> 13 July 2026</p>
+          <p className="mt-2 text-gray-500">
+            Device Details
+          </p>
 
         </div>
 
+        <Link
+          to="/admin/access-devices"
+          className="rounded-lg border px-5 py-2 hover:bg-gray-100"
+        >
+          ← Back
+        </Link>
+
       </div>
 
-      {/* API Key */}
+      <div className="rounded-xl border bg-white p-8 shadow-sm">
 
-      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+  <div className="grid gap-6 md:grid-cols-2">
 
-        <h2 className="mb-6 text-2xl font-semibold">
-          API Key
-        </h2>
+                  <div>
+            <p className="text-sm font-medium text-gray-500">
+              Device ID
+            </p>
 
-        <div className="flex items-center gap-4">
+            <p className="mt-2 text-lg font-semibold">
+              {device.deviceId}
+            </p>
+          </div>
 
-          <input
-            type="password"
-            value="******************************"
-            readOnly
-            className="flex-1 rounded-lg border border-gray-300 bg-gray-100 px-4 py-3"
-          />
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Device Status
+            </p>
 
-          <button className="rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-800">
-            Copy API Key
+            <span
+              className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold ${
+                device.isActive
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {device.isActive ? "ACTIVE" : "DISABLED"}
+            </span>
+          </div>
+
+          <div className="md:col-span-2">
+            <p className="text-sm font-medium text-gray-500">
+              API Key
+            </p>
+
+            <textarea
+              readOnly
+              value={device.apiKey}
+              rows={3}
+              className="mt-2 w-full rounded-lg border bg-gray-50 p-3 text-sm"
+            />
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Room Number
+            </p>
+
+            <p className="mt-2 text-lg font-semibold">
+              {device.room.roomNo}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Room Type
+            </p>
+
+            <p className="mt-2 text-lg font-semibold">
+              {device.room.type}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Room Status
+            </p>
+
+            <span
+              className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold ${
+                device.room.status === "AVAILABLE"
+                  ? "bg-green-100 text-green-700"
+                  : device.room.status === "OCCUPIED"
+                  ? "bg-red-100 text-red-700"
+                  : device.room.status === "RESERVED"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              {device.room.status}
+            </span>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Registered On
+            </p>
+
+            <p className="mt-2">
+              {new Date(
+                device.createdAt
+              ).toLocaleString()}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Last Updated
+            </p>
+
+            <p className="mt-2">
+              {new Date(
+                device.updatedAt
+              ).toLocaleString()}
+            </p>
+          </div>
+
+        </div>
+
+        <div className="mt-10 flex justify-end gap-3">
+
+          <button
+            onClick={toggleStatus}
+            className={`rounded-lg px-6 py-2 text-white ${
+              device.isActive
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
+          >
+            {device.isActive
+              ? "Disable Device"
+              : "Enable Device"}
           </button>
 
+          <Link
+            to="/admin/access-devices"
+            className="rounded-lg border px-6 py-2 hover:bg-gray-100"
+          >
+            Back to Devices
+          </Link>
+
         </div>
 
       </div>
-
-      {/* Device Test */}
-
-      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-
-        <h2 className="mb-6 text-2xl font-semibold">
-          Device Connection
-        </h2>
-
-        <button className="rounded-lg bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800">
-          Test Connection
-        </button>
-
-      </div>
-
-      {/* Device Actions */}
-
-      <div className="mt-8 flex gap-4">
-
-        <button
-        onClick={() => setShowEditDrawer(true)}
-        className="rounded-lg bg-yellow-600 px-6 py-3 font-semibold text-white hover:bg-yellow-700"
-        >
-        Edit Device
-        </button>
-
-        <button
-        onClick={() => setShowDeleteModal(true)}
-        className="rounded-lg bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
-        >
-        Delete Device
-        </button>
-
-      </div>
-        <EditDeviceDrawer
-        isOpen={showEditDrawer}
-        onClose={() => setShowEditDrawer(false)}
-        />
-
-        <DeleteDeviceModal
-        isOpen={showDeleteModal}
-        onCancel={() => setShowDeleteModal(false)}
-        onConfirm={() => {
-            // Backend delete request will be added later
-            setShowDeleteModal(false);
-        }}
-        />
 
     </AdminLayout>
   );
 }
-
-export default ViewAccessDevice;

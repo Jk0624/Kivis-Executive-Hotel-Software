@@ -7,8 +7,7 @@ import api from "../../services/api";
 function Bookings() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [statistics, setStatistics] = useState<any>(null);
-  const [bookingId, setBookingId] = useState("");
-  const [phone, setPhone] = useState("");
+  const [search, setSearch] = useState("");
 
 const fetchBookings = async () => {
   try {
@@ -31,15 +30,16 @@ const fetchStatistics = async () => {
 
 const searchBookings = async () => {
   try {
-    if (!bookingId.trim() && !phone.trim()) {
+    const value = search.trim();
+
+    if (!value) {
       fetchBookings();
       return;
     }
 
     const response = await api.get("/admin/bookings/search", {
       params: {
-        bookingId: bookingId || undefined,
-        phone: phone || undefined,
+        search: value,
       },
     });
 
@@ -123,27 +123,19 @@ useEffect(() => {
           Search Bookings
         </h2>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="flex flex-col gap-4 md:flex-row">
 
           <input
             type="text"
-            placeholder="Booking ID"
-            value={bookingId}
-            onChange={(e) => setBookingId(e.target.value)}
-            className="rounded-lg border border-gray-300 px-4 py-3"
-          />
-
-          <input
-            type="text"
-            placeholder="Phone Number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="rounded-lg border border-gray-300 px-4 py-3"
+            placeholder="Search by Booking ID or Phone Number"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 rounded-lg border px-4 py-3"
           />
 
           <button
             onClick={searchBookings}
-            className="rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-800"
+            className="rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-800 md:w-auto"
           >
             Search
           </button> 

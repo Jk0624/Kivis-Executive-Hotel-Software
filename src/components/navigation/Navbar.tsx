@@ -1,12 +1,18 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Hotel } from "lucide-react";
+import NotificationBell from "./NotificationBell";
+import GuestDropdown from "./GuestDropdown";
 import axios from "axios";
 
 function Navbar() {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
+
+  const [user, setUser] = useState({
+  name: "",
+  email: "",
+});
 
   useEffect(() => {
   const fetchProfile = async () => {
@@ -27,14 +33,22 @@ function Navbar() {
         }
       );
 
+      console.log(JSON.stringify(response.data.user, null, 2));
+
       setIsLoggedIn(true);
-      setUserName(response.data.user.name || "My Account");
+      setUser({
+        name: response.data.user.name || "Guest",
+        email: response.data.user.email || "",
+      });
     } catch (error) {
       console.error(error);
 
       localStorage.removeItem("token");
       setIsLoggedIn(false);
-      setUserName("");
+      setUser({
+  name: "",
+  email: "",
+});
     }
   };
 
@@ -113,12 +127,15 @@ function Navbar() {
         <div className="flex items-center gap-3">
 
           {isLoggedIn ? (
-            <button
-              className="rounded-lg bg-blue-700 px-4 py-2 font-medium text-white transition hover:bg-blue-800"
-            >
-              {userName}
-            </button>
-          ) : (
+  <div className="flex items-center gap-4">
+    <NotificationBell unreadCount={3} />
+
+    <GuestDropdown
+      name={user.name}
+      email={user.email}
+    />
+  </div>
+) : (
             <>
               <Link
                 to="/signin"

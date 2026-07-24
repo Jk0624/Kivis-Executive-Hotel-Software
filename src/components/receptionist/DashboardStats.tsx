@@ -2,8 +2,8 @@ import {
   BedDouble,
   ClipboardList,
   DoorOpen,
-  LogOut,
   Hotel,
+  LogOut,
 } from "lucide-react";
 
 interface DashboardStatsProps {
@@ -62,7 +62,8 @@ export default function DashboardStats({
     (statistics?.availableRooms ?? 0);
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
+
       {stats.map((card) => {
         const Icon = card.icon;
 
@@ -76,27 +77,34 @@ export default function DashboardStats({
         return (
           <div
             key={card.title}
-            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+            className="flex min-h-[170px] flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
           >
             <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                {card.title}
+
+              <div className="pr-3">
+
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  {card.title}
                 </p>
 
-                <h2 className="mt-4 text-4xl font-bold text-slate-900">
+                <h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
                   {value}
                 </h2>
 
-                
               </div>
 
               <div
-                className={`ml-2 rounded-lg p-2 ${card.color}`}
-                >
-                <Icon size={18} />
-                </div>
+                className={`flex h-12 w-12 items-center justify-center rounded-xl ${card.color}`}
+              >
+                <Icon size={22} />
+              </div>
+
             </div>
+
+            <p className="mt-6 text-sm text-slate-500">
+              {card.subtitle}
+            </p>
+
           </div>
         );
       })}

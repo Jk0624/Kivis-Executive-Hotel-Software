@@ -25,6 +25,7 @@ import {
   LogOut,
   Building2,
   Smartphone,
+  X,
 } from "lucide-react";
 
 interface MenuItem {
@@ -33,7 +34,15 @@ interface MenuItem {
   icon: React.ElementType;
 }
 
-function AdminSidebar() {
+type AdminSidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+function AdminSidebar({
+  isOpen,
+  onClose,
+}: AdminSidebarProps) {
   const [showLogoutModal, setShowLogoutModal] =
     useState(false);
 
@@ -183,6 +192,11 @@ function AdminSidebar() {
                 ref={(el) => {
                   linkRefs.current[item.path] = el;
                 }}
+                onClick={() => {
+                  if (window.innerWidth < 1024) {
+                    onClose();
+                  }
+                }}
                 className={({ isActive }) =>
                   `group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
                     isActive
@@ -207,31 +221,57 @@ function AdminSidebar() {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 z-40 flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 text-white">
+      {/* Mobile Backdrop */}
+
+      {isOpen && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+        />
+      )}
+
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 text-white transition-transform duration-300 lg:translate-x-0 ${
+          isOpen
+            ? "translate-x-0"
+            : "-translate-x-full"
+        }`}
+      >
 
         {/* Brand */}
 
         <div className="border-b border-slate-800 px-6 py-8">
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between">
 
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-700 shadow-lg">
+            <div className="flex items-center gap-3">
 
-              <Building2 size={24} />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-700 shadow-lg">
+
+                <Building2 size={24} />
+
+              </div>
+
+              <div>
+
+                <h2 className="text-lg font-bold tracking-wide">
+                  KIVIZ EXECUTIVE
+                </h2>
+
+                <p className="text-sm font-medium text-yellow-400">
+                  Admin Portal
+                </p>
+
+              </div>
 
             </div>
 
-            <div>
-
-              <h2 className="text-lg font-bold tracking-wide">
-                KIVIZ EXECUTIVE
-              </h2>
-
-              <p className="text-sm font-medium text-yellow-400">
-                Admin Portal
-              </p>
-
-            </div>
+            <button
+              onClick={onClose}
+              className="rounded-lg p-2 hover:bg-slate-800 lg:hidden"
+            >
+              <X size={22} />
+            </button>
 
           </div>
 
@@ -307,6 +347,8 @@ function AdminSidebar() {
           setShowLogoutModal(false);
 
           toast.success("Logged out successfully");
+
+          onClose();
 
           navigate("/");
         }}

@@ -2,196 +2,353 @@ import AdminLayout from "../../layouts/AdminLayout";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 
+import {
+  BedDouble,
+  CalendarDays,
+  Smartphone,
+  Users,
+  UserCog,
+} from "lucide-react";
+
 function Dashboard() {
-  const [summary, setSummary] = useState<any | null>(null);
-  const [header, setHeader] = useState<any | null>(null);
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [summary, setSummary] =
+    useState<any | null>(null);
+
+  const [header, setHeader] =
+    useState<any | null>(null);
+
+  const [recentActivity, setRecentActivity] =
+    useState<any[]>([]);
 
   useEffect(() => {
-  const fetchDashboardSummary = async () => {
-    try {
-      const response = await api.get("/admin/dashboard/summary");
-      setSummary(response.data);
-    } catch (error) {
-      console.error("Failed to fetch dashboard summary:", error);
-    }
-  };
-  fetchDashboardSummary();
-}, []);
+    const fetchDashboardSummary = async () => {
+      try {
+        const response = await api.get(
+          "/admin/dashboard/summary"
+        );
 
-useEffect(() => {
-  const fetchDashboardHeader = async () => {
-    try {
-      const response = await api.get("/admin/dashboard/header");
-      setHeader(response.data.user);
-    } catch (error) {
-      console.error("Failed to fetch dashboard header:", error);
-    }
-  };
+        setSummary(response.data);
+      } catch (error) {
+        console.error(
+          "Failed to fetch dashboard summary:",
+          error
+        );
+      }
+    };
 
-  fetchDashboardHeader();
-}, []);  
+    fetchDashboardSummary();
+  }, []);
 
-useEffect(() => {
-  const fetchRecentActivity = async () => {
-    try {
-      const response = await api.get("/admin/dashboard/recent-activity");
-      setRecentActivity(response.data);
-    } catch (error) {
-      console.error("Failed to fetch recent activity:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchDashboardHeader = async () => {
+      try {
+        const response = await api.get(
+          "/admin/dashboard/header"
+        );
 
-  fetchRecentActivity();
-}, []);
+        setHeader(response.data.user);
+      } catch (error) {
+        console.error(
+          "Failed to fetch dashboard header:",
+          error
+        );
+      }
+    };
 
-  
+    fetchDashboardHeader();
+  }, []);
+
+  useEffect(() => {
+    const fetchRecentActivity =
+      async () => {
+        try {
+          const response = await api.get(
+            "/admin/dashboard/recent-activity"
+          );
+
+          setRecentActivity(response.data);
+        } catch (error) {
+          console.error(
+            "Failed to fetch recent activity:",
+            error
+          );
+        }
+      };
+
+    fetchRecentActivity();
+  }, []);
+
+  const statCards = [
+    {
+      title: "Rooms",
+      value: summary?.totalRooms ?? 0,
+      icon: BedDouble,
+      color: "bg-blue-50 text-blue-700",
+      subtitle: "Total rooms",
+    },
+    {
+      title: "Bookings",
+      value: summary?.totalBookings ?? 0,
+      icon: CalendarDays,
+      color: "bg-emerald-50 text-emerald-700",
+      subtitle: "Reservations",
+    },
+    {
+      title: "Guests",
+      value: summary?.totalGuests ?? 0,
+      icon: Users,
+      color: "bg-amber-50 text-amber-700",
+      subtitle: "Registered guests",
+    },
+    {
+      title: "Receptionists",
+      value:
+        summary?.totalReceptionists ?? 0,
+      icon: UserCog,
+      color: "bg-purple-50 text-purple-700",
+      subtitle: "Staff accounts",
+    },
+    {
+      title: "Access Devices",
+      value: summary?.totalDevices ?? 0,
+      icon: Smartphone,
+      color: "bg-slate-100 text-slate-700",
+      subtitle: "ESP32 devices",
+    },
+  ];
+
   return (
     <AdminLayout>
 
-      <h1 className="text-4xl font-bold text-slate-900">
-        Welcome Back,
-      </h1>
+      {/* Welcome */}
 
-      <h2 className="mt-2 text-2xl font-semibold text-blue-700">
-        {header?.name ?? "Administrator"}
-      </h2>
+      <section>
 
-      <p className="mt-2 text-gray-600">
-        Kiviz Executive Lodge Administration
-      </p>
+        <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
+          Welcome Back,
+        </h1>
+
+        <h2 className="mt-2 text-2xl font-semibold text-blue-700 sm:text-3xl">
+          {header?.name ??
+            "Administrator"}
+        </h2>
+
+        <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
+          KIVIZ Executive Lodge
+          Administration Dashboard
+        </p>
+
+      </section>
 
       {/* Statistics */}
 
-    <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+      <section className="mt-8 sm:mt-10">
 
-    <div className="rounded-xl bg-white p-6 shadow-md">
-        <h3 className="text-lg font-semibold text-gray-600">
-        Rooms
-        </h3>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
 
-        <p className="mt-4 text-4xl font-bold text-blue-700">
-        {summary?.totalRooms ?? 0}
-        </p>
-    </div>
+          {statCards.map((card) => {
+            const Icon = card.icon;
 
-    <div className="rounded-xl bg-white p-6 shadow-md">
-        <h3 className="text-lg font-semibold text-gray-600">
-        Bookings
-        </h3>
+            return (
+              <div
+                key={card.title}
+                className="flex min-h-[170px] flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+              >
 
-        <p className="mt-4 text-4xl font-bold text-blue-700">
-          {summary?.totalBookings ?? 0}
-        </p>
-    </div>
+                <div className="flex items-start justify-between">
 
-    <div className="rounded-xl bg-white p-6 shadow-md">
-        <h3 className="text-lg font-semibold text-gray-600">
-        Guests
-        </h3>
+                  <div className="pr-3">
 
-        <p className="mt-4 text-4xl font-bold text-blue-700">
-          {summary?.totalGuests ?? 0}
-        </p>
-    </div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
 
-    <div className="rounded-xl bg-white p-6 shadow-md">
-        <h3 className="text-lg font-semibold text-gray-600">
-        Receptionists
-        </h3>
+                      {card.title}
 
-        <p className="mt-4 text-4xl font-bold text-blue-700">
-          {summary?.totalReceptionists ?? 0}
-        </p>
+                    </p>
 
-    </div>
+                    <h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
 
-        <div className="rounded-xl bg-white p-6 shadow-md">
-            <h3 className="text-lg font-semibold text-gray-600">
-            Access Devices
+                      {card.value}
+
+                    </h2>
+
+                  </div>
+
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-xl ${card.color}`}
+                  >
+
+                    <Icon size={22} />
+
+                  </div>
+
+                </div>
+
+                <p className="mt-6 text-sm text-slate-500">
+
+                  {card.subtitle}
+
+                </p>
+
+              </div>
+            );
+          })}
+
+        </div>
+
+      </section>
+
+            {/* Quick Actions */}
+
+      <section className="mt-8 sm:mt-10">
+
+        <div className="flex items-center justify-between">
+
+          <div>
+
+            <h2 className="text-2xl font-semibold text-slate-900">
+              Quick Actions
+            </h2>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Frequently used administrative tasks.
+            </p>
+
+          </div>
+
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+
+          <button className="rounded-2xl bg-blue-700 p-8 text-left text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-blue-800 hover:shadow-lg">
+
+            <h3 className="text-lg font-semibold">
+              Add Receptionist
             </h3>
 
-            <p className="mt-4 text-4xl font-bold text-blue-700">
-              {summary?.totalDevices ?? 0}
+            <p className="mt-2 text-sm text-blue-100">
+              Register a new receptionist account.
             </p>
+
+          </button>
+
+          <button className="rounded-2xl bg-emerald-700 p-8 text-left text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-800 hover:shadow-lg">
+
+            <h3 className="text-lg font-semibold">
+              Register ESP32 Device
+            </h3>
+
+            <p className="mt-2 text-sm text-emerald-100">
+              Connect a new smart access device.
+            </p>
+
+          </button>
+
+          <button className="rounded-2xl bg-slate-800 p-8 text-left text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-slate-900 hover:shadow-lg">
+
+            <h3 className="text-lg font-semibold">
+              View Security Audit
+            </h3>
+
+            <p className="mt-2 text-sm text-slate-300">
+              Review system activity and access logs.
+            </p>
+
+          </button>
+
         </div>
 
-    </div>
+      </section>
 
+      {/* Recent Activity */}
 
-    {/* Quick Actions */}
+      <section className="mt-8 sm:mt-10 rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-<div className="mt-10">
+        <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
 
-  <h2 className="mb-6 text-2xl font-semibold text-slate-900">
-    Quick Actions
-  </h2>
+          <h2 className="text-2xl font-semibold text-slate-900">
+            Recent System Activity
+          </h2>
 
-  <div className="grid gap-6 md:grid-cols-3">
-
-    <button className="rounded-xl bg-blue-700 p-8 text-lg font-semibold text-white shadow-md transition hover:bg-blue-800">
-      Add Receptionist
-    </button>
-
-    <button className="rounded-xl bg-green-700 p-8 text-lg font-semibold text-white shadow-md transition hover:bg-green-800">
-      Register ESP32 Device
-    </button>
-
-    <button className="rounded-xl bg-slate-800 p-8 text-lg font-semibold text-white shadow-md transition hover:bg-slate-900">
-      View Security Audit
-    </button>
-
-  </div>
-
-</div>
-
-
-{/* Recent Activity */}
-
-<div className="mt-10 rounded-xl bg-white p-8 shadow-md">
-
-  <h2 className="mb-6 text-2xl font-semibold text-slate-900">
-    Recent System Activity
-  </h2>
-
-  <div className="space-y-4">
-  {recentActivity.length === 0 ? (
-    <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
-      <p className="text-lg text-gray-500">
-        No recent activity.
-      </p>
-    </div>
-  ) : (
-    recentActivity.map((activity) => (
-      <div
-        key={activity.bookingReference}
-        className="flex items-center justify-between rounded-lg border p-4"
-      >
-        <div>
-          <p className="font-semibold">
-            {activity.guestName}
+          <p className="mt-1 text-sm text-slate-500">
+            Latest booking and room activity.
           </p>
 
-          <p className="text-sm text-gray-600">
-            Booking: {activity.bookingReference} • Room {activity.roomNumber}
-          </p>
         </div>
 
-        <div className="text-right">
-          <p className="font-medium">
-            {activity.status}
-          </p>
+        <div className="divide-y divide-slate-100">
 
-          <p className="text-sm text-gray-500">
-            {new Date(activity.updatedAt).toLocaleString()}
-          </p>
+          {recentActivity.length === 0 ? (
+
+            <div className="flex min-h-[220px] flex-col items-center justify-center px-6 text-center">
+
+              <p className="text-lg font-semibold text-slate-700">
+                No recent activity
+              </p>
+
+              <p className="mt-2 text-sm text-slate-500">
+                Activity will appear here once staff begin using the system.
+              </p>
+
+            </div>
+
+          ) : (
+
+            recentActivity.map((activity) => (
+
+              <div
+                key={activity.bookingReference}
+                className="flex flex-col gap-4 px-5 py-5 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+              >
+
+                <div className="min-w-0">
+
+                  <p className="truncate font-semibold text-slate-900">
+
+                    {activity.guestName}
+
+                  </p>
+
+                  <p className="mt-1 break-all text-sm text-slate-500">
+
+                    Booking: {activity.bookingReference}
+
+                  </p>
+
+                  <p className="mt-1 text-sm text-slate-500">
+
+                    Room {activity.roomNumber}
+
+                  </p>
+
+                </div>
+
+                <div className="sm:text-right">
+
+                  <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+
+                    {activity.status}
+
+                  </span>
+
+                  <p className="mt-2 text-sm text-slate-500">
+
+                    {new Date(
+                      activity.updatedAt
+                    ).toLocaleString()}
+
+                  </p>
+
+                </div>
+
+              </div>
+
+            ))
+
+          )}
+
         </div>
-      </div>
-    ))
-  )}
-</div>
 
-</div>
+      </section>
 
     </AdminLayout>
   );

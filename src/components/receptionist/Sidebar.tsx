@@ -25,6 +25,7 @@ import {
   Bell,
   Clock3,
   Building2,
+  X,
 } from "lucide-react";
 
 interface MenuItem {
@@ -33,7 +34,15 @@ interface MenuItem {
   icon: React.ElementType;
 }
 
-function Sidebar() {
+type SidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+function Sidebar({
+  isOpen,
+  onClose,
+}: SidebarProps) {
   const [showLogoutModal, setShowLogoutModal] =
     useState(false);
 
@@ -114,7 +123,7 @@ function Sidebar() {
     }
   }, []);
 
-  /* Save scroll position */
+  /* Save sidebar scroll */
 
   useEffect(() => {
     const container =
@@ -180,6 +189,11 @@ function Sidebar() {
                 ref={(el) => {
                   linkRefs.current[item.path] = el;
                 }}
+                onClick={() => {
+                  if (window.innerWidth < 1024) {
+                    onClose();
+                  }
+                }}
                 className={({ isActive }) =>
                   `group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
                     isActive
@@ -204,31 +218,57 @@ function Sidebar() {
 
   return (
     <>
-      <aside className="flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 text-white">
+      {/* Mobile Backdrop */}
+
+      {isOpen && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+        />
+      )}
+
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 text-white transition-transform duration-300 lg:translate-x-0 ${
+          isOpen
+            ? "translate-x-0"
+            : "-translate-x-full"
+        }`}
+      >
 
         {/* Brand */}
 
         <div className="border-b border-slate-800 px-6 py-8">
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between">
 
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-700 shadow-lg">
+            <div className="flex items-center gap-3">
 
-              <Building2 size={24} />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-700 shadow-lg">
+
+                <Building2 size={24} />
+
+              </div>
+
+              <div>
+
+                <h2 className="text-lg font-bold tracking-wide">
+                  KIVIZ EXECUTIVE
+                </h2>
+
+                <p className="text-sm font-medium text-yellow-400">
+                  Reception Portal
+                </p>
+
+              </div>
 
             </div>
 
-            <div>
-
-              <h2 className="text-lg font-bold tracking-wide">
-                KIVIZ EXECUTIVE
-              </h2>
-
-              <p className="text-sm font-medium text-yellow-400">
-                Reception Portal
-              </p>
-
-            </div>
+            <button
+              onClick={onClose}
+              className="rounded-lg p-2 hover:bg-slate-800 lg:hidden"
+            >
+              <X size={22} />
+            </button>
 
           </div>
 
@@ -240,6 +280,7 @@ function Sidebar() {
           ref={navigationRef}
           className="flex-1 overflow-y-auto px-4 py-6"
         >
+
                     {renderSection("Operations", operations)}
 
           <div className="my-8 border-t border-slate-800" />
@@ -299,6 +340,8 @@ function Sidebar() {
           setShowLogoutModal(false);
 
           toast.success("Logged out successfully");
+
+          onClose();
 
           navigate("/");
         }}

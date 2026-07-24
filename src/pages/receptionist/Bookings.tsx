@@ -101,154 +101,167 @@ function Bookings() {
     }
   };
 
-  return (
-    <ReceptionistLayout>
+   return (
+  <ReceptionistLayout>
 
-      <div className="sticky top-20 z-20 -mx-2 mb-8 rounded-2xl border border-slate-200 bg-white/95 px-2 py-5 backdrop-blur-md">
+    {/* Page Header */}
 
-        <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-          Bookings
-        </h1>
+    <section className="sticky top-20 z-20 -mx-2 mb-8 rounded-2xl border border-slate-200 bg-white/95 px-4 py-5 backdrop-blur-md sm:px-6">
 
-        <p className="mt-2 text-slate-600">
-          Search, monitor and manage hotel reservations from one place.
-        </p>
+      <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        Bookings
+      </h1>
+
+      <p className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base">
+        Search, monitor and manage hotel reservations from one place.
+      </p>
+
+    </section>
+
+    {/* Search */}
+
+    <section
+      ref={bookingsRef}
+      className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8"
+    >
+
+      <div className="mb-6 flex items-center gap-3">
+
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50">
+
+          <BookOpen
+            size={20}
+            className="text-blue-700"
+          />
+
+        </div>
+
+        <div>
+
+          <h2 className="text-xl font-semibold text-slate-900">
+            Find Reservation
+          </h2>
+
+          <p className="text-sm text-slate-500">
+            Search using the booking reference or guest phone number.
+          </p>
+
+        </div>
 
       </div>
 
-      <div
-        ref={bookingsRef}
-        className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
-      >
+      <div className="flex flex-col gap-4 lg:flex-row">
 
-        <div className="mb-6 flex items-center gap-3">
+        <div className="flex-1">
 
-          <div className="rounded-lg bg-blue-50 p-2">
+          <div className="relative">
 
-            <BookOpen
+            <Search
               size={18}
-              className="text-blue-700"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+
+            <input
+              type="text"
+              value={search}
+              disabled={searching}
+              aria-invalid={!!searchError}
+              aria-describedby={
+                searchError
+                  ? "search-error"
+                  : undefined
+              }
+              placeholder="Search booking reference or phone number..."
+              onChange={(e) => {
+                const value = e.target.value;
+
+                setSearch(value);
+
+                if (searchError) {
+                  setSearchError("");
+                }
+
+                if (value.trim() === "") {
+                  fetchBookings();
+                }
+              }}
+              onKeyDown={(e) => {
+                if (
+                  e.key === "Enter" &&
+                  !searching
+                ) {
+                  handleSearch();
+                }
+              }}
+              className={`w-full rounded-xl py-3 pl-11 pr-4 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                searchError
+                  ? "border border-red-500 focus:border-red-500"
+                  : "border border-slate-300 focus:border-blue-700"
+              }`}
             />
 
           </div>
 
-          <div>
+          {searchError && (
 
-            <h2 className="text-xl font-semibold text-slate-900">
-              Find Reservation
-            </h2>
-
-            <p className="text-sm text-slate-500">
-              Search using the booking reference or guest phone number.
+            <p
+              id="search-error"
+              className="mt-2 text-sm font-medium text-red-600"
+            >
+              {searchError}
             </p>
 
-          </div>
+          )}
 
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row">
+        <LoadingButton
+          type="button"
+          loading={searching}
+          loadingText="Searching..."
+          onClick={handleSearch}
+          className="flex w-full items-center justify-center rounded-xl bg-blue-700 px-8 py-3 font-semibold text-white transition hover:bg-blue-800 lg:w-auto"
+        >
 
-          <div className="flex-1">
+          <>
+            <Search size={18} />
+            Search
+          </>
 
-            <div className="relative">
+        </LoadingButton>
 
-              <Search
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-              />
+      </div>
 
-              <input
-                type="text"
-                value={search}
-                disabled={searching}
-                aria-invalid={!!searchError}
-                aria-describedby={
-                  searchError
-                    ? "search-error"
-                    : undefined
-                }
-                placeholder="Search booking reference or phone number..."
-                onChange={(e) => {
-                  const value = e.target.value;
+    </section>
 
-                  setSearch(value);
+    {/* Recent Reservations */}
 
-                  if (searchError) {
-                    setSearchError("");
-                  }
+    <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-                  if (value.trim() === "") {
-                    fetchBookings();
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    !searching
-                  ) {
-                    handleSearch();
-                  }
-                }}
-                className={`w-full rounded-xl py-3 pl-11 pr-4 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                  searchError
-                    ? "border border-red-500 focus:border-red-500"
-                    : "border border-slate-300 focus:border-blue-700"
-                }`}
-              />
+      <div className="flex flex-col gap-4 border-b border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
 
-            </div>
+        <div>
 
-            {searchError && (
-              <p
-                id="search-error"
-                className="mt-2 text-sm font-medium text-red-600"
-              >
-                {searchError}
-              </p>
-            )}
+          <h2 className="text-xl font-semibold text-slate-900">
+            Recent Reservations
+          </h2>
 
-          </div>
+          <p className="mt-1 text-sm text-slate-500">
+            View and manage all hotel reservations.
+          </p>
 
-          <LoadingButton
-            type="button"
-            loading={searching}
-            loadingText="Searching..."
-            onClick={handleSearch}
-            className="rounded-xl bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
-          >
-            <>
-              <Search size={18} />
-              Search
-            </>
-          </LoadingButton>
+        </div>
+
+        <div className="self-start rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 sm:self-auto">
+
+          {bookings.length} Reservation
+          {bookings.length !== 1 ? "s" : ""}
 
         </div>
 
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-        <div className="flex items-center justify-between border-b border-slate-200 px-8 py-5">
-
-          <div>
-
-            <h2 className="text-xl font-semibold text-slate-900">
-              Recent Reservations
-            </h2>
-
-            <p className="mt-1 text-sm text-slate-500">
-              View and manage all hotel reservations.
-            </p>
-
-          </div>
-
-          <div className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600">
-            {bookings.length} Reservation
-            {bookings.length !== 1 ? "s" : ""}
-          </div>
-
-        </div>
-
+      
                 {loadingBookings ? (
 
           <div className="flex items-center justify-center py-20">
@@ -286,113 +299,215 @@ function Bookings() {
 
         ) : (
 
-          <div className="max-h-[70vh] overflow-auto">
+<>
+  {/* Mobile & Tablet Cards */}
 
-            <table className="min-w-[950px]">
+  <div className="divide-y divide-slate-100 lg:hidden">
 
-              <thead className="bg-slate-50">
+    {bookings.map((booking) => (
 
-                <tr>
+      <div
+        key={booking.bookingId}
+        className="space-y-4 p-5 transition hover:bg-slate-50"
+      >
 
-                  <th className="px-8 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Reference
-                  </th>
+        <div className="flex items-start justify-between gap-4">
 
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Guest
-                  </th>
+          <div className="min-w-0">
 
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Phone
-                  </th>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Booking Reference
+            </p>
 
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Room
-                  </th>
-
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Status
-                  </th>
-
-                  <th className="px-8 py-4 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Action
-                  </th>
-
-                </tr>
-
-              </thead>
-
-              <tbody>
-
-                {bookings.map((booking) => (
-
-                  <tr
-                    key={booking.bookingId}
-                    className="border-t border-slate-100 transition hover:bg-blue-50/40"
-                  >
-
-                    <td className="px-8 py-5 font-semibold text-slate-900">
-                      {booking.bookingId}
-                    </td>
-
-                    <td className="whitespace-nowrap px-6 py-5 font-medium text-slate-900">
-                      {booking.user.name}
-                    </td>
-
-                    <td className="px-6 py-5 text-slate-600">
-                      {booking.user.phone}
-                    </td>
-
-                    <td className="whitespace-nowrap px-6 py-5 font-semibold text-blue-700">
-                      {booking.room.roomNo}
-                    </td>
-
-                    <td className="px-6 py-5">
-
-                      <span
-                        className={`whitespace-nowrap text-sm font-semibold ${getStatusColor(
-                          booking.status
-                        )}`}
-                      >
-                        {booking.status.replaceAll("_", " ")}
-                      </span>
-
-                    </td>
-
-                    <td className="px-8 py-5 text-right">
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedBooking(booking);
-
-                          setTimeout(() => {
-                            detailsRef.current?.scrollIntoView({
-                              behavior: "smooth",
-                              block: "start",
-                            });
-                          }, 100);
-                        }}
-                        className="font-semibold text-blue-700 transition hover:text-blue-900"
-                      >
-                        View →
-                      </button>
-
-                    </td>
-
-                  </tr>
-
-                ))}
-
-              </tbody>
-
-            </table>
+            <p className="mt-1 break-all font-semibold text-slate-900">
+              {booking.bookingId}
+            </p>
 
           </div>
 
-        )}
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
+              booking.status
+            )}`}
+          >
+            {booking.status.replaceAll("_", " ")}
+          </span>
+
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+
+          <div>
+
+            <p className="text-xs uppercase tracking-wider text-slate-500">
+              Guest
+            </p>
+
+            <p className="mt-1 font-medium text-slate-900">
+              {booking.user.name}
+            </p>
+
+          </div>
+
+          <div>
+
+            <p className="text-xs uppercase tracking-wider text-slate-500">
+              Room
+            </p>
+
+            <p className="mt-1 font-semibold text-blue-700">
+              {booking.room.roomNo}
+            </p>
+
+          </div>
+
+          <div className="col-span-2">
+
+            <p className="text-xs uppercase tracking-wider text-slate-500">
+              Phone
+            </p>
+
+            <p className="mt-1 text-slate-700">
+              {booking.user.phone}
+            </p>
+
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedBooking(booking);
+
+            setTimeout(() => {
+              detailsRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }, 100);
+          }}
+          className="w-full rounded-xl border border-blue-700 py-3 font-semibold text-blue-700 transition hover:bg-blue-700 hover:text-white"
+        >
+          View Reservation
+        </button>
 
       </div>
+
+    ))}
+
+  </div>
+
+  {/* Desktop Table */}
+
+  <div className="hidden max-h-[70vh] overflow-auto lg:block">
+
+    <table className="min-w-full">
+
+      <thead className="sticky top-0 bg-slate-50">
+
+        <tr>
+
+          <th className="px-8 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Reference
+          </th>
+
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Guest
+          </th>
+
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Phone
+          </th>
+
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Room
+          </th>
+
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Status
+          </th>
+
+          <th className="px-8 py-4 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Action
+          </th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        {bookings.map((booking) => (
+
+          <tr
+            key={booking.bookingId}
+            className="border-t border-slate-100 transition hover:bg-blue-50/40"
+          >
+
+            <td className="px-8 py-5 font-semibold text-slate-900">
+              {booking.bookingId}
+            </td>
+
+            <td className="whitespace-nowrap px-6 py-5 font-medium text-slate-900">
+              {booking.user.name}
+            </td>
+
+            <td className="px-6 py-5 text-slate-600">
+              {booking.user.phone}
+            </td>
+
+            <td className="whitespace-nowrap px-6 py-5 font-semibold text-blue-700">
+              {booking.room.roomNo}
+            </td>
+
+            <td className="px-6 py-5">
+
+              <span
+                className={`whitespace-nowrap text-sm font-semibold ${getStatusColor(
+                  booking.status
+                )}`}
+              >
+                {booking.status.replaceAll("_", " ")}
+              </span>
+
+            </td>
+
+            <td className="px-8 py-5 text-right">
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedBooking(booking);
+
+                  setTimeout(() => {
+                    detailsRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }, 100);
+                }}
+                className="font-semibold text-blue-700 transition hover:text-blue-900"
+              >
+                View →
+              </button>
+
+            </td>
+
+          </tr>
+
+        ))}
+
+      </tbody>
+
+    </table>
+
+  </div>
+</>
+
+        )}
+
+            </section>
 
       {selectedBooking && (
 

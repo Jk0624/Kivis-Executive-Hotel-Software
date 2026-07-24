@@ -90,149 +90,135 @@ function CheckIn() {
   };
 
   return (
-    <ReceptionistLayout>
-      <h1 className="text-4xl font-bold text-slate-900">
-        Guest Check-In
-      </h1>
+  <ReceptionistLayout>
+    <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
+      Guest Check-In
+    </h1>
 
-      <p className="mt-3 text-gray-600">
-        Search for a booking using the guest's
-        phone number, verify the details and
-        complete the check-in process.
-      </p>
+    <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
+      Search for a booking using the guest's phone number, verify the
+      details and complete the check-in process.
+    </p>
 
-      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-        <h2 className="mb-6 text-2xl font-semibold">
-          Guest Verification
-        </h2>
+    <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+      <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
+        Guest Verification
+      </h2>
 
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <input
-              type="tel"
-              autoComplete="tel"
-              placeholder="Enter phone number"
-              value={phone}
-              disabled={
-                searching || checkingIn
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="flex-1">
+          <input
+            type="tel"
+            autoComplete="tel"
+            placeholder="Enter phone number"
+            value={phone}
+            disabled={searching || checkingIn}
+            aria-invalid={!!phoneError}
+            aria-describedby={
+              phoneError ? "phone-error" : undefined
+            }
+            onChange={(e) => {
+              setPhone(e.target.value);
+
+              if (phoneError) {
+                setPhoneError("");
               }
-              aria-invalid={!!phoneError}
-              aria-describedby={
-                phoneError
-                  ? "phone-error"
-                  : undefined
-              }
-              onChange={(e) => {
-                setPhone(e.target.value);
+            }}
+            className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
+              phoneError
+                ? "border border-red-500 focus:border-red-500"
+                : "border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+            }`}
+          />
 
-                if (phoneError) {
-                  setPhoneError("");
-                }
-              }}
-              className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                phoneError
-                  ? "border border-red-500 focus:border-red-500"
-                  : "border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              }`}
-            />
+          {phoneError && (
+            <p
+              id="phone-error"
+              className="mt-2 text-sm font-medium text-red-600"
+            >
+              {phoneError}
+            </p>
+          )}
+        </div>
 
-            {phoneError && (
-              <p
-                id="phone-error"
-                className="mt-2 text-sm font-medium text-red-600"
-              >
-                {phoneError}
-              </p>
-            )}
+        <LoadingButton
+          type="button"
+          loading={searching}
+          loadingText="Searching..."
+          onClick={searchBooking}
+          className="w-full rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800 sm:h-fit sm:w-auto"
+        >
+          Search
+        </LoadingButton>
+      </div>
+    </div>
+
+    {booking && (
+      <>
+        <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+          <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
+            Guest Details
+          </h2>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <p>
+              <strong>Booking Reference:</strong>{" "}
+              {booking.bookingReference}
+            </p>
+
+            <p>
+              <strong>Name:</strong>{" "}
+              {booking.guest.name}
+            </p>
+
+            <p>
+              <strong>Phone:</strong>{" "}
+              {booking.guest.phone}
+            </p>
+
+            <p>
+              <strong>Room:</strong>{" "}
+              {booking.room.roomNo} - {booking.room.type}
+            </p>
+
+            <p>
+              <strong>Payment Status:</strong>{" "}
+              <span className="font-semibold text-green-600">
+                {booking.paymentStatus}
+              </span>
+            </p>
+
+            <p>
+              <strong>Check-in Date:</strong>{" "}
+              {new Date(
+                booking.checkIn
+              ).toLocaleDateString()}
+            </p>
+
+            <p>
+              <strong>Check-out Date:</strong>{" "}
+              {new Date(
+                booking.checkOut
+              ).toLocaleDateString()}
+            </p>
           </div>
+        </div>
 
+        <div className="mt-8 flex justify-stretch sm:justify-end">
           <LoadingButton
             type="button"
-            loading={searching}
-            loadingText="Searching..."
-            onClick={searchBooking}
-            className="h-fit rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
+            loading={checkingIn}
+            loadingText="Checking In..."
+            onClick={checkInGuest}
+            className="w-full rounded-lg bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800 sm:w-auto sm:px-10"
           >
-            Search
+            Check In Guest
           </LoadingButton>
         </div>
-      </div>
-
-      {booking && (
-        <>
-          <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-            <h2 className="mb-6 text-2xl font-semibold">
-              Guest Details
-            </h2>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <p>
-                <strong>
-                  Booking Reference:
-                </strong>{" "}
-                {booking.bookingReference}
-              </p>
-
-              <p>
-                <strong>Name:</strong>{" "}
-                {booking.guest.name}
-              </p>
-
-              <p>
-                <strong>Phone:</strong>{" "}
-                {booking.guest.phone}
-              </p>
-
-              <p>
-                <strong>Room:</strong>{" "}
-                {booking.room.roomNo} -{" "}
-                {booking.room.type}
-              </p>
-
-              <p>
-                <strong>
-                  Payment Status:
-                </strong>{" "}
-                <span className="font-semibold text-green-600">
-                  {booking.paymentStatus}
-                </span>
-              </p>
-
-              <p>
-                <strong>
-                  Check-in Date:
-                </strong>{" "}
-                {new Date(
-                  booking.checkIn
-                ).toLocaleDateString()}
-              </p>
-
-              <p>
-                <strong>
-                  Check-out Date:
-                </strong>{" "}
-                {new Date(
-                  booking.checkOut
-                ).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-8 flex justify-end">
-            <LoadingButton
-              type="button"
-              loading={checkingIn}
-              loadingText="Checking In..."
-              onClick={checkInGuest}
-              className="rounded-lg bg-green-700 px-10 py-3 font-semibold text-white hover:bg-green-800"
-            >
-              Check In Guest
-            </LoadingButton>
-          </div>
-        </>
-      )}
-    </ReceptionistLayout>
-  );
+      </>
+    )}
+  </ReceptionistLayout>
+);
 }
 
 export default CheckIn;

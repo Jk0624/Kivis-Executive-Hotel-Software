@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import Sidebar from "../components/receptionist/Sidebar";
 import ReceptionistHeader from "../components/receptionist/ReceptionistHeader";
 
@@ -8,22 +10,26 @@ type ReceptionistLayoutProps = {
 function ReceptionistLayout({
   children,
 }: ReceptionistLayoutProps) {
+  const [sidebarOpen, setSidebarOpen] =
+    useState(false);
+
   return (
     <div className="min-h-screen bg-slate-100">
 
-      {/* Fixed Sidebar */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-      <div className="fixed left-0 top-0 z-40 h-screen w-72">
-        <Sidebar />
-      </div>
+      <main className="min-h-screen lg:ml-72">
 
-      {/* Main Content */}
+        <ReceptionistHeader
+          onMenuClick={() =>
+            setSidebarOpen(true)
+          }
+        />
 
-      <main className="ml-72 min-h-screen bg-slate-100">
-
-        <ReceptionistHeader />
-
-        <div className="p-8">
+        <div className="p-4 sm:p-6 lg:p-8">
 
           {children}
 
@@ -35,4 +41,4 @@ function ReceptionistLayout({
   );
 }
 
-export default ReceptionistLayout; 
+export default ReceptionistLayout;

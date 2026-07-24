@@ -178,21 +178,21 @@ function WalkIn() {
   return (
     <ReceptionistLayout>
 
-      <h1 className="text-4xl font-bold text-slate-900">
+      <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
         Walk-in Guest Registration
       </h1>
 
-      <p className="mt-3 text-gray-600">
+      <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
         Register guests who arrive without an online booking.
       </p>
 
-      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
 
         <h2 className="mb-6 text-2xl font-semibold text-slate-900">
           Guest Information
         </h2>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 
           <div>
 
@@ -360,7 +360,7 @@ function WalkIn() {
 
         ) : (
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 
             <div>
 
@@ -406,8 +406,7 @@ function WalkIn() {
                     key={room.roomNo}
                     value={room.roomNo}
                   >
-                    {room.roomNo} - {room.type} (GHS{" "}
-                    {room.price})
+                    {room.roomNo} - {room.type} (GHS {room.price})
                   </option>
 
                 ))}
@@ -504,13 +503,13 @@ function WalkIn() {
         )}
       </div>
 
-            <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+            <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
 
         <h2 className="mb-6 text-2xl font-semibold">
           Payment Information
         </h2>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 
           <select
             disabled={creatingBooking}
@@ -519,7 +518,7 @@ function WalkIn() {
             <option>Cash</option>
           </select>
 
-          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 sm:p-5">
 
             <h3 className="mb-3 font-semibold text-slate-800">
               Booking Summary
@@ -537,7 +536,7 @@ function WalkIn() {
 
               </div>
 
-              <div className="flex justify-between">
+              <div className="flex items-center justify-between gap-4">
 
                 <span>Number of Nights:</span>
 
@@ -547,7 +546,7 @@ function WalkIn() {
 
               <hr />
 
-              <div className="flex justify-between text-lg font-bold text-green-700">
+              <div className="flex items-center justify-between gap-4 text-base font-bold text-green-700 sm:text-lg">
 
                 <span>Total Amount:</span>
 
@@ -565,14 +564,14 @@ function WalkIn() {
 
       </div>
 
-      <div className="mt-8 flex justify-end">
+      <div className="mt-8 flex justify-stretch sm:justify-end">
 
         <LoadingButton
           type="button"
           loading={creatingBooking}
           loadingText="Creating Booking..."
           onClick={createBooking}
-          className="rounded-lg bg-green-700 px-10 py-3 font-semibold text-white hover:bg-green-800"
+          className="w-full rounded-lg bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800 sm:w-auto sm:px-10"
         >
           Create Booking
         </LoadingButton>

@@ -100,55 +100,76 @@ const totalAmount = selectedRoomPrice * numberOfNights;
         Register guests who arrive without an online booking.
       </p>
 
-      <div className="mt-8 rounded-xl bg-white p-8    shadow-md">
+<div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
 
-            <h2 className="mb-6 text-2xl font-semibold">
-            Guest Information
-            </h2>
+  <h2 className="mb-6 text-2xl font-semibold text-slate-900">
+    Guest Information
+  </h2>
 
-            <div className="grid gap-6 md:grid-cols-2">
+  <div className="grid gap-6 md:grid-cols-2">
 
-                <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-700">
-                        Full Name
-                    </label>
+    <div>
+      <label
+        htmlFor="guest-name"
+        className="mb-2 block text-sm font-medium text-slate-700"
+      >
+        Full Name
+      </label>
 
-                    <input
-                        type="text"
-                        placeholder="Enter guest's full name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-600 focus:outline-none"
-                    />
-                </div>
+      <input
+        id="guest-name"
+        type="text"
+        placeholder="Enter guest's full name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+      />
+    </div>
 
-                    <input
-                      type="text"
-                      placeholder="Phone Number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="rounded-lg border border-gray-300 px-4 py-3"
-                    />
+    <div>
+      <label
+        htmlFor="guest-phone"
+        className="mb-2 block text-sm font-medium text-slate-700"
+      >
+        Phone Number
+      </label>
 
-                    <input
-                        type="email"
-                        placeholder="Email Address (Optional)"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-4 py-3"
-                    />
+      <input
+        id="guest-phone"
+        type="text"
+        placeholder="Enter phone number"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+      />
+    </div>
 
-                {/*
-                <input
-                    type="text"
-                    placeholder="Nationality"
-                    className="rounded-lg border border-gray-300 px-4 py-3"
-                />
-                */}
+    <div>
+      <label
+        htmlFor="guest-email"
+        className="mb-2 block text-sm font-medium text-slate-700"
+      >
+        Email Address
+        <span className="ml-1 text-slate-400 font-normal">
+          (Optional)
+        </span>
+      </label>
 
-            </div>
+      <input
+        id="guest-email"
+        type="email"
+        placeholder="Enter email address"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+      />
+    </div>
 
-        </div>
+  </div>
+
+</div>
+
+
 
         <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
 

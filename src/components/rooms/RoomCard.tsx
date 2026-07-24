@@ -24,12 +24,6 @@ function RoomCard({ room }: RoomCardProps) {
         };
 
       case "BOOKED":
-        return {
-          label: "Booked",
-          badge: "bg-red-50/90 text-red-700 border border-red-200",
-          dot: "bg-red-500",
-        };
-
       case "OCCUPIED":
         return {
           label: "Occupied",
@@ -75,29 +69,19 @@ function RoomCard({ room }: RoomCardProps) {
           className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
 
-        {/* Overlay */}
-
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-        {/* Availability */}
-
         <div className="absolute right-5 top-5">
-
           <div
-            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-lg backdrop-blur-md transition-all duration-500 group-hover:scale-105 ${status.badge}`}
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-lg backdrop-blur-md ${status.badge}`}
           >
-
             <span
               className={`h-3 w-3 rounded-full ${status.dot} animate-pulse`}
             />
 
             {status.label}
-
           </div>
-
         </div>
-
-        {/* Room Number */}
 
         <div className="absolute bottom-6 left-6">
 
@@ -117,8 +101,6 @@ function RoomCard({ room }: RoomCardProps) {
 
       <div className="flex flex-1 flex-col p-7">
 
-        {/* Title */}
-
         <div>
 
           <h3 className="text-2xl font-bold text-slate-900">
@@ -137,14 +119,10 @@ function RoomCard({ room }: RoomCardProps) {
 
         </div>
 
-        {/* Description */}
-
         <p className="mt-5 min-h-[72px] leading-7 text-slate-600">
           {room.description ||
             "Experience comfort, elegance and modern convenience in a thoughtfully designed room, perfect for business and leisure stays."}
         </p>
-
-        {/* Amenities */}
 
         <div className="mt-6">
 
@@ -173,17 +151,15 @@ function RoomCard({ room }: RoomCardProps) {
 
         </div>
 
-        {/* Divider */}
-
         <div className="my-7 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
-        {/* Bottom */}
+        {/* Footer */}
 
-        <div className="mt-auto flex items-end justify-between">
+        <div className="mt-auto">
 
-          <div>
+          <div className="mb-6">
 
-            <p className="text-5x1 text-amber-600 font-bold">
+            <p className="text-3xl font-bold text-amber-600">
               GHS {room.price}
             </p>
 
@@ -193,17 +169,23 @@ function RoomCard({ room }: RoomCardProps) {
 
           </div>
 
-          <Link
-            to={`/rooms/${room.id}`}
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3.5 font-semibold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-800 hover:shadow-xl"
-          >
-            View Details
+          <div className="grid grid-cols-2 gap-3">
 
-            <span className="transition-transform duration-300 group-hover:translate-x-1">
-              →
-            </span>
+            <Link
+              to={`/rooms/${room.id}`}
+              className="rounded-xl border border-slate-300 bg-white px-5 py-3 text-center font-semibold text-slate-700 transition-all duration-300 hover:border-blue-700 hover:bg-blue-50 hover:text-blue-700"
+            >
+              View Details
+            </Link>
 
-          </Link>
+            <Link
+              to={`/rooms/${room.id}`}
+              className="rounded-xl bg-yellow-500 px-5 py-3 text-center font-semibold text-slate-900 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-yellow-400"
+            >
+              Book Now
+            </Link>
+
+          </div>
 
         </div>
 

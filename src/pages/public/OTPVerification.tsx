@@ -122,8 +122,12 @@ function OTPVerification() {
 
                   const data = response.data;
 
+                  console.log("VERIFY OTP RESPONSE:", data);
+
                   // Save JWT
                   localStorage.setItem("token", data.accessToken);
+
+                  localStorage.setItem("user", JSON.stringify(data.user));
 
                   const role = data.user.role;
 

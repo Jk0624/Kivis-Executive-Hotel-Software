@@ -1,141 +1,145 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Star } from "lucide-react";
-
-const rooms = [
-  {
-    name: "Executive Room",
-    price: "GH₵450 / Night",
-    description:
-      "Perfect for business travellers and couples seeking comfort.",
-    image:
-      "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800",
-  },
-  {
-    name: "Deluxe Room",
-    price: "GH₵380 / Night",
-    description:
-      "A spacious room with modern amenities for a relaxing stay.",
-    image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800",
-  },
-  {
-    name: "Standard Room",
-    price: "GH₵280 / Night",
-    description:
-      "Affordable comfort with everything you need for your visit.",
-    image:
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800",
-  },
-  {
-    name: "Suite",
-    price: "GH₵650 / Night",
-    description:
-      "Luxury accommodation offering premium comfort and elegance.",
-    image:
-      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
-  },
-];
+import RoomCard from "../rooms/RoomCard";
+import {
+  getGuestRooms,
+  type GuestRoom,
+} from "../../services/guestRoomService";
 
 function FeaturedRooms() {
+  const [rooms, setRooms] = useState<GuestRoom[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchRooms() {
+      try {
+        const data = await getGuestRooms();
+
+        // Show only the first four available rooms
+        const featuredRooms = data
+          .filter(
+            (room) => room.status.toUpperCase() === "AVAILABLE"
+          )
+          .slice(0, 4);
+
+        setRooms(featuredRooms);
+      } catch (error) {
+        console.error("Failed to fetch featured rooms:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRooms();
+  }, []);
+
   return (
-    <section
-      className="bg-slate-50 px-6 py-24"
-    >
+    <section className="bg-slate-50 px-6 py-24">
       <div className="mx-auto max-w-7xl">
 
-        <div className="text-center">
+        {/* Header */}
 
-          <p className="font-semibold uppercase tracking-[0.25em] text-yellow-500">
-            Featured Rooms
-          </p>
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
 
-          <h2 className="mt-4 text-4xl font-bold text-slate-900">
-            Discover Your Perfect Stay
-          </h2>
+          <div>
 
-          <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-600">
-            Choose from our carefully designed rooms offering luxury,
-            comfort and smart access technology.
-          </p>
+            <p className="font-semibold uppercase tracking-[0.3em] text-yellow-500">
+              Featured Rooms
+            </p>
+
+            <h2 className="mt-4 text-4xl font-bold text-slate-900">
+              Discover Your Perfect Stay
+            </h2>
+
+            <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
+              Explore our handpicked selection of premium rooms,
+              combining comfort, elegance and smart hospitality.
+            </p>
+
+          </div>
+
+          <Link
+            to="/rooms"
+            className="inline-flex items-center gap-2 font-semibold text-blue-700 transition hover:text-blue-900"
+          >
+            View All Rooms
+
+            <span className="transition-transform duration-300 hover:translate-x-1">
+              →
+            </span>
+
+          </Link>
 
         </div>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
+        {/* Loading */}
 
-          {rooms.map((room) => (
+        {loading ? (
 
-            <div
-              key={room.name}
-              className="overflow-hidden rounded-2xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
-            >
+          <div className="mt-16 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
 
-              <img
-                src={room.image}
-                alt={room.name}
-                className="h-56 w-full object-cover"
-              />
+            {[...Array(4)].map((_, index) => (
 
-              <div className="p-6">
+              <div
+                key={index}
+                className="animate-pulse overflow-hidden rounded-3xl border border-slate-200 bg-white"
+              >
 
-                <h3 className="text-2xl font-bold text-slate-900">
-                  {room.name}
-                </h3>
+                <div className="h-72 bg-slate-200" />
 
-                <div className="mt-3 flex gap-1">
+                <div className="space-y-4 p-6">
 
-                  {[...Array(5)].map((_, index) => (
-                    <Star
-                      key={index}
-                      className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
+                  <div className="h-6 w-2/3 rounded bg-slate-200" />
 
-                </div>
+                  <div className="h-4 rounded bg-slate-200" />
 
-                <p className="mt-4 text-slate-600">
-                  {room.description}
-                </p>
+                  <div className="h-4 w-5/6 rounded bg-slate-200" />
 
-                <p className="mt-6 text-xl font-bold text-blue-700">
-                  {room.price}
-                </p>
-
-                <div className="mt-8 flex gap-3">
-
-                  <Link
-                    to="/rooms"
-                    className="flex-1 rounded-lg border border-blue-700 px-4 py-2 text-center font-semibold text-blue-700 transition hover:bg-blue-50"
-                  >
-                    View Details
-                  </Link>
-
-                  <Link
-                    to="/rooms"
-                    className="flex-1 rounded-lg bg-blue-700 px-4 py-2 text-center font-semibold text-white transition hover:bg-blue-800"
-                  >
-                    Book Now
-                  </Link>
+                  <div className="h-10 rounded bg-slate-200" />
 
                 </div>
 
               </div>
 
-            </div>
+            ))}
 
-          ))}
+          </div>
 
-        </div>
+        ) : rooms.length > 0 ? (
 
-        <div className="mt-16 text-center">
+          <div className="mt-16 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
 
-          <Link
-            to="/rooms"
-            className="rounded-xl bg-yellow-500 px-8 py-4 text-lg font-semibold text-white transition hover:bg-yellow-400"
-          >
-            View All Rooms
-          </Link>
+            {rooms.map((room) => (
+              <RoomCard
+                key={room.id}
+                room={room}
+              />
+            ))}
 
-        </div>
+          </div>
+
+        ) : (
+
+          <div className="mt-20 rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center">
+
+            <h3 className="text-2xl font-bold text-slate-900">
+              No Featured Rooms Available
+            </h3>
+
+            <p className="mt-4 text-slate-600">
+              Please check back later to explore our available accommodation.
+            </p>
+
+            <Link
+              to="/rooms"
+              className="mt-8 inline-flex rounded-xl bg-blue-700 px-6 py-3 font-semibold text-white transition hover:bg-blue-800"
+            >
+              Browse All Rooms
+            </Link>
+
+          </div>
+
+        )}
 
       </div>
     </section>

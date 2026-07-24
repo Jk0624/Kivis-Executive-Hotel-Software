@@ -50,7 +50,7 @@ function Rooms() {
 
                 <div className="mt-3 flex justify-center">
                   <span
-                    className={`rounded-full px-4 py-2 text-sm font-semibold ${
+                    className={`rounded-full px-4 py-2 text-sm font-semibold ${ 
                       room.status === "AVAILABLE"
                         ? "bg-green-100 text-green-700"
                         : room.status === "OCCUPIED"

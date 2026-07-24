@@ -1,6 +1,9 @@
 import ReceptionLayout from "../../layouts/ReceptionistLayout";
-import TodayArrivals from "../../components/receptionist/TodayArrivals";
-import { useEffect, useState } from "react";
+import DashboardStats from "../../components/receptionist/DashboardStats";
+//import TodayArrivals from "../../components/receptionist/TodayArrivals";
+
+import PendingCheckIns from "../../components/receptionist/PendingCheckIns";
+import { useEffect, useState } from "react"; 
 import api from "../../services/api";
 
 function Dashboard() {
@@ -19,64 +22,27 @@ function Dashboard() {
 }, []);
 
 
-  return (
+  return ( 
     <ReceptionLayout>
-      <h1 className="text-4xl font-bold text-slate-900">
-        Reception Dashboard
-      </h1>
 
-      <p className="mt-3 text-gray-600">
-        Welcome back! Here's today's hotel overview.
-      </p>
+      
+        <h1 className="text-4xl font-bold text-slate-900">
+          Reception Dashboard
+        </h1>
 
-      <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+        <p className="mt-2 text-slate-600">
+          Welcome back! Here is today's overview.
+        </p>
+      
 
-        <div className="rounded-xl bg-white p-6 shadow-md">
-          <h3 className="text-gray-500">Today's Check-ins</h3>
-
-          <p className="mt-2 text-3xl font-bold">
-            {statistics?.checkedInToday ?? 0}
-          </p>
-
-        </div>
-
-        <div className="rounded-xl bg-white p-6 shadow-md">
-          <h3 className="text-gray-500">Today's Check-outs</h3>
-
-          <p className="mt-2 text-3xl font-bold">
-            {statistics?.checkedOutToday ?? 0}
-          </p>
-        
-        </div>
-
-        <div className="rounded-xl bg-white p-6 shadow-md">
-          <h3 className="text-gray-500">Available Rooms</h3>
-
-          <p className="mt-2 text-3xl font-bold">
-            {statistics?.availableRooms ?? 0}
-          </p>
-
-        </div>
-
-        <div className="rounded-xl bg-white p-6 shadow-md">
-          <h3 className="text-gray-500">Total Rooms</h3>
-
-          <p className="mt-2 text-3xl font-bold">
-            {statistics?.totalRooms ?? 0}
-          </p>
-
-        </div>
-
-        <div className="rounded-xl bg-white p-6 shadow-md">
-          <h3 className="text-gray-500">Total Bookings</h3>
-
-          <p className="mt-2 text-3xl font-bold">
-            {statistics?.totalBookings ?? 0}
-          </p>
-        </div>
-
+      <div className="mt-10">
+        <DashboardStats statistics={statistics} />
       </div>
-      <TodayArrivals />
+
+      <div className="mt-8">
+        <PendingCheckIns />
+      </div>
+      
     </ReceptionLayout>
   );
 }

@@ -3,144 +3,227 @@ interface BookingDetailsProps {
   onClose: () => void;
 }
 
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case "PAID":
+      return "text-amber-600";
+
+    case "CHECKED_IN":
+      return "text-emerald-600";
+
+    case "CHECKED_OUT":
+      return "text-slate-600";
+
+    case "CANCELLED":
+      return "text-red-600";
+
+    default:
+      return "text-blue-600";
+  }
+}
+
+function DetailRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between border-b border-slate-100 py-3">
+
+      <span className="text-sm font-medium text-slate-500">
+        {label}
+      </span>
+
+      <span className="text-sm font-semibold text-slate-900">
+        {value}
+      </span>
+
+    </div>
+  );
+}
+
 function BookingDetails({
   booking,
   onClose,
 }: BookingDetailsProps) {
+
+  const payment = booking.payments?.[0];
+
   return (
-    <div className="mt-8 space-y-6">
 
-      {/* Booking Information */}
-      <div className="rounded-xl bg-white p-6 shadow-md">
+    <div className="mt-10 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
 
-        <div className="mb-4 flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-slate-200 px-8 py-6">
 
-        <h2 className="text-2xl font-bold text-slate-900">
-          Booking Information
-        </h2>
+        <div>
+
+          <h2 className="text-2xl font-bold text-slate-900">
+            Booking Details
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Reservation information and guest profile.
+          </p>
+
+        </div>
 
         <button
           onClick={onClose}
-          className="rounded-lg border border-red-500 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
+          className="rounded-lg border border-red-300 px-5 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
         >
           Close
         </button>
 
       </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+      <div className="space-y-8 p-8"></div>
 
-          <p>
-            <strong>Booking Reference:</strong> {booking.bookingId}
-          </p>
+              {/* Booking Information */}
 
-          <p>
-            <strong>Status:</strong>{" "}
-            <span className="font-semibold text-blue-600">
-              {booking.status}
-            </span>
-          </p>
+        <section>
 
-          <p>
-            <strong>Check-In:</strong>{" "}
-            {new Date(booking.checkIn).toLocaleDateString()}
-          </p>
+          <h3 className="mb-4 text-lg font-semibold text-slate-900">
+            Booking Information
+          </h3>
 
-          <p>
-            <strong>Check-Out:</strong>{" "}
-            {new Date(booking.checkOut).toLocaleDateString()}
-          </p>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-6">
 
-        </div>
+            <DetailRow
+              label="Booking Reference"
+              value={booking.bookingId}
+            />
+
+            <DetailRow
+              label="Status"
+              value={
+                <span className={getStatusColor(booking.status)}>
+                  {booking.status.replaceAll("_", " ")}
+                </span>
+              }
+            />
+
+            <DetailRow
+              label="Check-In"
+              value={formatDate(booking.checkIn)}
+            />
+
+            <DetailRow
+              label="Check-Out"
+              value={formatDate(booking.checkOut)}
+            />
+
+          </div>
+
+        </section>
+
+        {/* Guest Information */}
+
+        <section>
+
+          <h3 className="mb-4 text-lg font-semibold text-slate-900">
+            Guest Information
+          </h3>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-6">
+
+            <DetailRow
+              label="Guest Name"
+              value={booking.user.name}
+            />
+
+            <DetailRow
+              label="Phone Number"
+              value={booking.user.phone}
+            />
+
+          </div>
+
+        </section>
+
+        {/* Room Information */}
+
+        <section>
+
+          <h3 className="mb-4 text-lg font-semibold text-slate-900">
+            Room Information
+          </h3>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-6">
+
+            <DetailRow
+              label="Room Number"
+              value={booking.room.roomNo}
+            />
+
+            <DetailRow
+              label="Room Type"
+              value={booking.room.type}
+            />
+
+            <DetailRow
+              label="Room Price"
+              value={`GH₵ ${booking.room.price.toFixed(2)}`}
+            />
+
+          </div>
+
+        </section>
+
+        {/* Payment Information */}
+
+        <section>
+
+          <h3 className="mb-4 text-lg font-semibold text-slate-900">
+            Payment Information
+          </h3>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-6">
+
+            <DetailRow
+              label="Payment Status"
+              value={
+                payment ? (
+                  <span className={getStatusColor(payment.status)}>
+                    {payment.status}
+                  </span>
+                ) : (
+                  "No Payment"
+                )
+              }
+            />
+
+            <DetailRow
+              label="Payment Method"
+              value={payment?.method ?? "N/A"}
+            />
+
+            <DetailRow
+              label="Amount Paid"
+              value={`GH₵ ${
+                payment
+                  ? payment.amount.toFixed(2)
+                  : "0.00"
+              }`}
+            />
+
+          </div>
+
+        </section>
 
       </div>
 
-      {/* Guest Information */}
-      <div className="rounded-xl bg-white p-6 shadow-md">
+  
 
-        <h2 className="mb-4 text-2xl font-bold text-slate-900">
-          Guest Information
-        </h2>
-
-        <div className="grid gap-4 md:grid-cols-2">
-
-          <p>
-            <strong>Name:</strong> {booking.user.name}
-          </p>
-
-          <p>
-            <strong>Phone:</strong> {booking.user.phone}
-          </p>
-
-        </div>
-
-      </div>
-
-      {/* Room Information */}
-      <div className="rounded-xl bg-white p-6 shadow-md">
-
-        <h2 className="mb-4 text-2xl font-bold text-slate-900">
-          Room Information
-        </h2>
-
-        <div className="grid gap-4 md:grid-cols-2">
-
-          <p>
-            <strong>Room Number:</strong> {booking.room.roomNo}
-          </p>
-
-          <p>
-            <strong>Room Type:</strong> {booking.room.type}
-          </p>
-
-          <p>
-            <strong>Room Price:</strong> GH₵ {booking.room.price.toFixed(2)}
-          </p>
-
-        </div>
-
-      </div>
-
-
-
-      {/* Payment Information */}
-      <div className="rounded-xl bg-white p-6 shadow-md">
-
-        <h2 className="mb-4 text-2xl font-bold text-slate-900">
-          Payment Information
-        </h2>
-
-        <div className="grid gap-4 md:grid-cols-2">
-
-          <p>
-            <strong>Status:</strong>{" "}
-            <span className="font-semibold text-green-600">
-              {booking.payments.length > 0
-                ? booking.payments[0].status
-                : "No Payment"}
-            </span>
-          </p>
-
-          <p>
-            <strong>Method:</strong>{" "}
-            {booking.payments.length > 0
-              ? booking.payments[0].method
-              : "N/A"}
-          </p>
-
-          <p>
-            <strong>Amount:</strong>{" "}
-            GH₵{" "}
-            {booking.payments.length > 0
-              ? booking.payments[0].amount.toFixed(2)
-              : "0.00"}
-          </p>
-
-        </div>
-
-      </div>
-</div>
-      
   );
 }
 

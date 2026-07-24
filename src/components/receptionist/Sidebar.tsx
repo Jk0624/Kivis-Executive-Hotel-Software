@@ -1,175 +1,233 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import LogoutModal from "../common/LogoutModal";
 
-
-
+import {
+  LayoutDashboard,
+  CalendarDays,
+  UserPlus,
+  LogIn,
+  LogOut,
+  BedDouble,
+  Users,
+  Bell,
+  Clock3,
+  Building2,
+} from "lucide-react";
 
 function Sidebar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const navigate = useNavigate();
+
+  const operations = [
+    {
+      name: "Dashboard",
+      path: "/receptionist/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Bookings",
+      path: "/receptionist/bookings",
+      icon: CalendarDays,
+    },
+    {
+      name: "Walk-in Booking",
+      path: "/receptionist/walkin",
+      icon: UserPlus,
+    },
+    {
+      name: "Check-In",
+      path: "/receptionist/checkin",
+      icon: LogIn,
+    },
+    {
+      name: "Check-Out",
+      path: "/receptionist/checkout",
+      icon: LogOut,
+    },
+    {
+      name: "Booking Extension",
+      path: "/receptionist/booking-extension",
+      icon: Clock3,
+    },
+  ];
+
+  const management = [
+    {
+      name: "Rooms",
+      path: "/receptionist/rooms",
+      icon: BedDouble,
+    },
+    {
+      name: "Guest Management",
+      path: "/receptionist/guests",
+      icon: Users,
+    },
+    {
+      name: "Notifications",
+      path: "/receptionist/notifications",
+      icon: Bell,
+    },
+  ];
+
   return (
-    <aside className="w-72 bg-slate-900 text-white p-6">
+    <>
+      <aside className="flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 text-white">
 
-      <h2 className="mb-10 text-2xl font-bold">
-        Kivis Executive Hotel
-      </h2>
+        {/* Brand */}
 
-      <nav>
-        <ul className="space-y-4">
+        <div className="border-b border-slate-800 px-6 py-8">
 
-          <li>
-            <NavLink
-              to="/receptionist/dashboard"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              📊 Dashboard
-            </NavLink>
-          </li>
+          <div className="flex items-center gap-3">
 
-          <li>
-            <NavLink
-              to="/receptionist/bookings"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              📖 Bookings
-            </NavLink>
-          </li>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-700 shadow-lg">
 
-          <li>
-            <NavLink
-              to="/receptionist/walkin"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              🚶 Walk-in Booking
-            </NavLink>
-          </li>
+              <Building2 size={24} />
 
-          <li>
-            <NavLink
-              to="/receptionist/checkin"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              🏨 Check-In
-            </NavLink>
-          </li>
+            </div>
 
-          <li>
-            <NavLink
-              to="/receptionist/checkout"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              🚪 Check-Out
-            </NavLink>
-          </li>
+            <div>
 
-          <li>
-            <NavLink
-              to="/receptionist/booking-extension"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              📅 Booking Extension
-            </NavLink>
-          </li>
+              <h2 className="text-lg font-bold tracking-wide">
+                KIVIZ EXECUTIVE
+              </h2>
 
+              <p className="text-sm font-medium text-yellow-400">
+                Reception Portal
+              </p>
 
-          <li>
-            <NavLink
-              to="/receptionist/rooms"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              🏨 Rooms
-            </NavLink>
-          </li>
+            </div>
 
-          <li>
-            <NavLink
-              to="/receptionist/guests"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              👤 Guest Management
-            </NavLink>
-          </li>
+          </div>
 
-      
+        </div>
 
-          <li>
-            <NavLink
-              to="/receptionist/notifications"
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
-                }`
-              }
-            >
-              🔔 Notifications
-            </NavLink>
-          </li>
+        {/* Navigation */}
 
-          <li>
-            <button
-              onClick={() => setShowLogoutModal(true)}
-              className="block w-full rounded-lg px-3 py-2 text-left transition hover:bg-slate-800"
-            >
-              🚪 Logout
-            </button>
-          </li>
+        <div className="flex-1 overflow-y-auto px-4 py-6">
 
-        </ul>
-      </nav>
+          {/* Operations */}
+
+          <div>
+
+            <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+              Operations
+            </p>
+
+            <nav className="space-y-2">
+
+              {operations.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
+                        isActive
+                          ? "border-l-4 border-blue-500 bg-blue-600/15 font-semibold text-white"
+                          : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                      }`
+                    }
+                  >
+                    <Icon size={20} />
+
+                    <span>{item.name}</span>
+                  </NavLink>
+                );
+              })}
+
+            </nav>
+
+          </div>
+
+          {/* Divider */}
+
+          <div className="my-8 border-t border-slate-800" />
+
+          {/* Management */}
+
+          <div>
+
+            <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+              Management
+            </p>
+
+            <nav className="space-y-2">
+
+              {management.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
+                        isActive
+                          ? "border-l-4 border-blue-500 bg-blue-600/15 font-semibold text-white"
+                          : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                      }`
+                    }
+                  >
+                    <Icon size={20} />
+
+                    <span>{item.name}</span>
+                  </NavLink>
+                );
+              })}
+
+            </nav>
+
+          </div>
+
+        </div>
+
+        {/* Receptionist */}
+
+        <div className="border-t border-slate-800 p-5">
+
+          <div className="rounded-2xl bg-slate-900 p-4">
+
+            <p className="text-xs uppercase tracking-widest text-slate-500">
+              Logged In
+            </p>
+
+            <h3 className="mt-2 font-semibold">
+              Receptionist
+            </h3>
+
+            <p className="text-sm text-slate-400">
+              Front Desk
+            </p>
+
+            <div className="mt-4 flex items-center gap-2">
+
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+
+              <span className="text-sm text-emerald-400">
+                Online
+              </span>
+
+            </div>
+
+          </div>
+
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 font-semibold text-red-400 transition hover:bg-red-500 hover:text-white"
+          >
+            <LogOut size={18} />
+
+            Logout
+          </button>
+
+        </div>
+
+      </aside>
 
       <LogoutModal
         isOpen={showLogoutModal}
@@ -177,15 +235,12 @@ function Sidebar() {
         onConfirm={() => {
           setShowLogoutModal(false);
 
-          // Later we'll also clear the authentication token here
-
           toast.success("Logged out successfully");
 
           navigate("/");
         }}
       />
-
-    </aside>
+    </>
   );
 }
 

@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Hotel } from "lucide-react";
-import axios from "axios";
+import api from "../../services/api";
 import NotificationBell from "./NotificationBell";
 import GuestDropdown from "./GuestDropdown";
 
@@ -25,14 +25,7 @@ function Navbar() {
       }
 
       try {
-        const response = await axios.get(
-          "http://localhost:3001/auth/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await api.get("/profile");
 
         setIsLoggedIn(true);
 

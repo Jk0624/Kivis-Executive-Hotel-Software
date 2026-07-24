@@ -21,7 +21,7 @@ import AdminRoomDetails from "../pages/admin/RoomDetails";
 import AdminBookings from "../pages/admin/Bookings";
 import PaymentDetails from "../pages/admin/PaymentDetails";
 import AdminGuests from "../pages/admin/Guests";
-import GuestProfile from "../pages/admin/GuestProfile";
+
 import AdminReceptionists from "../pages/admin/Receptionists";
 import AdminAccessDevices from "../pages/admin/AccessDevices";
 import ViewAccessDevice from "../pages/admin/ViewAccessDevice";
@@ -31,6 +31,8 @@ import Gallery from "../pages/public/Gallery";
 import ScrollToHash from "../components/navigation/ScrollToHash";
 import About from "../pages/public/About";
 
+import GuestNotifications from "../pages/public/guest/Notifications";
+
 import PublicRoomDetails from "../pages/public/RoomDetails";
 
 import SignUp from "../pages/public/SignUp";
@@ -38,8 +40,13 @@ import SignIn from "../pages/public/SignIn";
 
 import OTPVerification from "../pages/public/OTPVerification";
 
+import GuestProfile from "../pages/public/guest/Profile";
+
 import Booking from "../pages/booking/Booking";
 
+import MyBookings from "../pages/public/guest/Bookings";
+
+import PaymentHistory from "../pages/public/guest/Payments";
 
 function AppRouter() {
   return (
@@ -54,7 +61,25 @@ function AppRouter() {
         <Route path="/receptionist/bookings" element={<Bookings />} />
         <Route path="/receptionist/walkin" element={<WalkIn />} />
 
-        
+        <Route
+          path="/guest/profile"
+          element={<GuestProfile />}
+        />
+
+        <Route
+          path="/guest/bookings"
+          element={<MyBookings />}
+        />
+
+        <Route
+          path="/guest/payments"
+          element={<PaymentHistory />}
+        />
+
+        <Route
+          path="/guest/notifications"
+          element={<GuestNotifications />}
+        />
 
         <Route path="/receptionist/checkin"element={<CheckIn />} />
 

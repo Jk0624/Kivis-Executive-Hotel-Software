@@ -1,0 +1,1 @@
+ALTER TYPE "RoomType" ADD VALUE 'DELUXE';

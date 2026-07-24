@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                        String                     @id @default(cuid())
+  phone                     String                     @unique
+  name                      String?
+  role                      Role                       @default(GUEST)
+  createdAt                 DateTime                   @default(now())
+  isVerified                Boolean                    @default(false)
+  updatedAt                 DateTime                   @default(now()) @updatedAt
+  email                     String?                    @unique
+  employeeId                String?                    @unique
+  isActive                  Boolean                    @default(true)
+  bookings                  Booking[]
+  adminNotifications        AdminNotification[]
+  receptionistNotifications ReceptionistNotification[]
+  guestNotifications        GuestNotification[]
+  securityAuditLogs         SecurityAuditLog[]
+}
+
+model Room {
+  id             String        @id @default(cuid())
+  roomNo         String        @unique
+  type           RoomType
+  price          Float
+  status         RoomStatus    @default(AVAILABLE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  amenities      String[]
+  description    String?
+  photos         String[]
+  photoPublicIds String[]
+  accessDevice   AccessDevice?
+  bookings       Booking[]
+}
+
+model Booking {
+  id                String             @id @default(cuid())
+  bookingId         String             @unique
+  userId            String
+  roomId            String
+  checkIn           DateTime
+  checkOut          DateTime
+  status            BookingStatus      @default(PENDING)
+  checkedInAt       DateTime?
+  checkedOutAt        DateTime?
+  accessPin         String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now()) @updatedAt
+  accessToken       String?            @unique
+  accessLogs        AccessLog[]
+  room              Room               @relation(fields: [roomId], references: [id])
+  user              User               @relation(fields: [userId], references: [id])
+  payments          Payment[]
+  notifications     Notification[]
+  securityAuditLogs SecurityAuditLog[]
+}
+
+model Payment {
+  id        String          @id @default(cuid())
+  reference String          @unique
+  provider  PaymentProvider @default(PAYSTACK)
+  amount    Float
+  status    PaymentStatus   @default(PENDING)
+  currency  String          @default("GHS")
+  paidAt    DateTime?
+  bookingId String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @default(now()) @updatedAt
+  method    PaymentMethod   @default(ONLINE)
+  purpose   PaymentPurpose
+  booking   Booking         @relation(fields: [bookingId], references: [id])
+}
+
+model AccessDevice {
+  id         String      @id @default(cuid())
+  deviceId   String      @unique
+  apiKey     String      @unique
+  roomId     String      @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now()) @updatedAt
+  isActive   Boolean     @default(true)
+  room       Room        @relation(fields: [roomId], references: [id])
+  accessLogs AccessLog[]
+}
+
+model AccessLog {
+  id             String       @id @default(cuid())
+  bookingId      String?
+  method         AccessMethod
+  status         AccessStatus
+  createdAt      DateTime     @default(now())
+  accessDeviceId String
+  reason         String?
+  accessDevice   AccessDevice @relation(fields: [accessDeviceId], references: [id])
+  booking        Booking?     @relation(fields: [bookingId], references: [id])
+}
+
+model SecurityAuditLog {
+  id             String         @id @default(cuid())
+  employeeUserId String
+  bookingId      String?
+  action         SecurityAction
+  details        String?
+  createdAt      DateTime       @default(now())
+  booking        Booking?       @relation(fields: [bookingId], references: [id])
+  employee       User           @relation(fields: [employeeUserId], references: [id])
+}
+
+model Otp {
+  id        String   @id @default(cuid())
+  phone     String
+  codeHash  String
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([phone])
+}
+
+model Notification {
+  id                        String                     @id @default(uuid())
+  title                     String
+  message                   String
+
+  // Optional booking relationship
+  bookingId                 String?
+  booking                   Booking?                   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  createdAt                 DateTime                   @default(now())
+
+  adminNotifications        AdminNotification[]
+  receptionistNotifications ReceptionistNotification[]
+  guestNotifications        GuestNotification[]
+
+  @@index([createdAt])
+  @@index([bookingId])
+}
+
+model ReceptionistNotification {
+  id             String       @id @default(uuid())
+  notificationId String
+  receptionistId String
+  readAt         DateTime?
+  hiddenAt       DateTime?
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  receptionist   User         @relation(fields: [receptionistId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, receptionistId])
+  @@index([notificationId])
+  @@index([receptionistId])
+  @@index([readAt])
+  @@index([hiddenAt])
+}
+
+model AdminNotification {
+  id             String       @id @default(uuid())
+  notificationId String
+  adminId        String
+  readAt         DateTime?
+  hiddenAt       DateTime?
+  admin          User         @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, adminId])
+  @@index([notificationId])
+  @@index([adminId])
+  @@index([readAt])
+  @@index([hiddenAt])
+}
+
+model GuestNotification {
+  id             String       @id @default(uuid())
+  notificationId String
+  guestId        String
+  readAt         DateTime?
+  hiddenAt       DateTime?
+
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  guest          User         @relation(fields: [guestId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, guestId])
+  @@index([notificationId])
+  @@index([guestId])
+  @@index([readAt])
+  @@index([hiddenAt])
+}
+
+enum Role {
+  GUEST
+  RECEPTIONIST
+  ADMIN
+  SYSTEM
+}
+
+enum AuthProvider {
+  OTP
+  PASSWORD
+}
+
+enum RoomStatus {
+  AVAILABLE
+  RESERVED
+  OCCUPIED
+  MAINTENANCE
+  BOOKED
+}
+
+enum RoomType {
+  STANDARD
+  DELUXE
+  EXECUTIVE
+  SUITE
+}
+
+enum BookingStatus {
+  PENDING
+  PAID
+  CANCELLED
+  CHECKED_IN
+  CHECKED_OUT
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum PaymentProvider {
+  PAYSTACK
+  MANUAL
+}
+
+enum PaymentMethod {
+  ONLINE
+  CASH
+}
+
+enum PaymentPurpose {
+  INITIAL_BOOKING
+  BOOKING_EXTENSION
+}
+
+enum SecurityAction {
+  PIN_REVEALED
+  BOOKING_CANCELLED
+  PIN_RESENT
+  LOGOUT
+}
+
+enum AccessMethod {
+  PIN
+}
+
+enum AccessStatus {
+  SUCCESS
+  FAILED
+}

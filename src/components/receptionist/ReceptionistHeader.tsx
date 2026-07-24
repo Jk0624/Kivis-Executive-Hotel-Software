@@ -2,11 +2,20 @@ import { Bell, CalendarDays } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 //import { useLocation } from "react-router-dom";
 import api from "../../services/api";
-import NotificationDropdown from "./NotificationDropdown";
+import NotificationDropdown from "../common/NotificationDropdown";
 
 function ReceptionistHeader() {
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
+
+  interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  createdAt: string;
+  isRead: boolean;
+}
+
+const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const notificationRef = useRef<HTMLDivElement>(null);
 
@@ -114,11 +123,19 @@ function ReceptionistHeader() {
   const firstName =
   user.name?.split(" ")[0] || "Receptionist";
 
+  const initials =
+  user.name
+    ?.split(" ")
+    .map((name: string) => name.charAt(0))
+    .join("")
+    .substring(0, 2)
+    .toUpperCase() || "R";
+
   
   return (
     
 
-      <header className="sticky top-0 z-40 mb-6 rounded-2xl border border-slate-200 bg-white px-8 py-5 shadow-sm">
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white px-8 py-5 shadow-sm">
 
   <div className="flex items-center justify-between">
 
@@ -188,7 +205,7 @@ function ReceptionistHeader() {
       <div className="flex items-center gap-3">
 
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-700 font-semibold text-white">
-          M
+          {initials}
         </div>
 
         <div>
@@ -199,7 +216,7 @@ function ReceptionistHeader() {
 
           <div className="flex items-center gap-2">
 
-            <span className="h-2 w-2 rounded-full rounded-full bg-emerald-500" />
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
 
             <p className="text-sm text-slate-500">
               Receptionist

@@ -1,220 +1,319 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import toast from "react-hot-toast";
+
 import LogoutModal from "../common/LogoutModal";
 
+import {
+  LayoutDashboard,
+  CreditCard,
+  CalendarDays,
+  BedDouble,
+  Users,
+  ShieldCheck,
+  UserCircle,
+  LogOut,
+  Building2,
+  Smartphone,
+} from "lucide-react";
+
+interface MenuItem {
+  name: string;
+  path: string;
+  icon: React.ElementType;
+}
+
 function AdminSidebar() {
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] =
+    useState(false);
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  
+  const location = useLocation();
+
+  const navigationRef =
+    useRef<HTMLDivElement>(null);
+
+  const linkRefs = useRef<
+    Record<string, HTMLAnchorElement | null>
+  >({});
+
+  const SCROLL_KEY =
+    "admin-sidebar-scroll";
+
+  const operations: MenuItem[] = [
+    {
+      name: "Dashboard",
+      path: "/admin/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Revenue & Payments",
+      path: "/admin/revenue",
+      icon: CreditCard,
+    },
+    {
+      name: "Bookings",
+      path: "/admin/bookings",
+      icon: CalendarDays,
+    },
+  ];
+
+  const management: MenuItem[] = [
+    {
+      name: "Rooms",
+      path: "/admin/rooms",
+      icon: BedDouble,
+    },
+    {
+      name: "Guests",
+      path: "/admin/guests",
+      icon: Users,
+    },
+    {
+      name: "Receptionists",
+      path: "/admin/receptionists",
+      icon: Users,
+    },
+    {
+      name: "Access Devices",
+      path: "/admin/access-devices",
+      icon: Smartphone,
+    },
+  ];
+
+  const system: MenuItem[] = [
+    {
+      name: "Security Audit",
+      path: "/admin/security-audit",
+      icon: ShieldCheck,
+    },
+    {
+      name: "Profile",
+      path: "/admin/profile",
+      icon: UserCircle,
+    },
+  ];
+
+  /* Restore sidebar scroll */
+
+  useEffect(() => {
+    const saved =
+      sessionStorage.getItem(SCROLL_KEY);
+
+    if (navigationRef.current && saved) {
+      navigationRef.current.scrollTop =
+        Number(saved);
+    }
+  }, []);
+
+  /* Save sidebar scroll */
+
+  useEffect(() => {
+    const container =
+      navigationRef.current;
+
+    if (!container) return;
+
+    const handleScroll = () => {
+      sessionStorage.setItem(
+        SCROLL_KEY,
+        container.scrollTop.toString()
+      );
+    };
+
+    container.addEventListener(
+      "scroll",
+      handleScroll
+    );
+
+    return () =>
+      container.removeEventListener(
+        "scroll",
+        handleScroll
+      );
+  }, []);
+
+  /* Keep active link visible */
+
+  useEffect(() => {
+    const activeLink =
+      linkRefs.current[location.pathname];
+
+    if (activeLink) {
+      activeLink.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [location.pathname]);
+
+  function renderSection(
+    title: string,
+    items: MenuItem[]
+  ) {
+    return (
+      <div>
+
+        <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+
+          {title}
+
+        </p>
+
+        <nav className="space-y-2">
+
+          {items.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                ref={(el) => {
+                  linkRefs.current[item.path] = el;
+                }}
+                className={({ isActive }) =>
+                  `group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
+                    isActive
+                      ? "border-l-4 border-blue-500 bg-blue-600/15 font-semibold text-white"
+                      : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                  }`
+                }
+              >
+                <Icon size={20} />
+
+                <span>{item.name}</span>
+
+              </NavLink>
+            );
+          })}
+
+        </nav>
+
+      </div>
+    );
+  }
+
   return (
+    <>
+      <aside className="fixed left-0 top-0 z-40 flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 text-white">
 
-    <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col bg-slate-900 text-white">
+        {/* Brand */}
 
-  {/* Logo */}
+        <div className="border-b border-slate-800 px-6 py-8">
 
-  <div className="border-b border-slate-700 p-6">
+          <div className="flex items-center gap-3">
 
-    <h1 className="text-2xl font-bold">
-      Kiviz Executive Lodge
-    </h1>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-700 shadow-lg">
 
-    <p className="mt-2 text-sm text-slate-400">
-      Administration Portal
-    </p>
+              <Building2 size={24} />
 
-  </div>
+            </div>
 
-  {/* Navigation */}
+            <div>
 
-  <nav className="flex-1 p-4">
+              <h2 className="text-lg font-bold tracking-wide">
+                KIVIZ EXECUTIVE
+              </h2>
 
-    <ul className="space-y-2">
+              <p className="text-sm font-medium text-yellow-400">
+                Admin Portal
+              </p>
 
-      <li>
+            </div>
 
-        <NavLink
-          to="/admin/dashboard"
-          className={({ isActive }) =>
-            `block rounded-lg px-3 py-2 transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-slate-800"
-            }`
-          }
+          </div>
+
+        </div>
+
+        {/* Navigation */}
+
+        <div
+          ref={navigationRef}
+          className="flex-1 overflow-y-auto px-4 py-6"
         >
-          📊 Dashboard
-        </NavLink>
 
-      </li>
+                    {renderSection("Operations", operations)}
 
-      <li>
+          <div className="my-8 border-t border-slate-800" />
 
-        <NavLink
-          to="/admin/revenue"
-          className={({ isActive }) =>
-            `block rounded-lg px-3 py-2 transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-slate-800"
-            }`
-          }
-        >
-          💳 Revenue & Payments
-        </NavLink>
+          {renderSection("Management", management)}
 
-      </li>
+          <div className="my-8 border-t border-slate-800" />
 
-      <li>
+          {renderSection("System", system)}
 
-        <NavLink
-          to="/admin/rooms"
-          className={({ isActive }) =>
-            `block rounded-lg px-3 py-2 transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-slate-800"
-            }`
-          }
-        >
-          🏨 Rooms
-        </NavLink>
+        </div>
 
-      </li>
+        {/* Administrator */}
 
+        <div className="border-t border-slate-800 p-5">
 
-      <li>
+          <div className="rounded-2xl bg-slate-900 p-4">
 
-        <NavLink
-          to="/admin/bookings"
-          className={({ isActive }) =>
-            `block rounded-lg px-3 py-2 transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-slate-800"
-            }`
-          }
-        >
-          📅 Bookings
-        </NavLink>
+            <p className="text-xs uppercase tracking-widest text-slate-500">
+              Logged In
+            </p>
 
-      </li>
+            <h3 className="mt-2 font-semibold">
+              Administrator
+            </h3>
 
-      <li>
+            <p className="text-sm text-slate-400">
+              System Administrator
+            </p>
 
-        <NavLink
-          to="/admin/guests"
-          className={({ isActive }) =>
-            `block rounded-lg px-3 py-2 transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-slate-800"
-            }`
-          }
-        >
-          👥 Guests
-        </NavLink>
+            <div className="mt-4 flex items-center gap-2">
 
-      </li>
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
 
-      <li>
+              <span className="text-sm text-emerald-400">
+                Online
+              </span>
 
-        <NavLink
-          to="/admin/receptionists"
-          className={({ isActive }) =>
-            `block rounded-lg px-3 py-2 transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-slate-800"
-            }`
-          }
-        >
-          👨‍💼 Receptionists
-        </NavLink>
+            </div>
 
-      </li>
+          </div>
 
-      <li>
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 font-semibold text-red-400 transition hover:bg-red-500 hover:text-white"
+          >
+            <LogOut size={18} />
 
-        <NavLink
-          to="/admin/access-devices"
-          className={({ isActive }) =>
-            `block rounded-lg px-3 py-2 transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-slate-800"
-            }`
-          }
-        >
-          📡 Access Devices
-        </NavLink>
+            Logout
 
-      </li>
+          </button>
 
-      <li>
+        </div>
 
-        <NavLink
-          to="/admin/security-audit"
-          className={({ isActive }) =>
-            `block rounded-lg px-3 py-2 transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-slate-800"
-            }`
-          }
-        >
-          🔒 Security Audit
-        </NavLink>
+      </aside>
 
-      </li>
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onCancel={() => setShowLogoutModal(false)}
+        onConfirm={() => {
+          setShowLogoutModal(false);
 
-      <li>
+          toast.success("Logged out successfully");
 
-        <NavLink
-          to="/admin/profile"
-          className={({ isActive }) =>
-            `block rounded-lg px-3 py-2 transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-slate-800"
-            }`
-          }
-        >
-          👤 Profile
-        </NavLink>
+          navigate("/");
+        }}
+      />
 
-      </li>
-
-      <li>
-
-  <button
-    onClick={() => setShowLogoutModal(true)}
-    className="block w-full rounded-lg px-3 py-2 text-left transition hover:bg-slate-800"
-  >
-    🚪 Logout
-  </button>
-
-</li>
-
-    </ul>
-
-  </nav>
-
-  <LogoutModal
-  isOpen={showLogoutModal}
-  onCancel={() => setShowLogoutModal(false)}
-  onConfirm={() => {
-    setShowLogoutModal(false);
-
-    // Later we'll clear the JWT/session here
-
-    navigate("/");
-  }}
-/>
-
-</aside>
-  ); 
+    </>
+  );
 }
 
 export default AdminSidebar;

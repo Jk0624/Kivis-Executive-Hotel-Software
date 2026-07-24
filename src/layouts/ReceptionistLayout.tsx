@@ -5,22 +5,32 @@ type ReceptionistLayoutProps = {
   children: React.ReactNode;
 };
 
-function ReceptionistLayout({ children }: ReceptionistLayoutProps) {
+function ReceptionistLayout({
+  children,
+}: ReceptionistLayoutProps) {
   return (
-    <div className="flex h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-100">
+
       {/* Fixed Sidebar */}
-      <div className="fixed left-0 top-0 h-screen w-72 overflow-y-auto">
+
+      <div className="fixed left-0 top-0 z-40 h-screen w-72">
         <Sidebar />
       </div>
 
-      {/* Scrollable Content */}
-      <main className="ml-72 flex-1 overflow-y-auto p-8">
+      {/* Main Content */}
+
+      <main className="ml-72 min-h-screen bg-slate-100">
 
         <ReceptionistHeader />
 
-        {children}
+        <div className="p-8">
+
+          {children}
+
+        </div>
 
       </main>
+
     </div>
   );
 }

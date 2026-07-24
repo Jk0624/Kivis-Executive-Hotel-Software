@@ -1,6 +1,17 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import toast from "react-hot-toast";
+
 import LogoutModal from "../common/LogoutModal";
 
 import {
@@ -16,12 +27,31 @@ import {
   Building2,
 } from "lucide-react";
 
+interface MenuItem {
+  name: string;
+  path: string;
+  icon: React.ElementType;
+}
+
 function Sidebar() {
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] =
+    useState(false);
 
   const navigate = useNavigate();
 
-  const operations = [
+  const location = useLocation();
+
+  const navigationRef =
+    useRef<HTMLDivElement>(null);
+
+  const linkRefs = useRef<
+    Record<string, HTMLAnchorElement | null>
+  >({});
+
+  const SCROLL_KEY =
+    "reception-sidebar-scroll";
+
+  const operations: MenuItem[] = [
     {
       name: "Dashboard",
       path: "/receptionist/dashboard",
@@ -54,7 +84,7 @@ function Sidebar() {
     },
   ];
 
-  const management = [
+  const management: MenuItem[] = [
     {
       name: "Rooms",
       path: "/receptionist/rooms",
@@ -71,6 +101,106 @@ function Sidebar() {
       icon: Bell,
     },
   ];
+
+  /* Restore sidebar scroll */
+
+  useEffect(() => {
+    const saved =
+      sessionStorage.getItem(SCROLL_KEY);
+
+    if (navigationRef.current && saved) {
+      navigationRef.current.scrollTop =
+        Number(saved);
+    }
+  }, []);
+
+  /* Save scroll position */
+
+  useEffect(() => {
+    const container =
+      navigationRef.current;
+
+    if (!container) return;
+
+    const handleScroll = () => {
+      sessionStorage.setItem(
+        SCROLL_KEY,
+        container.scrollTop.toString()
+      );
+    };
+
+    container.addEventListener(
+      "scroll",
+      handleScroll
+    );
+
+    return () =>
+      container.removeEventListener(
+        "scroll",
+        handleScroll
+      );
+  }, []);
+
+  /* Keep active link visible */
+
+  useEffect(() => {
+    const activeLink =
+      linkRefs.current[location.pathname];
+
+    if (activeLink) {
+      activeLink.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [location.pathname]);
+
+  function renderSection(
+    title: string,
+    items: MenuItem[]
+  ) {
+    return (
+      <div>
+
+        <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+
+          {title}
+
+        </p>
+
+        <nav className="space-y-2">
+
+          {items.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                ref={(el) => {
+                  linkRefs.current[item.path] = el;
+                }}
+                className={({ isActive }) =>
+                  `group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
+                    isActive
+                      ? "border-l-4 border-blue-500 bg-blue-600/15 font-semibold text-white"
+                      : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                  }`
+                }
+              >
+                <Icon size={20} />
+
+                <span>{item.name}</span>
+
+              </NavLink>
+            );
+          })}
+
+        </nav>
+
+      </div>
+    );
+  }
 
   return (
     <>
@@ -106,83 +236,15 @@ function Sidebar() {
 
         {/* Navigation */}
 
-        <div className="flex-1 overflow-y-auto px-4 py-6">
-
-          {/* Operations */}
-
-          <div>
-
-            <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
-              Operations
-            </p>
-
-            <nav className="space-y-2">
-
-              {operations.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      `group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
-                        isActive
-                          ? "border-l-4 border-blue-500 bg-blue-600/15 font-semibold text-white"
-                          : "text-slate-300 hover:bg-slate-900 hover:text-white"
-                      }`
-                    }
-                  >
-                    <Icon size={20} />
-
-                    <span>{item.name}</span>
-                  </NavLink>
-                );
-              })}
-
-            </nav>
-
-          </div>
-
-          {/* Divider */}
+        <div
+          ref={navigationRef}
+          className="flex-1 overflow-y-auto px-4 py-6"
+        >
+                    {renderSection("Operations", operations)}
 
           <div className="my-8 border-t border-slate-800" />
 
-          {/* Management */}
-
-          <div>
-
-            <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
-              Management
-            </p>
-
-            <nav className="space-y-2">
-
-              {management.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      `group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
-                        isActive
-                          ? "border-l-4 border-blue-500 bg-blue-600/15 font-semibold text-white"
-                          : "text-slate-300 hover:bg-slate-900 hover:text-white"
-                      }`
-                    }
-                  >
-                    <Icon size={20} />
-
-                    <span>{item.name}</span>
-                  </NavLink>
-                );
-              })}
-
-            </nav>
-
-          </div>
+          {renderSection("Management", management)}
 
         </div>
 
@@ -223,6 +285,7 @@ function Sidebar() {
             <LogOut size={18} />
 
             Logout
+
           </button>
 
         </div>
@@ -240,6 +303,7 @@ function Sidebar() {
           navigate("/");
         }}
       />
+
     </>
   );
 }

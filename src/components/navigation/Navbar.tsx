@@ -15,6 +15,8 @@ function Navbar() {
     email: "",
   });
 
+  const [notificationCount, setNotificationCount] = useState(0);
+
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
@@ -44,6 +46,17 @@ function Navbar() {
           name: "",
           email: "",
         });
+      }
+      try {
+        const notificationResponse = await api.get(
+          "/guest/notifications/recent"
+        );
+
+        setNotificationCount(
+          notificationResponse.data.notifications.length
+        );
+      } catch {
+        setNotificationCount(0);
       }
     };
 
@@ -162,7 +175,7 @@ function Navbar() {
 
           {isLoggedIn ? (
             <>
-              <NotificationBell unreadCount={3} />
+              <NotificationBell unreadCount={notificationCount} />
 
               <GuestDropdown
                 name={user.name}

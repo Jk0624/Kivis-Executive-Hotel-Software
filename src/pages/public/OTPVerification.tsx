@@ -1,9 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import { X } from "lucide-react";
+import { CheckCircle2, X } from "lucide-react";
+
 import MainLayout from "../../layouts/MainLayout";
 import OTPInput from "../../components/auth/OTPInput";
+import LoadingButton from "../../components/common/LoadingButton";
 
 function OTPVerification() {
   const navigate = useNavigate();
@@ -13,7 +15,71 @@ function OTPVerification() {
   const name = location.state?.name || "";
   const email = location.state?.email || "";
   const phone = location.state?.phone || "";
+
   const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [verifying, setVerifying] = useState(false);
+
+  const handleVerify = async () => {
+    if (otp.length !== 6) {
+      setOtpError("Please enter the 6-digit verification code.");
+      return;
+    }
+
+    setOtpError("");
+    setVerifying(true);
+
+    try {
+      const payload =
+        flow === "signup"
+          ? {
+              name,
+              phone,
+              email,
+              otp,
+              mode: "SIGN_UP",
+            }
+          : {
+              phone,
+              otp,
+              mode: "SIGN_IN",
+            };
+
+      const response = await axios.post(
+        "http://localhost:3001/auth/verify-otp",
+        payload
+      );
+
+      const data = response.data;
+
+      console.log("VERIFY OTP RESPONSE:", data);
+
+      localStorage.setItem("token", data.accessToken);
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+
+      const role = data.user.role;
+
+      if (role === "RECEPTIONIST") {
+        navigate("/receptionist/dashboard");
+      } else if (role === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error(error);
+
+      setOtpError(
+        "Invalid verification code. Please try again."
+      );
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   return (
     <MainLayout>
@@ -25,19 +91,27 @@ function OTPVerification() {
         }}
       >
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/60"></div>
+
+        <div className="absolute inset-0 bg-black/60" />
 
         {/* Glass Card */}
+
         <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
 
-          {/* Cancel */}
+          {/* Close Button */}
+
           <div className="mb-4 flex justify-end">
+
             <button
+              type="button"
               onClick={() => navigate(-1)}
-              className="rounded-full p-2 text-white transition hover:bg-white/20 hover:scale-110"
+              disabled={verifying}
+              aria-label="Close"
+              className="rounded-full p-2 text-white transition duration-300 hover:scale-110 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <X size={24} />
             </button>
+
           </div>
 
           {/* Header */}
@@ -45,7 +119,7 @@ function OTPVerification() {
           <div className="text-center">
 
             <h1 className="text-3xl font-bold text-white">
-              Kiviz Executive Lodge
+              KIVIS EXECUTIVE LODGE
             </h1>
 
             <p className="mt-2 text-sm tracking-[0.25em] text-yellow-400">
@@ -53,22 +127,18 @@ function OTPVerification() {
             </p>
 
             <h2 className="mt-8 text-2xl font-semibold text-white">
-
               {flow === "signup"
                 ? "Complete Your Registration"
                 : "Welcome Back"}
-
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-gray-200">
-
               {flow === "signup"
                 ? "Enter the verification code sent to your phone."
                 : "Verify your phone number to continue."}
-
             </p>
 
-            <p className="mt-4 text-yellow-300">
+            <p className="mt-4 font-medium text-yellow-300">
               {phone}
             </p>
 
@@ -77,10 +147,24 @@ function OTPVerification() {
           {/* OTP */}
 
           <div className="mt-10">
-            <OTPInput onComplete={setOtp} />
+            <OTPInput
+              onComplete={(value) => {
+                setOtp(value);
+
+                if (otpError) {
+                  setOtpError("");
+                }
+              }}
+            />
+
+            {otpError && (
+              <p className="mt-4 text-center text-sm font-medium text-red-400">
+                {otpError}
+              </p>
+            )}
           </div>
 
-          {/* Timers */}
+          {/* Timer */}
 
           <div className="mt-8 space-y-2 text-center">
 
@@ -90,82 +174,40 @@ function OTPVerification() {
 
           </div>
 
-          {/* Verify */}
+          {/* Verify Button */}
 
-          <button
-              onClick={async () => {
-                if (otp.length !== 6) {
-                  alert("Please enter the 6-digit OTP.");
-                  return;
-                }
-
-                try {
-                  const payload =
-                    flow === "signup"
-                      ? {
-                          name,
-                          phone,
-                          email,
-                          otp,
-                          mode: "SIGN_UP",
-                        }
-                      : {
-                          phone,
-                          otp,
-                          mode: "SIGN_IN",
-                        };
-
-                  const response = await axios.post(
-                    "http://localhost:3001/auth/verify-otp",
-                    payload
-                  );
-
-                  const data = response.data;
-
-                  console.log("VERIFY OTP RESPONSE:", data);
-
-                  // Save JWT
-                  localStorage.setItem("token", data.accessToken);
-
-                  localStorage.setItem("user", JSON.stringify(data.user));
-
-                  const role = data.user.role;
-
-                  alert(
-                    flow === "signup"
-                      ? "Registration successful!"
-                      : "Login successful!"
-                  );
-
-                  if (role === "RECEPTIONIST") {
-                    navigate("/receptionist/dashboard");
-                  } else if (role === "ADMIN") {
-                    navigate("/admin/dashboard");
-                  } else {
-                    navigate("/");
-                  }
-
-                } catch (error) {
-                  console.error(error);
-                  alert("Invalid OTP.");
-                }
-              }}
-              className="mt-8 w-full rounded-xl bg-yellow-500 py-3 text-lg font-semibold text-white transition hover:bg-yellow-400"
-            >
+          <LoadingButton
+            type="button"
+            loading={verifying}
+            loadingText="Verifying..."
+            onClick={handleVerify}
+            className="mt-8 w-full bg-yellow-500 py-3 text-lg text-white hover:bg-yellow-400"
+          >
+            <>
+              <CheckCircle2 size={20} />
               Verify
-            </button>
+            </>
+          </LoadingButton>
+
+          {/* Footer */}
 
           <p className="mt-6 text-center text-sm text-gray-200">
+
             Wrong phone number?{" "}
+
             <button
+              type="button"
+              disabled={verifying}
               onClick={() => navigate(-1)}
-              className="font-semibold text-yellow-400 hover:underline"
+              className="font-semibold text-yellow-400 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
             >
               Go Back
             </button>
+
           </p>
 
         </div>
+
       </section>
     </MainLayout>
   );

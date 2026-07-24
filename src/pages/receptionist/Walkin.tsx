@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
+
+import { notify } from "../../utils/notify";
+
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
+import LoadingButton from "../../components/common/LoadingButton";
 import api from "../../services/api";
 
 function WalkIn() {
-
   const [rooms, setRooms] = useState<any[]>([]);
+
+  const [loadingRooms, setLoadingRooms] = useState(true);
+  const [creatingBooking, setCreatingBooking] = useState(false);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -14,53 +20,137 @@ function WalkIn() {
   const [checkOutDate, setCheckOutDate] = useState("");
   const [selectedRoomPrice, setSelectedRoomPrice] = useState(0);
 
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [roomError, setRoomError] = useState("");
+  const [checkInError, setCheckInError] = useState("");
+  const [checkOutError, setCheckOutError] = useState("");
+
+  const loadRooms = async () => {
+    try {
+      setLoadingRooms(true);
+
+      const response = await api.get("/reception/rooms");
+
+      const availableRooms = response.data.rooms.filter(
+        (room: any) => room.status === "AVAILABLE"
+      );
+
+      setRooms(availableRooms);
+    } catch (error) {
+      console.error("Failed to load rooms:", error);
+    } finally {
+      setLoadingRooms(false);
+    }
+  };
+
   useEffect(() => {
-    const loadRooms = async () => {
-      try {
-        const response = await api.get("/reception/rooms");
-
-        const availableRooms = response.data.rooms.filter(
-          (room: any) => room.status === "AVAILABLE"
-        );
-
-        setRooms(availableRooms);
-      } catch (error) {
-        console.error("Failed to load rooms:", error);
-      }
-    };
-
     loadRooms();
   }, []);
 
-
   const numberOfNights =
-  checkInDate && checkOutDate
-    ? Math.max(
-        1,
-        Math.ceil(
-          (new Date(checkOutDate).getTime() -
-            new Date(checkInDate).getTime()) /
-            (1000 * 60 * 60 * 24)
+    checkInDate && checkOutDate
+      ? Math.max(
+          1,
+          Math.ceil(
+            (new Date(checkOutDate).getTime() -
+              new Date(checkInDate).getTime()) /
+              (1000 * 60 * 60 * 24)
+          )
         )
-      )
-    : 0;
+      : 0;
 
-const totalAmount = selectedRoomPrice * numberOfNights;
-
+  const totalAmount =
+    selectedRoomPrice * numberOfNights;
 
   const createBooking = async () => {
+  const trimmedName = name.trim();
+  const trimmedPhone = phone.trim();
+  const trimmedEmail = email.trim();
+
+  let hasError = false;
+
+  setNameError("");
+  setPhoneError("");
+  setEmailError("");
+  setRoomError("");
+  setCheckInError("");
+  setCheckOutError("");
+
+  if (!trimmedName) {
+    setNameError("Guest name is required.");
+    hasError = true;
+  }
+
+  if (!trimmedPhone) {
+    setPhoneError("Phone number is required.");
+    hasError = true;
+  }
+
+  if (
+    trimmedEmail &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)
+  ) {
+    setEmailError("Please enter a valid email address.");
+    hasError = true;
+  }
+
+  if (!roomNo) {
+    setRoomError("Please select a room.");
+    hasError = true;
+  }
+
+  if (!checkInDate) {
+    setCheckInError("Check-in date is required.");
+    hasError = true;
+  }
+
+  if (!checkOutDate) {
+    setCheckOutError("Check-out date is required.");
+    hasError = true;
+  }
+
+  if (
+    checkInDate &&
+    checkOutDate &&
+    new Date(checkOutDate) <= new Date(checkInDate)
+  ) {
+    setCheckOutError(
+      "Check-out date must be after check-in date."
+    );
+    hasError = true;
+  }
+
+  if (hasError) {
+    notify.error(
+      "Please correct the highlighted fields."
+    );
+    return;
+  }
+
+  setCreatingBooking(true);
+
+  const loadingToast = notify.loading(
+    "Creating booking..."
+  );
+
   try {
-    const response = await api.post("/reception/walk-in", {
-      name,
-      phone,
-      email: email || undefined,
+    await api.post("/reception/walk-in", {
+      name: trimmedName,
+      phone: trimmedPhone,
+      email: trimmedEmail || undefined,
       roomNo,
       checkInDate,
       checkOutDate,
-      amount: totalAmount, 
+      amount: totalAmount,
     });
 
-    alert(response.data.message);
+    notify.dismiss(loadingToast);
+
+    notify.success(
+      "Walk-in booking created successfully."
+    );
 
     setName("");
     setPhone("");
@@ -70,28 +160,24 @@ const totalAmount = selectedRoomPrice * numberOfNights;
     setCheckOutDate("");
     setSelectedRoomPrice(0);
 
-    // Reload available rooms
-    const roomsResponse = await api.get("/reception/rooms");
-
-    const availableRooms = roomsResponse.data.rooms.filter(
-      (room: any) => room.status === "AVAILABLE"
-    );
-
-    setRooms(availableRooms);
+    await loadRooms();
   } catch (error: any) {
-    alert(
-      error.response?.data?.message ||
+    console.error(error);
+
+    notify.dismiss(loadingToast);
+
+    notify.error(
+      error.response?.data?.message ??
         "Failed to create walk-in booking."
     );
+  } finally {
+    setCreatingBooking(false);
   }
 };
 
-
-
-
-
   return (
     <ReceptionistLayout>
+
       <h1 className="text-4xl font-bold text-slate-900">
         Walk-in Guest Registration
       </h1>
@@ -100,193 +186,398 @@ const totalAmount = selectedRoomPrice * numberOfNights;
         Register guests who arrive without an online booking.
       </p>
 
-<div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
 
-  <h2 className="mb-6 text-2xl font-semibold text-slate-900">
-    Guest Information
-  </h2>
+        <h2 className="mb-6 text-2xl font-semibold text-slate-900">
+          Guest Information
+        </h2>
 
-  <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
 
-    <div>
-      <label
-        htmlFor="guest-name"
-        className="mb-2 block text-sm font-medium text-slate-700"
-      >
-        Full Name
-      </label>
+          <div>
 
-      <input
-        id="guest-name"
-        type="text"
-        placeholder="Enter guest's full name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
-      />
-    </div>
+            <label
+              htmlFor="guest-name"
+              className="mb-2 block text-sm font-medium text-slate-700"
+            >
+              Full Name
+            </label>
 
-    <div>
-      <label
-        htmlFor="guest-phone"
-        className="mb-2 block text-sm font-medium text-slate-700"
-      >
-        Phone Number
-      </label>
+            <input
+              id="guest-name"
+              type="text"
+              autoComplete="name"
+              disabled={creatingBooking}
+              value={name}
+              aria-invalid={!!nameError}
+              aria-describedby={
+                nameError ? "name-error" : undefined
+              }
+              onChange={(e) => {
+                setName(e.target.value);
 
-      <input
-        id="guest-phone"
-        type="text"
-        placeholder="Enter phone number"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
-      />
-    </div>
+                if (nameError) {
+                  setNameError("");
+                }
+              }}
+              placeholder="Enter guest's full name"
+              className={`w-full rounded-lg bg-white px-4 py-3 transition outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
+                nameError
+                  ? "border border-red-500 focus:border-red-500"
+                  : "border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              }`}
+            />
 
-    <div>
-      <label
-        htmlFor="guest-email"
-        className="mb-2 block text-sm font-medium text-slate-700"
-      >
-        Email Address
-        <span className="ml-1 text-slate-400 font-normal">
-          (Optional)
-        </span>
-      </label>
+            {nameError && (
+              <p
+                id="name-error"
+                className="mt-2 text-sm font-medium text-red-600"
+              >
+                {nameError}
+              </p>
+            )}
 
-      <input
-        id="guest-email"
-        type="email"
-        placeholder="Enter email address"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
-      />
-    </div>
+          </div>
 
-  </div>
+          <div>
 
-</div>
+            <label
+              htmlFor="guest-phone"
+              className="mb-2 block text-sm font-medium text-slate-700"
+            >
+              Phone Number
+            </label>
 
+            <input
+              id="guest-phone"
+              type="tel"
+              autoComplete="tel"
+              disabled={creatingBooking}
+              value={phone}
+              aria-invalid={!!phoneError}
+              aria-describedby={
+                phoneError ? "phone-error" : undefined
+              }
+              onChange={(e) => {
+                setPhone(e.target.value);
 
+                if (phoneError) {
+                  setPhoneError("");
+                }
+              }}
+              placeholder="Enter phone number"
+              className={`w-full rounded-lg bg-white px-4 py-3 transition outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
+                phoneError
+                  ? "border border-red-500 focus:border-red-500"
+                  : "border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              }`}
+            />
 
-        <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+            {phoneError && (
+              <p
+                id="phone-error"
+                className="mt-2 text-sm font-medium text-red-600"
+              >
+                {phoneError}
+              </p>
+            )}
 
-  <h2 className="mb-6 text-2xl font-semibold">
-    Stay Information
-  </h2>
+          </div>
 
-  <div className="grid gap-6 md:grid-cols-2">
+                    <div>
 
-  <select
-  value={roomNo}
-  onChange={(e) => {
-    const selectedRoom = rooms.find(
-      (room) => room.roomNo === e.target.value
-    );
+            <label
+              htmlFor="guest-email"
+              className="mb-2 block text-sm font-medium text-slate-700"
+            >
+              Email Address
+              <span className="ml-1 font-normal text-slate-400">
+                (Optional)
+              </span>
+            </label>
 
-    setRoomNo(e.target.value);
-    setSelectedRoomPrice(selectedRoom ? selectedRoom.price : 0);
-  }}
-  className="rounded-lg border border-gray-300 px-4 py-3"
-  >
-    <option value="">Select Room Number</option>
+            <input
+              id="guest-email"
+              type="email"
+              autoComplete="email"
+              disabled={creatingBooking}
+              value={email}
+              aria-invalid={!!emailError}
+              aria-describedby={
+                emailError ? "email-error" : undefined
+              }
+              onChange={(e) => {
+                setEmail(e.target.value);
 
-    {rooms.map((room) => (
-      <option key={room.roomNo} value={room.roomNo}>
-        {room.roomNo} - {room.type} (GHS {room.price})
-      </option>
-    ))}
-  </select>
+                if (emailError) {
+                  setEmailError("");
+                }
+              }}
+              placeholder="Enter email address"
+              className={`w-full rounded-lg bg-white px-4 py-3 transition outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
+                emailError
+                  ? "border border-red-500 focus:border-red-500"
+                  : "border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              }`}
+            />
 
-    {/*
-    <input
-      type="number"
-      placeholder="Number of Guests"
-      className="rounded-lg border border-gray-300 px-4 py-3"
-    />
-    */}
+            {emailError && (
+              <p
+                id="email-error"
+                className="mt-2 text-sm font-medium text-red-600"
+              >
+                {emailError}
+              </p>
+            )}
 
-    <input
-      type="date"
-      value={checkInDate}
-      onChange={(e) => setCheckInDate(e.target.value)}
-      className="rounded-lg border border-gray-300 px-4 py-3"
-    />
+          </div>
 
-    <input
-      type="date"
-      value={checkOutDate}
-      onChange={(e) => setCheckOutDate(e.target.value)}
-      className="rounded-lg border border-gray-300 px-4 py-3"
-    />
+        </div>
 
-  </div>
+      </div>
 
-  
+      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
 
-</div>
+        <h2 className="mb-6 text-2xl font-semibold">
+          Stay Information
+        </h2>
 
+        {loadingRooms ? (
 
-<div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+          <div className="flex items-center justify-center py-10">
 
-  <h2 className="mb-6 text-2xl font-semibold">
-    Payment Information
-  </h2>
+            <div className="text-center">
 
-  <div className="grid gap-6 md:grid-cols-2">
+              <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-blue-700" />
 
-    <select className="rounded-lg border border-gray-300 px-4 py-3">
-      <option>Select Payment Method</option>
-      <option>Cash</option>
-      {/* Future Payment Methods */}
-      {/* <option>Mobile Money</option> */}
-      {/*<option>Debit/Credit Card</option>*/}
-    </select>
+              <p className="text-sm text-slate-500">
+                Loading available rooms...
+              </p>
 
-    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-  <h3 className="mb-3 font-semibold text-slate-800">
-    Booking Summary
-  </h3>
+            </div>
 
-  <div className="space-y-2 text-sm">
-    <div className="flex justify-between">
-      <span>Room Rate:</span>
-      <span>GHS {selectedRoomPrice.toFixed(2)}</span>
-    </div>
+          </div>
 
-    <div className="flex justify-between">
-      <span>Number of Nights:</span>
-      <span>{numberOfNights}</span>
-    </div>
+        ) : (
 
-    <hr />
+          <div className="grid gap-6 md:grid-cols-2">
 
-    <div className="flex justify-between text-lg font-bold text-green-700">
-      <span>Total Amount:</span>
-      <span>GHS {totalAmount.toFixed(2)}</span>
-    </div>
-  </div>
-</div>
+            <div>
 
-    
+              <select
+                disabled={creatingBooking}
+                value={roomNo}
+                aria-invalid={!!roomError}
+                aria-describedby={
+                  roomError ? "room-error" : undefined
+                }
+                onChange={(e) => {
+                  const selectedRoom = rooms.find(
+                    (room) =>
+                      room.roomNo === e.target.value
+                  );
 
-  </div>
+                  setRoomNo(e.target.value);
 
-</div>
+                  setSelectedRoomPrice(
+                    selectedRoom
+                      ? selectedRoom.price
+                      : 0
+                  );
 
+                  if (roomError) {
+                    setRoomError("");
+                  }
+                }}
+                className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  roomError
+                    ? "border border-red-500 focus:border-red-500"
+                    : "border border-gray-300 focus:border-blue-600"
+                }`}
+              >
 
-<div className="mt-8 flex justify-end">
+                <option value="">
+                  Select Room Number
+                </option>
 
-  <button
-    onClick={createBooking}
-    className="rounded-lg bg-green-700 px-10 py-3 font-semibold text-white transition hover:bg-green-800"
-  >
-    Create Booking
-  </button>
+                {rooms.map((room) => (
 
-</div>
+                  <option
+                    key={room.roomNo}
+                    value={room.roomNo}
+                  >
+                    {room.roomNo} - {room.type} (GHS{" "}
+                    {room.price})
+                  </option>
+
+                ))}
+
+              </select>
+
+              {roomError && (
+                <p
+                  id="room-error"
+                  className="mt-2 text-sm font-medium text-red-600"
+                >
+                  {roomError}
+                </p>
+              )}
+
+            </div>
+
+            <div>
+
+              <input
+                type="date"
+                disabled={creatingBooking}
+                value={checkInDate}
+                aria-invalid={!!checkInError}
+                aria-describedby={
+                  checkInError
+                    ? "checkin-error"
+                    : undefined
+                }
+                onChange={(e) => {
+                  setCheckInDate(e.target.value);
+
+                  if (checkInError) {
+                    setCheckInError("");
+                  }
+                }}
+                className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  checkInError
+                    ? "border border-red-500"
+                    : "border border-gray-300"
+                }`}
+              />
+
+              {checkInError && (
+                <p
+                  id="checkin-error"
+                  className="mt-2 text-sm font-medium text-red-600"
+                >
+                  {checkInError}
+                </p>
+              )}
+
+            </div>
+
+            <div>
+
+              <input
+                type="date"
+                disabled={creatingBooking}
+                value={checkOutDate}
+                aria-invalid={!!checkOutError}
+                aria-describedby={
+                  checkOutError
+                    ? "checkout-error"
+                    : undefined
+                }
+                onChange={(e) => {
+                  setCheckOutDate(e.target.value);
+
+                  if (checkOutError) {
+                    setCheckOutError("");
+                  }
+                }}
+                className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  checkOutError
+                    ? "border border-red-500"
+                    : "border border-gray-300"
+                }`}
+              />
+
+              {checkOutError && (
+                <p
+                  id="checkout-error"
+                  className="mt-2 text-sm font-medium text-red-600"
+                >
+                  {checkOutError}
+                </p>
+              )}
+
+            </div>
+
+          </div>
+
+        )}
+      </div>
+
+            <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+
+        <h2 className="mb-6 text-2xl font-semibold">
+          Payment Information
+        </h2>
+
+        <div className="grid gap-6 md:grid-cols-2">
+
+          <select
+            disabled={creatingBooking}
+            className="rounded-lg border border-gray-300 px-4 py-3 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <option>Cash</option>
+          </select>
+
+          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+
+            <h3 className="mb-3 font-semibold text-slate-800">
+              Booking Summary
+            </h3>
+
+            <div className="space-y-2 text-sm">
+
+              <div className="flex justify-between">
+
+                <span>Room Rate:</span>
+
+                <span>
+                  GHS {selectedRoomPrice.toFixed(2)}
+                </span>
+
+              </div>
+
+              <div className="flex justify-between">
+
+                <span>Number of Nights:</span>
+
+                <span>{numberOfNights}</span>
+
+              </div>
+
+              <hr />
+
+              <div className="flex justify-between text-lg font-bold text-green-700">
+
+                <span>Total Amount:</span>
+
+                <span>
+                  GHS {totalAmount.toFixed(2)}
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div className="mt-8 flex justify-end">
+
+        <LoadingButton
+          type="button"
+          loading={creatingBooking}
+          loadingText="Creating Booking..."
+          onClick={createBooking}
+          className="rounded-lg bg-green-700 px-10 py-3 font-semibold text-white hover:bg-green-800"
+        >
+          Create Booking
+        </LoadingButton>
+
+      </div>
 
     </ReceptionistLayout>
   );

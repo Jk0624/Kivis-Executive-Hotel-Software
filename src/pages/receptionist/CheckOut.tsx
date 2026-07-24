@@ -1,47 +1,96 @@
 import { useState } from "react";
+
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
+import LoadingButton from "../../components/common/LoadingButton";
 import api from "../../services/api";
+import { notify } from "../../utils/notify";
 
 function CheckOut() {
   const [phone, setPhone] = useState("");
   const [booking, setBooking] = useState<any | null>(null);
 
+  const [searching, setSearching] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+
+  const [phoneError, setPhoneError] = useState("");
 
   const searchBooking = async () => {
+    const trimmedPhone = phone.trim();
+
+    setPhoneError("");
+
+    if (!trimmedPhone) {
+      setPhoneError("Phone number is required.");
+      notify.error("Please enter a phone number.");
+      return;
+    }
+
+    setSearching(true);
+
+    const loadingToast = notify.loading(
+      "Searching booking..."
+    );
+
     try {
       const response = await api.get(
-        `/reception/check-out/search?phone=${encodeURIComponent(phone)}`
+        `/reception/check-out/search?phone=${encodeURIComponent(
+          trimmedPhone
+        )}`
       );
+
+      notify.dismiss(loadingToast);
+
+      notify.success("Booking found.");
 
       setBooking(response.data.booking);
     } catch (error: any) {
+      notify.dismiss(loadingToast);
+
       setBooking(null);
 
-      alert(
-        error.response?.data?.message ||
-        "Booking not found."
+      notify.error(
+        error.response?.data?.message ??
+          "Booking not found."
       );
+    } finally {
+      setSearching(false);
     }
-  };  
+  };
 
   const checkOutGuest = async () => {
-  try {
-    const response = await api.post("/reception/check-out", {
-      bookingId: booking.bookingReference,
-    });
+    if (!booking) return;
 
-    alert(response.data.message);
+    setCheckingOut(true);
 
-    setBooking(null);
-    setPhone("");
-  } catch (error: any) {
-    alert(
-      error.response?.data?.message ||
-      "Failed to check out guest."
+    const loadingToast = notify.loading(
+      "Checking out guest..."
     );
-  }
-};
 
+    try {
+      const response = await api.post(
+        "/reception/check-out",
+        {
+          bookingId: booking.bookingReference,
+        }
+      );
+
+      notify.dismiss(loadingToast);
+
+      notify.success(response.data.message);
+
+      setBooking(null);
+      setPhone("");
+    } catch (error: any) {
+      notify.dismiss(loadingToast);
+
+      notify.error(
+        error.response?.data?.message ??
+          "Failed to check out guest."
+      );
+    } finally {
+      setCheckingOut(false);
+    }
+  };
 
   return (
     <ReceptionistLayout>
@@ -50,92 +99,142 @@ function CheckOut() {
       </h1>
 
       <p className="mt-3 text-gray-600">
-        Search for a checked-in guest and complete the check-out process using the phone number.
+        Search for a checked-in guest using
+        the phone number, verify the booking
+        details and complete the check-out
+        process.
       </p>
 
       <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-
         <h2 className="mb-6 text-2xl font-semibold">
           Guest Verification
         </h2>
 
         <div className="flex gap-4">
+          <div className="flex-1">
+            <input
+              type="tel"
+              autoComplete="tel"
+              placeholder="Enter phone number"
+              value={phone}
+              disabled={
+                searching || checkingOut
+              }
+              aria-invalid={!!phoneError}
+              aria-describedby={
+                phoneError
+                  ? "phone-error"
+                  : undefined
+              }
+              onChange={(e) => {
+                setPhone(e.target.value);
 
-          <input
-            type="text"
-            placeholder="Enter Phone Number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="flex-1 rounded-lg border border-gray-300 px-4 py-3"
-          />
+                if (phoneError) {
+                  setPhoneError("");
+                }
+              }}
+              className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                phoneError
+                  ? "border border-red-500 focus:border-red-500"
+                  : "border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              }`}
+            />
 
-          <button
+            {phoneError && (
+              <p
+                id="phone-error"
+                className="mt-2 text-sm font-medium text-red-600"
+              >
+                {phoneError}
+              </p>
+            )}
+          </div>
+
+          <LoadingButton
+            type="button"
+            loading={searching}
+            loadingText="Searching..."
             onClick={searchBooking}
-            className="rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
+            className="h-fit rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
           >
             Search
-          </button>
-
+          </LoadingButton>
         </div>
-
       </div>
 
-    {booking && (
-      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+      {booking && (
+        <>
+          <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
+            <h2 className="mb-6 text-2xl font-semibold">
+              Guest Details
+            </h2>
 
-        <h2 className="mb-6 text-2xl font-semibold">
-            Guest Details
-        </h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              <p>
+                <strong>
+                  Booking Reference:
+                </strong>{" "}
+                {booking.bookingReference}
+              </p>
 
-        <div className="grid gap-6 md:grid-cols-2">
+              <p>
+                <strong>Name:</strong>{" "}
+                {booking.guest.name}
+              </p>
 
-            <p>
-              <strong>Booking ID:</strong> {booking?.bookingReference}
-            </p>
+              <p>
+                <strong>Phone:</strong>{" "}
+                {booking.guest.phone}
+              </p>
 
-            <p>
-              <strong>Name:</strong> {booking?.guest?.name}
-            </p>
+              <p>
+                <strong>Room:</strong>{" "}
+                {booking.room.roomNo} -{" "}
+                {booking.room.type}
+              </p>
 
-            <p>
-              <strong>Phone:</strong> {booking?.guest?.phone}
-            </p>
+              <p>
+                <strong>
+                  Payment Status:
+                </strong>{" "}
+                <span className="font-semibold text-green-600">
+                  {booking.paymentStatus}
+                </span>
+              </p>
 
-            <p>
-              <strong>Room:</strong> {booking?.room?.roomNo} - {booking?.room?.type}
-            </p>
+              <p>
+                <strong>
+                  Check-in Date:
+                </strong>{" "}
+                {new Date(
+                  booking.checkIn
+                ).toLocaleDateString()}
+              </p>
 
-            <p>
-              <strong>Payment:</strong>{" "}
-              <span className="font-semibold text-green-600">
-                {booking?.paymentStatus}
-              </span>
-            </p>
+              <p>
+                <strong>
+                  Check-out Date:
+                </strong>{" "}
+                {new Date(
+                  booking.checkOut
+                ).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
 
-            <p>
-              <strong>Check-in Date:</strong>{" "}
-              {new Date(booking?.checkIn).toLocaleDateString()}
-            </p>
-
-            <p>
-              <strong>Check-out Date:</strong>{" "}
-              {new Date(booking?.checkOut).toLocaleDateString()}
-            </p>
-        </div>
-
-    </div>
-    )}
-
-    {booking && (
-      <div className="mt-8 flex justify-end">
-        <button
-          onClick={checkOutGuest}
-          className="rounded-lg bg-red-700 px-10 py-3 font-semibold text-white transition hover:bg-red-800"
-        >
-          Check Out Guest
-        </button>
-      </div>
-    )}
+          <div className="mt-8 flex justify-end">
+            <LoadingButton
+              type="button"
+              loading={checkingOut}
+              loadingText="Checking Out..."
+              onClick={checkOutGuest}
+              className="rounded-lg bg-red-700 px-10 py-3 font-semibold text-white hover:bg-red-800"
+            >
+              Check Out Guest
+            </LoadingButton>
+          </div>
+        </>
+      )}
     </ReceptionistLayout>
   );
 }

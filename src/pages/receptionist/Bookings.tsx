@@ -1,8 +1,10 @@
-import { BookOpen, Search} from "lucide-react";
+import { BookOpen, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+
 import api from "../../services/api";
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
 import BookingDetails from "../../components/receptionist/BookingDetails";
+import LoadingButton from "../../components/common/LoadingButton";
 
 interface Booking {
   bookingId: string;
@@ -25,15 +27,18 @@ function Bookings() {
   const [selectedBooking, setSelectedBooking] =
     useState<Booking | null>(null);
 
-  const [loading, setLoading] = useState(true);
+  const [loadingBookings, setLoadingBookings] = useState(true);
+  const [searching, setSearching] = useState(false);
+
   const [search, setSearch] = useState("");
+  const [searchError, setSearchError] = useState("");
 
   const bookingsRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
 
   const fetchBookings = async () => {
     try {
-      setLoading(true);
+      setLoadingBookings(true);
 
       const response = await api.get("/reception/bookings");
 
@@ -41,7 +46,7 @@ function Bookings() {
     } catch (error) {
       console.error("Failed to load bookings:", error);
     } finally {
-      setLoading(false);
+      setLoadingBookings(false);
     }
   };
 
@@ -50,44 +55,51 @@ function Bookings() {
   }, []);
 
   const handleSearch = async () => {
+    const trimmedSearch = search.trim();
+
+    if (!trimmedSearch) {
+      setSearchError(
+        "Please enter a booking reference or phone number."
+      );
+      return;
+    }
+
+    setSearchError("");
+    setSearching(true);
+
     try {
-      setLoading(true);
-
-      if (search.trim() === "") {
-        await fetchBookings();
-        return;
-      }
-
       const response = await api.get(
-        `/reception/bookings/search?search=${encodeURIComponent(search)}`
+        `/reception/bookings/search?search=${encodeURIComponent(
+          trimmedSearch
+        )}`
       );
 
       setBookings(response.data.bookings);
     } catch (error) {
       console.error("Search failed:", error);
     } finally {
-      setLoading(false);
+      setSearching(false);
     }
   };
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "PAID":
-      return "text-amber-600";
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "PAID":
+        return "text-amber-600";
 
-    case "CHECKED_IN":
-      return "text-emerald-600";
+      case "CHECKED_IN":
+        return "text-emerald-600";
 
-    case "CHECKED_OUT":
-      return "text-slate-600";
+      case "CHECKED_OUT":
+        return "text-slate-600";
 
-    case "CANCELLED":
-      return "text-red-600";
+      case "CANCELLED":
+        return "text-red-600";
 
-    default:
-      return "text-blue-600";
-  }
-};
+      default:
+        return "text-blue-600";
+    }
+  };
 
   return (
     <ReceptionistLayout>
@@ -136,48 +148,85 @@ const getStatusColor = (status: string) => {
 
         <div className="flex flex-col gap-4 md:flex-row">
 
-          <div className="relative flex-1">
+          <div className="flex-1">
 
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-            />
+            <div className="relative">
 
-            <input
-              type="text"
-              value={search}
-              placeholder="Search booking reference or phone number..."
-              onChange={async (e) => {
-                const value = e.target.value;
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              />
 
-                setSearch(value);
-
-                if (value.trim() === "") {
-                  fetchBookings();
+              <input
+                type="text"
+                value={search}
+                disabled={searching}
+                aria-invalid={!!searchError}
+                aria-describedby={
+                  searchError
+                    ? "search-error"
+                    : undefined
                 }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearch();
-                }
-              }}
-              className="w-full rounded-xl border border-slate-300 py-3 pl-11 pr-4 transition outline-none focus:border-blue-700"
-            />
+                placeholder="Search booking reference or phone number..."
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  setSearch(value);
+
+                  if (searchError) {
+                    setSearchError("");
+                  }
+
+                  if (value.trim() === "") {
+                    fetchBookings();
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "Enter" &&
+                    !searching
+                  ) {
+                    handleSearch();
+                  }
+                }}
+                className={`w-full rounded-xl py-3 pl-11 pr-4 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  searchError
+                    ? "border border-red-500 focus:border-red-500"
+                    : "border border-slate-300 focus:border-blue-700"
+                }`}
+              />
+
+            </div>
+
+            {searchError && (
+              <p
+                id="search-error"
+                className="mt-2 text-sm font-medium text-red-600"
+              >
+                {searchError}
+              </p>
+            )}
 
           </div>
 
-          <button
+          <LoadingButton
+            type="button"
+            loading={searching}
+            loadingText="Searching..."
             onClick={handleSearch}
-            className="rounded-xl bg-blue-700 px-8 py-3 font-semibold text-white transition hover:bg-blue-800"
+            className="rounded-xl bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
           >
-            Search
-          </button>
+            <>
+              <Search size={18} />
+              Search
+            </>
+          </LoadingButton>
 
         </div>
 
       </div>
 
-            <div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
         <div className="flex items-center justify-between border-b border-slate-200 px-8 py-5">
 
@@ -194,18 +243,19 @@ const getStatusColor = (status: string) => {
           </div>
 
           <div className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600">
-            {bookings.length} Reservation{bookings.length !== 1 ? "s" : ""}
+            {bookings.length} Reservation
+            {bookings.length !== 1 ? "s" : ""}
           </div>
 
         </div>
 
-        {loading ? (
+                {loadingBookings ? (
 
           <div className="flex items-center justify-center py-20">
 
             <div className="text-center">
 
-              <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-700"></div>
+              <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-700" />
 
               <p className="text-sm text-slate-500">
                 Loading reservations...
@@ -236,7 +286,7 @@ const getStatusColor = (status: string) => {
 
         ) : (
 
-          <div className="max-h-[70v] overflow-auto">
+          <div className="max-h-[70vh] overflow-auto">
 
             <table className="min-w-[950px]">
 
@@ -300,32 +350,35 @@ const getStatusColor = (status: string) => {
                     <td className="px-6 py-5">
 
                       <span
-  className={`whitespace-nowrap text-sm font-semibold ${getStatusColor(
-    booking.status
-  )}`}
->
+                        className={`whitespace-nowrap text-sm font-semibold ${getStatusColor(
+                          booking.status
+                        )}`}
+                      >
                         {booking.status.replaceAll("_", " ")}
                       </span>
 
                     </td>
 
                     <td className="px-8 py-5 text-right">
-  <button
-    onClick={() => {
-      setSelectedBooking(booking);
 
-      setTimeout(() => {
-        detailsRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-    }}
-    className="font-semibold text-blue-700 transition hover:text-blue-900"
-  >
-    View →
-  </button>
-</td>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedBooking(booking);
+
+                          setTimeout(() => {
+                            detailsRef.current?.scrollIntoView({
+                              behavior: "smooth",
+                              block: "start",
+                            });
+                          }, 100);
+                        }}
+                        className="font-semibold text-blue-700 transition hover:text-blue-900"
+                      >
+                        View →
+                      </button>
+
+                    </td>
 
                   </tr>
 
@@ -341,9 +394,12 @@ const getStatusColor = (status: string) => {
 
       </div>
 
+      {selectedBooking && (
 
-            {selectedBooking && (
-        <div ref={detailsRef} className="mt-10">
+        <div
+          ref={detailsRef}
+          className="mt-10"
+        >
 
           <BookingDetails
             booking={selectedBooking}
@@ -360,6 +416,7 @@ const getStatusColor = (status: string) => {
           />
 
         </div>
+
       )}
 
     </ReceptionistLayout>

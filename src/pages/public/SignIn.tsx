@@ -2,11 +2,54 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Phone, PhoneCall, X } from "lucide-react";
+
 import MainLayout from "../../layouts/MainLayout";
+import LoadingButton from "../../components/common/LoadingButton";
 
 function SignIn() {
   const navigate = useNavigate();
+
   const [phone, setPhone] = useState("");
+  const [sendingCode, setSendingCode] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    const trimmedPhone = phone.trim();
+
+    if (!trimmedPhone) {
+      setPhoneError("Please enter your phone number.");
+      return;
+    }
+
+    setPhoneError("");
+    setSendingCode(true);
+
+    try {
+      await axios.post(
+        "http://localhost:3001/auth/request-otp",
+        {
+          phone: trimmedPhone,
+          mode: "SIGN_IN",
+        }
+      );
+
+      navigate("/verify-otp", {
+        state: {
+          flow: "signin",
+          phone: trimmedPhone,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send OTP. Please try again.");
+    } finally {
+      setSendingCode(false);
+    }
+  };
 
   return (
     <MainLayout>
@@ -18,18 +61,19 @@ function SignIn() {
         }}
       >
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-black/60" />
 
         {/* Glass Card */}
         <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
 
-          {/* Cancel Button */}
+          {/* Close Button */}
           <div className="mb-4 flex justify-end">
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="rounded-full p-2 text-white transition duration-300 hover:scale-110 hover:bg-white/20"
+              disabled={sendingCode}
               aria-label="Close"
+              className="rounded-full p-2 text-white transition duration-300 hover:scale-110 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <X size={24} />
             </button>
@@ -39,7 +83,7 @@ function SignIn() {
           <div className="text-center">
 
             <h1 className="text-3xl font-bold text-white">
-              Kiviz Executive Lodge
+              KIVIS EXECUTIVE LODGE
             </h1>
 
             <p className="mt-2 text-sm tracking-[0.25em] text-yellow-400">
@@ -60,32 +104,8 @@ function SignIn() {
 
           <form
             className="mt-8 space-y-6"
-            onSubmit={async (e) => {
-              e.preventDefault();
-
-              if (!phone) {
-                alert("Please enter your phone number.");
-                return;
-              }
-
-              try {
-                await axios.post("http://localhost:3001/auth/request-otp", {
-                    phone,
-                    mode: "SIGN_IN",
-                  });
-
-                navigate("/verify-otp", {
-                  state: {
-                    flow: "signin",
-                    phone,
-                  },
-                });
-              } catch (error) {
-                console.error(error);
-                alert("Failed to send OTP. Please try again.");
-              }
-            }}
-            >
+            onSubmit={handleSubmit}
+          >
 
             {/* Phone Number */}
 
@@ -98,6 +118,8 @@ function SignIn() {
                 Phone Number
               </label>
 
+              {/* Input Container */}
+
               <div className="relative">
 
                 <Phone
@@ -108,25 +130,60 @@ function SignIn() {
                 <input
                   id="phone"
                   type="tel"
+                  autoComplete="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  disabled={sendingCode}
+                  aria-invalid={!!phoneError}
+                  aria-describedby={
+                    phoneError ? "phone-error" : undefined
+                  }
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+
+                    if (phoneError) {
+                      setPhoneError("");
+                    }
+                  }}
                   placeholder="+233 XX XXX XXXX"
-                  className="w-full rounded-xl border border-white/20 bg-white/10 py-3 pl-12 pr-4 text-white placeholder-gray-300 outline-none backdrop-blur-md transition focus:border-yellow-400" required
+                  className={`w-full rounded-xl bg-white/10 py-3 pl-12 pr-4 text-white placeholder-gray-300 outline-none backdrop-blur-md transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                    phoneError
+                      ? "border border-red-500 focus:border-red-500"
+                      : "border border-white/20 focus:border-yellow-400"
+                  }`}
                 />
 
               </div>
 
+              {/* Error Message */}
+
+              {phoneError && (
+                <p
+                  id="phone-error"
+                  className="mt-2 text-sm font-medium text-red-400 transition-all"
+                >
+                  {phoneError}
+                </p>
+              )}
+
             </div>
 
-            <button
+            {/* Submit Button */}
+
+            <LoadingButton
               type="submit"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-yellow-500 py-3 text-lg font-semibold text-white transition hover:bg-yellow-400"
+              loading={sendingCode}
+              loadingText="Sending SMS Code..."
+              className="w-full bg-yellow-500 py-3 text-lg text-white hover:bg-yellow-400"
             >
-              <PhoneCall size={20} />
-              Send SMS Code
-            </button>
+              <>
+                <PhoneCall size={20} />
+                Send SMS Code
+              </>
+            </LoadingButton>
 
           </form>
+
+          {/* Footer */}
 
           <p className="mt-8 text-center text-sm text-gray-200">
             Don't have an account?{" "}
@@ -139,6 +196,7 @@ function SignIn() {
           </p>
 
         </div>
+
       </section>
     </MainLayout>
   );

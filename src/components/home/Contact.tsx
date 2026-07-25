@@ -21,7 +21,9 @@ function Contact() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement
+    >
   ) => {
     setFormData((previous) => ({
       ...previous,
@@ -37,15 +39,15 @@ function Contact() {
     setSuccessMessage("");
     setErrorMessage("");
 
-    // Frontend validation (matches backend DTO)
-
     if (!formData.fullName.trim()) {
       setErrorMessage("Full name is required.");
       return;
     }
 
     if (formData.fullName.length > 100) {
-      setErrorMessage("Full name cannot exceed 100 characters.");
+      setErrorMessage(
+        "Full name cannot exceed 100 characters."
+      );
       return;
     }
 
@@ -53,7 +55,9 @@ function Contact() {
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(formData.email)) {
-      setErrorMessage("Please enter a valid email address.");
+      setErrorMessage(
+        "Please enter a valid email address."
+      );
       return;
     }
 
@@ -63,7 +67,9 @@ function Contact() {
     }
 
     if (formData.subject.length > 150) {
-      setErrorMessage("Subject cannot exceed 150 characters.");
+      setErrorMessage(
+        "Subject cannot exceed 150 characters."
+      );
       return;
     }
 
@@ -73,7 +79,9 @@ function Contact() {
     }
 
     if (formData.message.length > 2000) {
-      setErrorMessage("Message cannot exceed 2000 characters.");
+      setErrorMessage(
+        "Message cannot exceed 2000 characters."
+      );
       return;
     }
 
@@ -86,7 +94,7 @@ function Contact() {
       );
 
       setSuccessMessage(
-        response.data.message ||
+        response.data.message ??
           "Thank you for contacting Kiviz Executive Lodge. We have received your message and will get back to you shortly."
       );
 
@@ -100,7 +108,7 @@ function Contact() {
       console.error(error);
 
       setErrorMessage(
-        error?.response?.data?.message ||
+        error?.response?.data?.message ??
           "Unable to send your message. Please try again later."
       );
     } finally {
@@ -111,130 +119,119 @@ function Contact() {
   return (
     <section
       id="contact"
-      className="bg-white px-6 py-24"
+      className="bg-white px-5 py-16 sm:px-6 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-7xl">
-
         {/* Heading */}
 
         <div className="text-center">
-
-          <p className="font-semibold uppercase tracking-[0.25em] text-yellow-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-yellow-500 sm:text-sm">
             Contact Us
           </p>
 
-          <h2 className="mt-4 text-4xl font-bold text-slate-900">
+          <h2 className="mt-3 text-3xl font-bold text-slate-900 sm:mt-4 sm:text-4xl">
             We'd Love to Hear From You
           </h2>
 
-          <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-600">
-            Whether you're planning your next stay, making a
-            reservation, or simply have a question, our team
-            is always ready to assist you.
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-7 text-slate-600 sm:mt-5 sm:text-lg">
+            Whether you're planning your next
+            stay, making a reservation, or
+            simply have a question, our team is
+            always ready to assist you.
           </p>
-
         </div>
 
-        <div className="mt-16 grid gap-12 lg:grid-cols-2">
-
+        <div className="mt-12 grid gap-10 lg:mt-16 lg:grid-cols-2 lg:gap-12">
           {/* Contact Information */}
 
           <div className="space-y-8">
-
-            <div className="flex gap-4">
-              <MapPin className="h-8 w-8 text-yellow-500" />
+            <div className="flex items-start gap-4">
+              <MapPin className="mt-1 h-7 w-7 flex-shrink-0 text-yellow-500 sm:h-8 sm:w-8" />
 
               <div>
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-lg font-semibold sm:text-xl">
                   Address
                 </h3>
 
-                <p className="mt-2 text-slate-600">
-                  Accra, Greater Accra Region, Ghana
+                <p className="mt-2 text-sm text-slate-600 sm:text-base">
+                  Accra, Greater Accra Region,
+                  Ghana
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <Phone className="h-8 w-8 text-yellow-500" />
+            <div className="flex items-start gap-4">
+              <Phone className="mt-1 h-7 w-7 flex-shrink-0 text-yellow-500 sm:h-8 sm:w-8" />
 
               <div>
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-lg font-semibold sm:text-xl">
                   Phone
                 </h3>
 
-                <p className="mt-2 text-slate-600">
+                <p className="mt-2 text-sm text-slate-600 sm:text-base">
                   +233 XX XXX XXXX
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <Mail className="h-8 w-8 text-yellow-500" />
+            <div className="flex items-start gap-4">
+              <Mail className="mt-1 h-7 w-7 flex-shrink-0 text-yellow-500 sm:h-8 sm:w-8" />
 
               <div>
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-lg font-semibold sm:text-xl">
                   Email
                 </h3>
 
-                <p className="mt-2 text-slate-600">
+                <p className="mt-2 text-sm text-slate-600 sm:text-base">
                   info@kivizhotel.com
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <Clock3 className="h-8 w-8 text-yellow-500" />
+            <div className="flex items-start gap-4">
+              <Clock3 className="mt-1 h-7 w-7 flex-shrink-0 text-yellow-500 sm:h-8 sm:w-8" />
 
               <div>
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-lg font-semibold sm:text-xl">
                   Reception
                 </h3>
 
-                <p className="mt-2 text-slate-600">
+                <p className="mt-2 text-sm text-slate-600 sm:text-base">
                   Open 24 Hours
                 </p>
               </div>
             </div>
-
           </div>
 
           {/* Contact Form */}
 
-          <div className="rounded-2xl bg-slate-50 p-8 shadow-md">
-
-            <h3 className="text-2xl font-bold text-slate-900">
+          <div className="rounded-2xl bg-slate-50 p-5 shadow-md sm:p-8">
+            <h3 className="text-xl font-bold text-slate-900 sm:text-2xl">
               Send Us a Message
             </h3>
 
-            <p className="mt-2 text-slate-600">
-              Have a question or special request? Complete the
-              form below and our team will get back to you as
-              soon as possible.
+            <p className="mt-2 text-sm text-slate-600 sm:text-base">
+              Have a question or special
+              request? Complete the form below
+              and our team will get back to you
+              as soon as possible.
             </p>
 
             <form
               onSubmit={handleSubmit}
               className="mt-8 space-y-6"
             >
-
-              {/* Success */}
-
               {successMessage && (
                 <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700">
                   {successMessage}
                 </div>
               )}
 
-              {/* Error */}
-
               {errorMessage && (
                 <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
                   {errorMessage}
                 </div>
               )}
-
-              {/* Full Name */}
 
               <div>
                 <label className="mb-2 block font-medium text-slate-700">
@@ -252,8 +249,6 @@ function Contact() {
                 />
               </div>
 
-              {/* Email */}
-
               <div>
                 <label className="mb-2 block font-medium text-slate-700">
                   Email Address *
@@ -269,10 +264,7 @@ function Contact() {
                 />
               </div>
 
-              {/* Subject */}
-
               <div>
-
                 <label className="mb-2 block font-medium text-slate-700">
                   Subject *
                 </label>
@@ -287,23 +279,20 @@ function Contact() {
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-700"
                 />
 
-                <div className="mt-2 flex items-center justify-between text-sm text-slate-500">
+                <div className="mt-2 flex flex-col gap-1 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
                   <span>
-                    Examples: Room Reservation, Event Booking,
-                    General Inquiry
+                    Examples: Room Reservation,
+                    Event Booking, General
+                    Inquiry
                   </span>
 
                   <span>
                     {formData.subject.length}/150
                   </span>
                 </div>
-
               </div>
 
-              {/* Message */}
-
               <div>
-
                 <label className="mb-2 block font-medium text-slate-700">
                   Your Message *
                 </label>
@@ -321,10 +310,7 @@ function Contact() {
                 <div className="mt-2 text-right text-sm text-slate-500">
                   {formData.message.length}/2000
                 </div>
-
               </div>
-
-              {/* Button */}
 
               <button
                 type="submit"
@@ -337,13 +323,9 @@ function Contact() {
                   ? "Sending..."
                   : "Send Message"}
               </button>
-
             </form>
-
           </div>
-
         </div>
-
       </div>
     </section>
   );

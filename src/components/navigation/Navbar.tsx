@@ -1,6 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Hotel } from "lucide-react";
+import {
+  Hotel,
+  Menu,
+  X,
+} from "lucide-react";
 import api from "../../services/api";
 import NotificationBell from "./NotificationBell";
 import GuestDropdown from "./GuestDropdown";
@@ -15,7 +19,13 @@ function Navbar() {
     email: "",
   });
 
-  const [notificationCount, setNotificationCount] = useState(0);
+  const [notificationCount, setNotificationCount] =
+    useState(0);
+
+  /* Mobile Drawer */
+
+  const [mobileMenuOpen, setMobileMenuOpen] =
+    useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -47,13 +57,16 @@ function Navbar() {
           email: "",
         });
       }
+
       try {
-        const notificationResponse = await api.get(
-          "/guest/notifications/recent"
-        );
+        const notificationResponse =
+          await api.get(
+            "/guest/notifications/recent"
+          );
 
         setNotificationCount(
-          notificationResponse.data.notifications.length
+          notificationResponse.data.notifications
+            .length
         );
       } catch {
         setNotificationCount(0);
@@ -63,6 +76,47 @@ function Navbar() {
     fetchProfile();
   }, []);
 
+  /* Lock page scroll while drawer is open */
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
+  /* Close drawer with ESC */
+
+  useEffect(() => {
+    const handleEscape = (
+      event: KeyboardEvent
+    ) => {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener(
+      "keydown",
+      handleEscape
+    );
+
+    return () =>
+      window.removeEventListener(
+        "keydown",
+        handleEscape
+      );
+  }, []);
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
   const handleHomeClick = () => {
     if (location.pathname === "/") {
       window.scrollTo({
@@ -70,6 +124,8 @@ function Navbar() {
         behavior: "smooth",
       });
     }
+
+    closeMobileMenu();
   };
 
   const navLinkClass = (path: string) => {
@@ -100,110 +156,279 @@ function Navbar() {
       }
     `;
   };
+    return (
+    <>
+      {/* Overlay */}
 
-  return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur-md shadow-sm">
-      <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-6 lg:px-8">
+      {mobileMenuOpen && (
+        <div
+          onClick={closeMobileMenu}
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+        />
+      )}
 
-        {/* Logo */}
+      <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 shadow-sm backdrop-blur-md">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:h-24 sm:px-6 lg:px-8">
 
-        <Link
-          to="/"
-          onClick={handleHomeClick}
-          className="group flex items-center gap-3"
-        >
-          <div className="rounded-xl bg-yellow-50 p-2 transition-all duration-300 group-hover:scale-105">
-            <Hotel className="h-8 w-8 text-yellow-500" />
-          </div>
-
-          <div className="leading-tight">
-            <h2 className="text-1xl font-bold tracking-tight text-blue-900">
-              KIVIS EXECUTIVE LODGE
-            </h2>
-
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-500">
-              Smart Hospitality
-            </p>
-          </div>
-        </Link>
-
-        {/* Navigation */}
-
-        <div className="flex items-center gap-10">
+          {/* Logo */}
 
           <Link
             to="/"
             onClick={handleHomeClick}
-            className={navLinkClass("/")}
+            className="group flex items-center gap-3"
           >
-            Home
+            <div className="rounded-xl bg-yellow-50 p-2 transition-all duration-300 group-hover:scale-105">
+              <Hotel className="h-7 w-7 text-yellow-500 sm:h-8 sm:w-8" />
+            </div>
+
+            <div className="leading-tight">
+              <h2 className="text-sm font-bold tracking-tight text-blue-900 sm:text-base lg:text-lg">
+                KIVIS EXECUTIVE LODGE
+              </h2>
+
+              <p className="hidden text-[11px] uppercase tracking-[0.35em] text-slate-500 sm:block">
+                Smart Hospitality
+              </p>
+            </div>
           </Link>
 
-          <Link
-            to="/rooms"
-            className={navLinkClass("/rooms")}
-          >
-            Rooms
-          </Link>
+          {/* Desktop Navigation */}
 
-          <Link
-            to="/gallery"
-            className={navLinkClass("/gallery")}
-          >
-            Gallery
-          </Link>
+          <div className="hidden items-center gap-8 lg:flex">
 
-          <Link
-            to="/about"
-            className={navLinkClass("/about")}
-          >
-            About
-          </Link>
+            <Link
+              to="/"
+              onClick={handleHomeClick}
+              className={navLinkClass("/")}
+            >
+              Home
+            </Link>
 
-          <Link
-            to="/#contact"
-            className={navLinkClass("/#contact")}
+            <Link
+              to="/rooms"
+              className={navLinkClass("/rooms")}
+            >
+              Rooms
+            </Link>
+
+            <Link
+              to="/gallery"
+              className={navLinkClass("/gallery")}
+            >
+              Gallery
+            </Link>
+
+            <Link
+              to="/about"
+              className={navLinkClass("/about")}
+            >
+              About
+            </Link>
+
+            <Link
+              to="/#contact"
+              className={navLinkClass("/#contact")}
+            >
+              Contact
+            </Link>
+
+          </div>
+
+          {/* Desktop Right Side */}
+
+          <div className="hidden items-center gap-5 lg:flex">
+
+            {isLoggedIn ? (
+              <>
+                <NotificationBell
+                  unreadCount={notificationCount}
+                />
+
+                <GuestDropdown
+                  name={user.name}
+                  email={user.email}
+                />
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/signin"
+                  className="rounded-xl border border-blue-700 px-5 py-2.5 text-sm font-semibold text-blue-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-50"
+                >
+                  Log In
+                </Link>
+
+                <Link
+                  to="/signup"
+                  className="rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg"
+                >
+                  Create Account
+                </Link>
+              </>
+            )}
+
+          </div>
+
+          {/* Mobile Right Side */}
+
+          <div className="flex items-center gap-3 lg:hidden">
+
+            {isLoggedIn && (
+              <NotificationBell
+                unreadCount={notificationCount}
+              />
+            )}
+
+            <button
+              type="button"
+              onClick={() =>
+                setMobileMenuOpen(true)
+              }
+              aria-label="Open navigation menu"
+              className="rounded-xl border border-slate-200 p-2 transition hover:bg-slate-100"
+            >
+              <Menu className="h-6 w-6 text-slate-700" />
+            </button>
+
+          </div>
+
+        </div>
+      </nav>
+
+      {/* Mobile Drawer */}
+
+      <aside
+        className={`fixed right-0 top-0 z-50 flex h-full w-[85%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 lg:hidden ${
+          mobileMenuOpen
+            ? "translate-x-0"
+            : "translate-x-full"
+        }`}
+      >
+        {/* Drawer Header */}
+
+        <div className="flex items-center justify-between border-b border-slate-200 p-5">
+
+          <div className="flex items-center gap-3">
+
+            <div className="rounded-xl bg-yellow-50 p-2">
+              <Hotel className="h-7 w-7 text-yellow-500" />
+            </div>
+
+            <div>
+              <h2 className="text-sm font-bold text-blue-900">
+                KIVIS EXECUTIVE LODGE
+              </h2>
+
+              <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">
+                Smart Hospitality
+              </p>
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            aria-label="Close navigation menu"
+            onClick={closeMobileMenu}
+            className="rounded-lg p-2 transition hover:bg-slate-100"
           >
-            Contact
-          </Link>
+            <X className="h-6 w-6 text-slate-700" />
+          </button>
 
         </div>
 
-        {/* Right Side */}
+                {/* Mobile Navigation */}
 
-        <div className="flex items-center gap-5">
+        <div className="flex-1 overflow-y-auto px-6 py-8">
+          <div className="flex flex-col space-y-2">
+
+            <Link
+              to="/"
+              onClick={handleHomeClick}
+              className={`${navLinkClass("/")} rounded-lg px-2 py-3 after:hidden`}
+            >
+              Home
+            </Link>
+
+            <Link
+              to="/rooms"
+              onClick={closeMobileMenu}
+              className={`${navLinkClass("/rooms")} rounded-lg px-2 py-3 after:hidden`}
+            >
+              Rooms
+            </Link>
+
+            <Link
+              to="/gallery"
+              onClick={closeMobileMenu}
+              className={`${navLinkClass("/gallery")} rounded-lg px-2 py-3 after:hidden`}
+            >
+              Gallery
+            </Link>
+
+            <Link
+              to="/about"
+              onClick={closeMobileMenu}
+              className={`${navLinkClass("/about")} rounded-lg px-2 py-3 after:hidden`}
+            >
+              About
+            </Link>
+
+            <Link
+              to="/#contact"
+              onClick={closeMobileMenu}
+              className={`${navLinkClass("/#contact")} rounded-lg px-2 py-3 after:hidden`}
+            >
+              Contact
+            </Link>
+
+          </div>
+
+          <div className="my-8 border-t border-slate-200" />
 
           {isLoggedIn ? (
-            <>
-              <NotificationBell unreadCount={notificationCount} />
+            <div className="space-y-6">
+
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm font-semibold text-slate-900">
+                  {user.name}
+                </p>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  {user.email}
+                </p>
+              </div>
 
               <GuestDropdown
                 name={user.name}
                 email={user.email}
               />
-            </>
+
+            </div>
           ) : (
-            <>
+            <div className="space-y-4">
+
               <Link
                 to="/signin"
-                className="rounded-xl border border-blue-700 px-5 py-2.5 text-sm font-semibold text-blue-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-50"
+                onClick={closeMobileMenu}
+                className="block rounded-xl border border-blue-700 px-5 py-3 text-center font-semibold text-blue-700 transition hover:bg-blue-50"
               >
                 Log In
               </Link>
 
               <Link
                 to="/signup"
-                className="rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg"
+                onClick={closeMobileMenu}
+                className="block rounded-xl bg-blue-700 px-5 py-3 text-center font-semibold text-white transition hover:bg-blue-800"
               >
                 Create Account
               </Link>
-            </>
+
+            </div>
           )}
-
         </div>
-
-      </div>
-    </nav>
+      </aside>
+    </>
   );
 }
 

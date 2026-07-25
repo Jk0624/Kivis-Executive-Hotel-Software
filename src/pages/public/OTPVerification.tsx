@@ -84,24 +84,22 @@ function OTPVerification() {
   return (
     <MainLayout>
       <section
-        className="relative flex min-h-screen items-center justify-center bg-cover bg-center px-6 py-12"
+        className="relative flex min-h-screen items-center justify-center bg-cover bg-center px-4 py-8 sm:px-6 sm:py-12"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600')",
         }}
       >
-        {/* Dark Overlay */}
+        {/* Overlay */}
 
         <div className="absolute inset-0 bg-black/60" />
 
         {/* Glass Card */}
 
-        <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
-
+        <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-8">
           {/* Close Button */}
 
           <div className="mb-4 flex justify-end">
-
             <button
               type="button"
               onClick={() => navigate(-1)}
@@ -109,24 +107,22 @@ function OTPVerification() {
               aria-label="Close"
               className="rounded-full p-2 text-white transition duration-300 hover:scale-110 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <X size={24} />
+              <X size={22} />
             </button>
-
           </div>
 
           {/* Header */}
 
           <div className="text-center">
-
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-white sm:text-3xl">
               KIVIS EXECUTIVE LODGE
             </h1>
 
-            <p className="mt-2 text-sm tracking-[0.25em] text-yellow-400">
+            <p className="mt-2 text-xs tracking-[0.2em] text-yellow-400 sm:text-sm sm:tracking-[0.25em]">
               Luxury • Comfort • Excellence
             </p>
 
-            <h2 className="mt-8 text-2xl font-semibold text-white">
+            <h2 className="mt-6 text-xl font-semibold text-white sm:mt-8 sm:text-2xl">
               {flow === "signup"
                 ? "Complete Your Registration"
                 : "Welcome Back"}
@@ -138,15 +134,14 @@ function OTPVerification() {
                 : "Verify your phone number to continue."}
             </p>
 
-            <p className="mt-4 font-medium text-yellow-300">
+            <p className="mt-4 break-all font-medium text-yellow-300">
               {phone}
             </p>
-
           </div>
 
           {/* OTP */}
 
-          <div className="mt-10">
+          <div className="mt-8 sm:mt-10">
             <OTPInput
               onComplete={(value) => {
                 setOtp(value);
@@ -166,12 +161,10 @@ function OTPVerification() {
 
           {/* Timer */}
 
-          <div className="mt-8 space-y-2 text-center">
-
+          <div className="mt-6 space-y-2 text-center sm:mt-8">
             <p className="pt-3 text-sm text-gray-300">
               Resend code in 01:00
             </p>
-
           </div>
 
           {/* Verify Button */}
@@ -181,7 +174,7 @@ function OTPVerification() {
             loading={verifying}
             loadingText="Verifying..."
             onClick={handleVerify}
-            className="mt-8 w-full bg-yellow-500 py-3 text-lg text-white hover:bg-yellow-400"
+            className="mt-8 w-full bg-yellow-500 py-3 text-base text-white hover:bg-yellow-400 sm:text-lg"
           >
             <>
               <CheckCircle2 size={20} />
@@ -191,10 +184,8 @@ function OTPVerification() {
 
           {/* Footer */}
 
-          <p className="mt-6 text-center text-sm text-gray-200">
-
+          <p className="mt-6 text-center text-sm leading-6 text-gray-200">
             Wrong phone number?{" "}
-
             <button
               type="button"
               disabled={verifying}
@@ -203,11 +194,8 @@ function OTPVerification() {
             >
               Go Back
             </button>
-
           </p>
-
         </div>
-
       </section>
     </MainLayout>
   );

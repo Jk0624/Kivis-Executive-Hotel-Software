@@ -166,293 +166,282 @@ function BookingExtension() {
   };
 
   return (
-        <ReceptionistLayout>
-      <h1 className="text-4xl font-bold text-slate-900">
-        Booking Extension
-      </h1>
+  <ReceptionistLayout>
+    <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
+      Booking Extension
+    </h1>
 
-      <p className="mt-3 text-gray-600">
-        Extend the stay of a checked-in guest.
-      </p>
+    <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
+      Extend the stay of a checked-in guest.
+    </p>
 
-      <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-        <h2 className="mb-6 text-2xl font-semibold">
-          Search Checked-In Guest
+    <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+      <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
+        Search Checked-In Guest
+      </h2>
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="flex-1">
+          <input
+            type="tel"
+            autoComplete="tel"
+            placeholder="Enter guest's phone number"
+            value={phone}
+            disabled={
+              searching ||
+              previewing ||
+              confirming
+            }
+            aria-invalid={!!phoneError}
+            aria-describedby={
+              phoneError
+                ? "phone-error"
+                : undefined
+            }
+            onChange={(e) => {
+              setPhone(e.target.value);
+
+              if (phoneError) {
+                setPhoneError("");
+              }
+            }}
+            className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
+              phoneError
+                ? "border border-red-500 focus:border-red-500"
+                : "border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+            }`}
+          />
+
+          {phoneError && (
+            <p
+              id="phone-error"
+              className="mt-2 text-sm font-medium text-red-600"
+            >
+              {phoneError}
+            </p>
+          )}
+        </div>
+
+        <LoadingButton
+          type="button"
+          loading={searching}
+          loadingText="Searching..."
+          onClick={searchBooking}
+          className="w-full rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800 sm:h-fit sm:w-auto"
+        >
+          Search
+        </LoadingButton>
+      </div>
+    </div>
+
+    {booking && (
+      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+        <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
+          Booking Details
         </h2>
 
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <input
-              type="tel"
-              autoComplete="tel"
-              placeholder="Enter guest's phone number"
-              value={phone}
-              disabled={
-                searching ||
-                previewing ||
-                confirming
-              }
-              aria-invalid={!!phoneError}
-              aria-describedby={
-                phoneError
-                  ? "phone-error"
-                  : undefined
-              }
-              onChange={(e) => {
-                setPhone(e.target.value);
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <p>
+            <strong>Booking Reference:</strong>{" "}
+            {booking.bookingReference}
+          </p>
 
-                if (phoneError) {
-                  setPhoneError("");
-                }
-              }}
-              className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                phoneError
-                  ? "border border-red-500 focus:border-red-500"
-                  : "border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              }`}
-            />
+          <p>
+            <strong>Guest Name:</strong>{" "}
+            {booking.guest.name}
+          </p>
 
-            {phoneError && (
-              <p
-                id="phone-error"
-                className="mt-2 text-sm font-medium text-red-600"
-              >
-                {phoneError}
-              </p>
-            )}
-          </div>
+          <p>
+            <strong>Phone Number:</strong>{" "}
+            {booking.guest.phone}
+          </p>
 
-          <LoadingButton
-            type="button"
-            loading={searching}
-            loadingText="Searching..."
-            onClick={searchBooking}
-            className="h-fit rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
-          >
-            Search
-          </LoadingButton>
+          <p>
+            <strong>Room:</strong>{" "}
+            {booking.room.roomNo} -{" "}
+            {booking.room.type}
+          </p>
+
+          <p>
+            <strong>Current Check-in:</strong>{" "}
+            {new Date(
+              booking.checkIn
+            ).toLocaleDateString()}
+          </p>
+
+          <p>
+            <strong>Current Check-out:</strong>{" "}
+            {new Date(
+              booking.checkOut
+            ).toLocaleDateString()}
+          </p>
+
+          <p>
+            <strong>Status:</strong>{" "}
+            <span className="font-semibold text-green-600">
+              Checked In
+            </span>
+          </p>
         </div>
       </div>
+    )}
 
-      {booking && (
-        <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-          <h2 className="mb-6 text-2xl font-semibold">
-            Booking Details
-          </h2>
+    {booking && (
+      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+        <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
+          Extension Details
+        </h2>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <p>
-              <strong>Booking Reference:</strong>{" "}
-              {booking.bookingReference}
-            </p>
+        <div>
+          <label
+            htmlFor="new-checkout-date"
+            className="mb-2 block font-medium"
+          >
+            New Check-out Date
+          </label>
 
-            <p>
-              <strong>Guest Name:</strong>{" "}
-              {booking.guest.name}
-            </p>
-
-            <p>
-              <strong>Phone Number:</strong>{" "}
-              {booking.guest.phone}
-            </p>
-
-            <p>
-              <strong>Room:</strong>{" "}
-              {booking.room.roomNo} -{" "}
-              {booking.room.type}
-            </p>
-
-            <p>
-              <strong>Current Check-in:</strong>{" "}
-              {new Date(
-                booking.checkIn
-              ).toLocaleDateString()}
-            </p>
-
-            <p>
-              <strong>Current Check-out:</strong>{" "}
-              {new Date(
-                booking.checkOut
-              ).toLocaleDateString()}
-            </p>
-
-            <p>
-              <strong>Status:</strong>{" "}
-              <span className="font-semibold text-green-600">
-                Checked In
-              </span>
-            </p>
-          </div>
-        </div>
-      )}
-
-      {booking && (
-        <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-          <h2 className="mb-6 text-2xl font-semibold">
-            Extension Details
-          </h2>
-
-          <div>
-            <label
-              htmlFor="new-checkout-date"
-              className="mb-2 block font-medium"
-            >
-              New Check-out Date
-            </label>
-
-            <div className="flex items-end gap-4">
-              <div className="flex-1">
-                <input
-                  id="new-checkout-date"
-                  type="date"
-                  value={newCheckOutDate}
-                  disabled={
-                    previewing ||
-                    confirming
-                  }
-                  aria-invalid={
-                    !!checkOutDateError
-                  }
-                  aria-describedby={
-                    checkOutDateError
-                      ? "checkout-error"
-                      : undefined
-                  }
-                  onChange={(e) => {
-                    setNewCheckOutDate(
-                      e.target.value
-                    );
-
-                    if (checkOutDateError) {
-                      setCheckOutDateError("");
-                    }
-                  }}
-                  className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                    checkOutDateError
-                      ? "border border-red-500 focus:border-red-500"
-                      : "border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                  }`}
-                />
-
-                {checkOutDateError && (
-                  <p
-                    id="checkout-error"
-                    className="mt-2 text-sm font-medium text-red-600"
-                  >
-                    {checkOutDateError}
-                  </p>
-                )}
-              </div>
-
-              <LoadingButton
-                type="button"
-                loading={previewing}
-                loadingText="Calculating..."
-                onClick={previewExtension}
-                className="rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800"
-              >
-                Preview Extension
-              </LoadingButton>
-            </div>
-          </div>
-        </div>
-      )}
-
-
-            {preview && (
-        <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-          <h2 className="mb-6 text-2xl font-semibold">
-            Extension Preview
-          </h2>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="rounded-lg bg-slate-100 p-6 text-center">
-              <h3 className="text-lg font-semibold">
-                Nightly Rate
-              </h3>
-
-              <p className="mt-3 text-3xl font-bold text-blue-700">
-                GHS {preview.nightlyRate}
-              </p>
-            </div>
-
-            <div className="rounded-lg bg-slate-100 p-6 text-center">
-              <h3 className="text-lg font-semibold">
-                Additional Nights
-              </h3>
-
-              <p className="mt-3 text-3xl font-bold text-blue-700">
-                {preview.additionalNights}
-              </p>
-            </div>
-
-            <div className="rounded-lg bg-slate-100 p-6 text-center">
-              <h3 className="text-lg font-semibold">
-                Additional Amount
-              </h3>
-
-              <p className="mt-3 text-3xl font-bold text-green-700">
-                GHS {preview.additionalAmount}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {preview && (
-        <div className="mt-8 rounded-xl bg-white p-8 shadow-md">
-          <h2 className="mb-6 text-2xl font-semibold">
-            Confirm Extension
-          </h2>
-
-          <div>
-            <label
-              htmlFor="payment-method"
-              className="mb-2 block font-medium"
-            >
-              Payment Method
-            </label>
-
-            <div className="flex items-end gap-4">
-              <select
-                id="payment-method"
-                value={paymentMethod}
-                disabled={confirming}
-                onChange={(e) =>
-                  setPaymentMethod(e.target.value)
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <div className="flex-1">
+              <input
+                id="new-checkout-date"
+                type="date"
+                value={newCheckOutDate}
+                disabled={
+                  previewing ||
+                  confirming
                 }
-                className="flex-1 rounded-lg border border-gray-300 px-4 py-3 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <option value="Cash">Cash</option>
+                aria-invalid={
+                  !!checkOutDateError
+                }
+                aria-describedby={
+                  checkOutDateError
+                    ? "checkout-error"
+                    : undefined
+                }
+                onChange={(e) => {
+                  setNewCheckOutDate(
+                    e.target.value
+                  );
 
-                {/*
-                  Future payment methods can be added here.
+                  if (checkOutDateError) {
+                    setCheckOutDateError("");
+                  }
+                }}
+                className={`w-full rounded-lg px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  checkOutDateError
+                    ? "border border-red-500 focus:border-red-500"
+                    : "border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                }`}
+              />
 
-                  <option value="Mobile Money">
-                    Mobile Money
-                  </option>
-
-                  <option value="Card">
-                    Debit / Credit Card
-                  </option>
-                */}
-              </select>
-
-              <LoadingButton
-                type="button"
-                loading={confirming}
-                loadingText="Processing..."
-                onClick={confirmExtension}
-                className="rounded-lg bg-green-700 px-8 py-3 font-semibold text-white hover:bg-green-800"
-              >
-                Confirm Extension
-              </LoadingButton>
+              {checkOutDateError && (
+                <p
+                  id="checkout-error"
+                  className="mt-2 text-sm font-medium text-red-600"
+                >
+                  {checkOutDateError}
+                </p>
+              )}
             </div>
+
+            <LoadingButton
+              type="button"
+              loading={previewing}
+              loadingText="Calculating..."
+              onClick={previewExtension}
+              className="w-full rounded-lg bg-blue-700 px-8 py-3 font-semibold text-white hover:bg-blue-800 sm:w-auto"
+            >
+              Preview Extension
+            </LoadingButton>
           </div>
         </div>
-      )}
-    </ReceptionistLayout>
-  );
+      </div>
+    )}
+
+    {preview && (
+      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+        <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
+          Extension Preview
+        </h2>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="rounded-lg bg-slate-100 p-6 text-center">
+            <h3 className="text-lg font-semibold">
+              Nightly Rate
+            </h3>
+
+            <p className="mt-3 text-3xl font-bold text-blue-700">
+              GHS {preview.nightlyRate}
+            </p>
+          </div>
+
+          <div className="rounded-lg bg-slate-100 p-6 text-center">
+            <h3 className="text-lg font-semibold">
+              Additional Nights
+            </h3>
+
+            <p className="mt-3 text-3xl font-bold text-blue-700">
+              {preview.additionalNights}
+            </p>
+          </div>
+
+          <div className="rounded-lg bg-slate-100 p-6 text-center">
+            <h3 className="text-lg font-semibold">
+              Additional Amount
+            </h3>
+
+            <p className="mt-3 text-3xl font-bold text-green-700">
+              GHS {preview.additionalAmount}
+            </p>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {preview && (
+      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+        <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
+          Confirm Extension
+        </h2>
+
+        <div>
+          <label
+            htmlFor="payment-method"
+            className="mb-2 block font-medium"
+          >
+            Payment Method
+          </label>
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <select
+              id="payment-method"
+              value={paymentMethod}
+              disabled={confirming}
+              onChange={(e) =>
+                setPaymentMethod(e.target.value)
+              }
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-1"
+            >
+              <option value="Cash">
+                Cash
+              </option>
+            </select>
+
+            <LoadingButton
+              type="button"
+              loading={confirming}
+              loadingText="Processing..."
+              onClick={confirmExtension}
+              className="w-full rounded-lg bg-green-700 px-8 py-3 font-semibold text-white hover:bg-green-800 sm:w-auto"
+            >
+              Confirm Extension
+            </LoadingButton>
+          </div>
+        </div>
+      </div>
+    )}
+  </ReceptionistLayout>
+);
 }
 
 export default BookingExtension;

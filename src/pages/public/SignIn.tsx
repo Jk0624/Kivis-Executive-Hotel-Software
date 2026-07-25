@@ -54,19 +54,21 @@ function SignIn() {
   return (
     <MainLayout>
       <section
-        className="relative flex min-h-screen items-center justify-center bg-cover bg-center px-6 py-12"
+        className="relative flex min-h-screen items-center justify-center bg-cover bg-center px-4 py-8 sm:px-6 sm:py-12"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600')",
         }}
       >
-        {/* Dark Overlay */}
+        {/* Overlay */}
+
         <div className="absolute inset-0 bg-black/60" />
 
         {/* Glass Card */}
-        <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
 
+        <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-8">
           {/* Close Button */}
+
           <div className="mb-4 flex justify-end">
             <button
               type="button"
@@ -75,29 +77,28 @@ function SignIn() {
               aria-label="Close"
               className="rounded-full p-2 text-white transition duration-300 hover:scale-110 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <X size={24} />
+              <X size={22} />
             </button>
           </div>
 
           {/* Header */}
-          <div className="text-center">
 
-            <h1 className="text-3xl font-bold text-white">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white sm:text-3xl">
               KIVIS EXECUTIVE LODGE
             </h1>
 
-            <p className="mt-2 text-sm tracking-[0.25em] text-yellow-400">
+            <p className="mt-2 text-xs tracking-[0.2em] text-yellow-400 sm:text-sm sm:tracking-[0.25em]">
               Luxury • Comfort • Excellence
             </p>
 
-            <h2 className="mt-8 text-2xl font-semibold text-white">
+            <h2 className="mt-6 text-xl font-semibold text-white sm:mt-8 sm:text-2xl">
               Welcome Back
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-gray-200">
               Sign in to continue with your booking.
             </p>
-
           </div>
 
           {/* Form */}
@@ -106,11 +107,9 @@ function SignIn() {
             className="mt-8 space-y-6"
             onSubmit={handleSubmit}
           >
-
-            {/* Phone Number */}
+            {/* Phone */}
 
             <div>
-
               <label
                 htmlFor="phone"
                 className="mb-2 block text-sm font-medium text-white"
@@ -118,10 +117,7 @@ function SignIn() {
                 Phone Number
               </label>
 
-              {/* Input Container */}
-
               <div className="relative">
-
                 <Phone
                   size={20}
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
@@ -135,7 +131,9 @@ function SignIn() {
                   disabled={sendingCode}
                   aria-invalid={!!phoneError}
                   aria-describedby={
-                    phoneError ? "phone-error" : undefined
+                    phoneError
+                      ? "phone-error"
+                      : undefined
                   }
                   onChange={(e) => {
                     setPhone(e.target.value);
@@ -151,41 +149,36 @@ function SignIn() {
                       : "border border-white/20 focus:border-yellow-400"
                   }`}
                 />
-
               </div>
-
-              {/* Error Message */}
 
               {phoneError && (
                 <p
                   id="phone-error"
-                  className="mt-2 text-sm font-medium text-red-400 transition-all"
+                  className="mt-2 text-sm font-medium text-red-400"
                 >
                   {phoneError}
                 </p>
               )}
-
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
 
             <LoadingButton
               type="submit"
               loading={sendingCode}
               loadingText="Sending SMS Code..."
-              className="w-full bg-yellow-500 py-3 text-lg text-white hover:bg-yellow-400"
+              className="w-full bg-yellow-500 py-3 text-base text-white hover:bg-yellow-400 sm:text-lg"
             >
               <>
                 <PhoneCall size={20} />
                 Send SMS Code
               </>
             </LoadingButton>
-
           </form>
 
           {/* Footer */}
 
-          <p className="mt-8 text-center text-sm text-gray-200">
+          <p className="mt-8 text-center text-sm leading-6 text-gray-200">
             Don't have an account?{" "}
             <Link
               to="/signup"
@@ -194,9 +187,7 @@ function SignIn() {
               Create account
             </Link>
           </p>
-
         </div>
-
       </section>
     </MainLayout>
   );

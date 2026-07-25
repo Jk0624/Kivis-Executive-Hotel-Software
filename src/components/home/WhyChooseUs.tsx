@@ -50,50 +50,48 @@ function WhyChooseUs() {
   return (
     <section
       id="why-us"
-      className="bg-white px-6 py-24"
+      className="bg-white px-5 py-16 sm:px-6 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-7xl">
+        {/* Section Header */}
 
         <div className="text-center">
-
-          <h2 className="text-4xl font-bold text-slate-900">
+          <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">
             WHY CHOOSE US
           </h2>
 
-          <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-600">
-            Experience luxury, comfort and smart technology designed to make
-            every stay unforgettable.
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-7 text-slate-600 sm:mt-5 sm:text-lg sm:leading-8">
+            Experience luxury, comfort and smart technology
+            designed to make every stay unforgettable.
           </p>
-
         </div>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* Features */}
 
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-8">
           {features.map((feature) => {
             const Icon = feature.icon;
 
             return (
               <div
                 key={feature.title}
-                className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl"
+                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl sm:p-8"
               >
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-yellow-100">
                   <Icon className="h-7 w-7 text-yellow-600" />
                 </div>
 
-                <h3 className="mt-6 text-xl font-semibold text-slate-900">
+                <h3 className="mt-5 text-lg font-semibold text-slate-900 sm:mt-6 sm:text-xl">
                   {feature.title}
                 </h3>
 
-                <p className="mt-3 leading-7 text-slate-600">
+                <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
                   {feature.description}
                 </p>
               </div>
             );
           })}
-
         </div>
-
       </div>
     </section>
   );

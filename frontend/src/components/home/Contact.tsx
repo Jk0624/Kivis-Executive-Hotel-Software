@@ -7,6 +7,7 @@ import {
   Clock3,
   Send,
 } from "lucide-react";
+import { API_BASE_URL } from "../../services/api";
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -89,7 +90,7 @@ function Contact() {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:3001/contact",
+        `${API_BASE_URL}/contact`,
         formData
       );
 

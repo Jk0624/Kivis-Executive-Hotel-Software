@@ -5,6 +5,7 @@ import { Phone, PhoneCall, X } from "lucide-react";
 
 import MainLayout from "../../layouts/MainLayout";
 import LoadingButton from "../../components/common/LoadingButton";
+import { API_BASE_URL } from "../../services/api";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ function SignIn() {
 
     try {
       await axios.post(
-        "http://localhost:3001/auth/request-otp",
+        `${API_BASE_URL}/auth/request-otp`,
         {
           phone: trimmedPhone,
           mode: "SIGN_IN",

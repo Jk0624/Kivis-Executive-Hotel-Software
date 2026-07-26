@@ -6,6 +6,7 @@ import { CheckCircle2, X } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
 import OTPInput from "../../components/auth/OTPInput";
 import LoadingButton from "../../components/common/LoadingButton";
+import { API_BASE_URL } from "../../services/api";
 
 function OTPVerification() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ function OTPVerification() {
             };
 
       const response = await axios.post(
-        "http://localhost:3001/auth/verify-otp",
+        `${API_BASE_URL}/auth/verify-otp`,
         payload
       );
 

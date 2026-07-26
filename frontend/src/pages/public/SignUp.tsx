@@ -11,6 +11,7 @@ import {
 
 import MainLayout from "../../layouts/MainLayout";
 import LoadingButton from "../../components/common/LoadingButton";
+import { API_BASE_URL } from "../../services/api";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ function SignUp() {
 
     try {
       await axios.post(
-        "http://localhost:3001/auth/request-otp",
+        `${API_BASE_URL}/auth/request-otp`,
         {
           name: trimmedName,
           email: trimmedEmail,

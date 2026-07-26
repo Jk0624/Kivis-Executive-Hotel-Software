@@ -25,11 +25,21 @@ async function bootstrap() {
   // ==========================================
   // CORS
   // ==========================================
+  const allowedOrigins = (
+    process.env.CORS_ORIGIN ??
+    'http://localhost:3000,http://localhost:5173'
+  )
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    origin: allowedOrigins,
   });
 
-  await app.listen(3001, '0.0.0.0');
+  const port = Number(process.env.PORT ?? 3001);
+
+  await app.listen(port, '0.0.0.0');
 }
 
 bootstrap();

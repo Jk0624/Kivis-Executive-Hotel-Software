@@ -3,10 +3,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateWalkInBookingDto } from './dto/create-walkin-booking.dto';
 import { BookingService } from '../booking/booking.service';
 import {
-  checkRoomAvailability,
   validateBookingDates,
   validateRoomStatus,
 } from '../booking/helpers/booking-validation.helper';
+import { validateRoomAvailability } from '../common/utils/booking/validate-room-availability';
 import { Prisma } from '@prisma/client';
 import { PaymentService } from '../payment/payment.service';
 import { validatePaymentAmount } from '../payment/helpers/payment-validation.helper';
@@ -26,6 +26,7 @@ import { RoomService } from '../room/room.service';
 import { FilterGuestsDto } from './dto/filter-guests.dto';
 import { NotificationService } from '../notifications/notification.service';
 import { BookingHousekeepingService } from '../booking/booking-housekeeping.service';
+import { applyHotelBookingTimes } from '../common/utils/booking/apply-hotel-booking-dates';
 
 
 @Injectable()
@@ -400,12 +401,20 @@ async searchBookings(
     // ==========================================
     // VALIDATE BOOKING
     // ==========================================
-    const checkIn = new Date(
+    const rawCheckIn = new Date(
     createWalkInBookingDto.checkInDate,
     );
 
-    const checkOut = new Date(
+    const rawCheckOut = new Date(
     createWalkInBookingDto.checkOutDate,
+    );
+
+    const {
+    checkIn,
+    checkOut,
+    } = applyHotelBookingTimes(
+    rawCheckIn,
+    rawCheckOut,
     );
 
     validateBookingDates(
@@ -415,11 +424,14 @@ async searchBookings(
 
     validateRoomStatus(room);
 
-    await checkRoomAvailability(
-    this.prisma,
-    room.id,
-    );
+    await validateRoomAvailability({
+        prisma: this.prisma,
+        roomId: room.id,
+        checkIn,
+        checkOut,
+    });
 
+    
     // ==========================================
     // CALCULATE BOOKING AMOUNT
     // ==========================================
@@ -456,16 +468,16 @@ async searchBookings(
     );
 
     // ==========================================
-    // RESERVE ROOM
+    // I WILL UPDATE ROOM STATUS HERE ANYMORE V2
     // ==========================================
-    await this.prisma.room.update({
-    where: {
-        id: room.id,
-    },
-    data: {
-        status: RoomStatus.RESERVED,
-    },
-    });
+    // Walk-in bookings no longer change the room's
+    // operational status.
+    //
+    // The room remains AVAILABLE until the guest
+    // physically checks in.
+    //
+    // Availability is determined by booking dates,
+    // not by Room.status.
 
     // ==========================================
     // FETCH UPDATED BOOKING
@@ -587,33 +599,25 @@ async searchBookings(
     // UPDATE BOOKING, UPDATE ROOM AND SAVE ACCESS PIN TO DATABASE
     // ==============================================================
     await this.prisma.$transaction([
-    this.prisma.booking.update({
-    where: {
-        id: booking.id,
-    },
-    data: {
-        status: BookingStatus.CHECKED_IN,
-        checkedInAt: new Date(),
-    },
-    }),
+        this.prisma.booking.update({
+            where: {
+                id: booking.id,
+            },
+            data: {
+                status: BookingStatus.CHECKED_IN,
+                checkedInAt: new Date(),
+                accessPin,
+            },
+        }),
 
-    this.prisma.room.update({
-        where: {
-        id: booking.room.id,
-        },
-        data: {
-        status: RoomStatus.OCCUPIED,
-        },
-    }),
-
-    this.prisma.booking.update({
-        where: {
-        id: booking.id,
-        },
-        data: {
-        accessPin,
-        },
-    }),
+        this.prisma.room.update({
+            where: {
+                id: booking.room.id,
+            },
+            data: {
+                status: RoomStatus.OCCUPIED,
+            },
+        }),
     ]);
 
     // ==========================================
@@ -748,7 +752,7 @@ async searchBookings(
     }
 
     if (
-        booking.status !== 'CHECKED_IN'
+        booking.status !== BookingStatus.CHECKED_IN
     ) {
         throw new BadRequestException(
         'Guest is not checked in.',
@@ -992,6 +996,17 @@ async searchBookings(
         'New check-out date must be after the current check-out date.',
         );
     }
+
+    // ==========================================
+    // VALIDATE ROOM AVAILABILITY
+    // ==========================================
+    await validateRoomAvailability({
+        prisma: this.prisma,
+        roomId: booking.roomId,
+        checkIn: booking.checkIn,
+        checkOut: newCheckOut,
+        excludeBookingId: booking.id,
+    });
 
     // ==========================================
     // CALCULATE EXTENSION COST

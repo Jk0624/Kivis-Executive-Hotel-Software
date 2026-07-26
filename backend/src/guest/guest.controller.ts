@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 
 import { GuestService } from './guest.service';
-import { GetGuestRoomsDto } from './dto/get-guest-rooms.dto';
+import { FilterGuestRoomsDto } from './dto/filter-guest-rooms.dto';
 import { CreateBookingDto } from '../booking/dto/create-booking.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -24,15 +24,23 @@ export class GuestController {
     private readonly notificationService: NotificationService,
   ) {}
 
-    // ==========================================
-    // GET ROOMS
-    // ==========================================
-    @Get('rooms')
-    getRooms(
-    @Query() query: GetGuestRoomsDto,
-    ) {
-    return this.guestService.getRooms(query);
-    }
+  // ==========================================
+  // GET ALL ROOMS FOR GUESTS
+  // ==========================================
+  @Get('rooms')
+  getRooms() {
+    return this.guestService.getRooms();
+  }
+
+  // ==========================================
+  // FILTER ROOMS FOR GUESTS
+  // ==========================================
+  @Get('rooms/filter')
+  filterRooms(
+    @Query() query: FilterGuestRoomsDto,
+  ) {
+    return this.guestService.filterRooms(query);
+  }
 
     // ==========================================
     // GET ROOM

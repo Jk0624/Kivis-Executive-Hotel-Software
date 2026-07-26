@@ -6,6 +6,7 @@ import {
 
 import {
   RoomStatus,
+  BookingStatus,
 } from '@prisma/client';
 import {
   CreateRoomDto,
@@ -14,7 +15,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UpdateRoomDto } from '../admin/dto/update-room.dto';
 import { NotificationService } from '../notifications/notification.service';
-import { GetGuestRoomsDto } from '../guest/dto/get-guest-rooms.dto';
+import { FilterGuestRoomsDto} from '../guest/dto/filter-guest-rooms.dto';
 import { formatRoomType } from '../common/utils/room-type.util';
 import { formatRoomStatus } from '../common/utils/room-status.util';
 
@@ -27,32 +28,42 @@ export class RoomService {
   private readonly notificationService: NotificationService,
 ) {}
 
-  // ==========================================
+// ==========================================
 // GET ALL ROOMS
 // ==========================================
 async getAllRooms() {
+  const rooms = await this.prisma.room.findMany({
+    where: {
+      status: {
+        not: RoomStatus.MAINTENANCE,
+      },
+    },
 
-  const rooms =
-    await this.prisma.room.findMany({
-      orderBy: {
-        roomNo: 'asc',
-      },
-      select: {
-        id: true,
-        roomNo: true,
-        type: true,
-        price: true,
-        status: true,
-      },
-    });
+    orderBy: {
+      roomNo: 'asc',
+    },
+
+    select: {
+      id: true,
+      roomNo: true,
+      type: true,
+      price: true,
+      status: true,
+      amenities: true,
+      photos: true,
+    },
+  });
 
   return {
-    message:
-      'Rooms retrieved successfully.',
+    message: 'Rooms retrieved successfully.',
     rooms: rooms.map((room) => ({
-      ...room,
+      id: room.id,
+      roomNo: room.roomNo,
       type: formatRoomType(room.type),
+      price: room.price,
       status: formatRoomStatus(room.status),
+      amenities: room.amenities,
+      photo: room.photos[0] ?? null,
     })),
   };
 }
@@ -346,55 +357,96 @@ async updateRoom(
 }
 
 // ==========================================
-// GET ALL ROOMS FOR GUEST
+// FIND AVAILABLE ROOMS
 // ==========================================
-async getRoomsForGuest(
-  query: GetGuestRoomsDto,
+private async findAvailableRooms(
+  query: FilterGuestRoomsDto,
 ) {
   const {
-    status,
+    checkIn,
+    checkOut,
     roomType,
     maxPrice,
   } = query;
 
-  const rooms =
-    await this.prisma.room.findMany({
-      where: {
-        status: status
-          ? status
-          : {
-              not: RoomStatus.MAINTENANCE,
-            },
+  return this.prisma.room.findMany({
+    where: {
+      status: {
+        not: RoomStatus.MAINTENANCE,
+      },
 
-        ...(roomType && {
-          type: roomType,
-        }),
+      ...(roomType && {
+        type: roomType,
+      }),
 
-        ...(maxPrice && {
-          price: {
-            lte: maxPrice,
+      ...(maxPrice && {
+        price: {
+          lte: maxPrice,
+        },
+      }),
+
+      bookings: {
+        none: {
+          status: {
+            in: [
+              BookingStatus.PENDING,
+              BookingStatus.PAID,
+              BookingStatus.CHECKED_IN,
+            ],
           },
-        }),
-      },
 
-      orderBy: {
-        roomNo: 'asc',
-      },
+          checkIn: {
+            lt: new Date(checkOut),
+          },
 
-      select: {
-        id: true,
-        roomNo: true,
-        type: true,
-        price: true,
-        status: true,
-        amenities: true,
-        photos: true,
+          checkOut: {
+            gt: new Date(checkIn),
+          },
+        },
       },
-    });
+    },
+
+    orderBy: {
+      roomNo: 'asc',
+    },
+
+    select: {
+      id: true,
+      roomNo: true,
+      type: true,
+      price: true,
+      status: true,
+      amenities: true,
+      photos: true,
+    },
+  });
+}
+
+// ==========================================
+//FILTER ROOMS FOR GUEST
+// ==========================================
+async filterRoomsForGuest(
+  query: FilterGuestRoomsDto,
+) {
+
+  const {
+    checkIn,
+    checkOut,
+  } = query;
+
+  const rooms =
+    await this.findAvailableRooms(
+      query,
+    );
 
   return {
     message:
       'Rooms retrieved successfully.',
+
+    search: {
+      checkIn,
+      checkOut,
+    },
 
     rooms: rooms.map((room) => ({
       id: room.id,

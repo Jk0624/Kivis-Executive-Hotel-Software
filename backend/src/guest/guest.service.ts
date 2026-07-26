@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { RoomService } from '../room/room.service';
-import { GetGuestRoomsDto } from './dto/get-guest-rooms.dto';
+import { FilterGuestRoomsDto } from './dto/filter-guest-rooms.dto';
 import { BookingService } from '../booking/booking.service';
 import type { AuthenticatedUser } from '../auth/types/authenticated-user.type';
 import { CreateBookingDto } from '../booking/dto/create-booking.dto';
@@ -13,13 +13,17 @@ export class GuestService {
      private readonly bookingService: BookingService,
   ) {}
 
+  async getRooms() {
+    return this.roomService.getAllRooms();
+  }
+
     // ==========================================
-    // GET AVAILABLE ROOMS
+    // FILTER AVAILABLE ROOMS FOR GUEST
     // ==========================================
-    async getRooms(
-    query: GetGuestRoomsDto,
+    async filterRooms(
+    query: FilterGuestRoomsDto,
     ) {
-    return this.roomService.getRoomsForGuest(
+    return this.roomService.filterRoomsForGuest(
         query,
     );
     }

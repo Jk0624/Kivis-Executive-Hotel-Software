@@ -1,0 +1,175 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdminBookingDetails from "../pages/admin/BookingDetails";
+import ScrollToTop from "../components/navigation/ScrollToTop";
+import Home from "../pages/public/Home";
+import Rooms from "../pages/public/Rooms";
+import Dashboard from "../pages/receptionist/Dashboard";
+import Bookings from "../pages/receptionist/Bookings";
+import WalkIn from "../pages/receptionist/Walkin";
+
+import CheckIn from "../pages/receptionist/CheckIn";
+import CheckOut from "../pages/receptionist/CheckOut";
+import BookingExtension from "../pages/receptionist/BookingExtensionPage";
+import ReceptionistRooms from "../pages/receptionist/Rooms";
+import RoomDetails from "../pages/receptionist/RoomDetails";
+import Guest from "../pages/receptionist/Guest";
+import Notifications from "../pages/receptionist/NotificationPage";
+import AdminDashboard from "../pages/admin/Dashboard";
+import Revenue from "../pages/admin/Revenue";
+import AdminRooms from "../pages/admin/Rooms";
+import AdminRoomDetails from "../pages/admin/RoomDetails";
+import AdminBookings from "../pages/admin/Bookings";
+import PaymentDetails from "../pages/admin/PaymentDetails";
+import AdminGuests from "../pages/admin/Guests";
+
+import AdminReceptionists from "../pages/admin/Receptionists";
+import AdminAccessDevices from "../pages/admin/AccessDevices";
+import ViewAccessDevice from "../pages/admin/ViewAccessDevice";
+import SecurityAudit from "../pages/admin/SecurityAudit";
+import Profile from "../pages/admin/Profile";
+import Gallery from "../pages/public/Gallery";
+import ScrollToHash from "../components/navigation/ScrollToHash";
+import About from "../pages/public/About";
+
+import GuestNotifications from "../pages/public/guest/Notifications";
+
+import PublicRoomDetails from "../pages/public/RoomDetails";
+
+import SignUp from "../pages/public/SignUp";
+import SignIn from "../pages/public/SignIn";
+
+import OTPVerification from "../pages/public/OTPVerification";
+
+import GuestProfile from "../pages/public/guest/Profile";
+
+import Booking from "../pages/booking/Booking";
+
+import MyBookings from "../pages/public/guest/Bookings";
+
+import PaymentHistory from "../pages/public/guest/Payments";
+
+function AppRouter() {
+  return (
+    <BrowserRouter>
+    <ScrollToTop />
+    <ScrollToHash />
+      <Routes>
+
+        <Route path="/" element={<Home />} />
+        <Route path="/guest/rooms" element={<Rooms />} />
+        <Route path="/receptionist/dashboard" element={<Dashboard />} />
+        <Route path="/receptionist/bookings" element={<Bookings />} />
+        <Route path="/receptionist/walkin" element={<WalkIn />} />
+
+        <Route
+          path="/guest/profile"
+          element={<GuestProfile />}
+        />
+
+        <Route
+          path="/guest/bookings"
+          element={<MyBookings />}
+        />
+
+        <Route
+          path="/guest/payments"
+          element={<PaymentHistory />}
+        />
+
+        <Route
+          path="/guest/notifications"
+          element={<GuestNotifications />}
+        />
+
+        <Route path="/receptionist/checkin"element={<CheckIn />} />
+
+        <Route path="/receptionist/checkout"element={<CheckOut />} />
+
+        <Route path="/receptionist/rooms" element={<ReceptionistRooms />}/>
+
+        <Route path="/receptionist/booking-extension"element={<BookingExtension />}/>
+
+        <Route path="/receptionist/guests" element={<Guest />} />
+
+        <Route path="/receptionist/notifications" element={<Notifications />}/>
+
+        <Route path="/receptionist/rooms/:roomNumber" element={<RoomDetails />} />
+
+        <Route
+          path="/admin/dashboard" element={<AdminDashboard />} />
+
+        <Route
+          path="/admin/revenue"
+          element={<Revenue />}
+        />
+
+        <Route path="/admin/rooms" element={<AdminRooms />}
+        />
+
+        <Route path="/admin/bookings" element={<AdminBookings />}/>
+
+        <Route
+          path="/admin/bookings/:bookingId"
+          element={<AdminBookingDetails />}
+        />
+
+        <Route
+          path="/admin/payments/:paymentId"
+          element={<PaymentDetails />}
+        />
+
+        <Route path="/admin/guests" element={<AdminGuests />}/>
+
+        <Route
+          path="/admin/guests/:guestId"
+          element={<GuestProfile />}
+        />
+        <Route
+        path="/admin/rooms/:roomId"
+        element={<AdminRoomDetails />}
+        />
+
+        <Route path="/admin/receptionists"
+          element={<AdminReceptionists />}/>
+
+        <Route path="/admin/access-devices" element={<AdminAccessDevices />} />
+
+       <Route
+          path="/admin/access-devices/:id"
+          element={<ViewAccessDevice />}
+        />
+
+        <Route path="/admin/security-audit" element={<SecurityAudit />} />
+
+        <Route path="/admin/profile" element={<Profile />} />
+
+        <Route path="/gallery" element={<Gallery />}
+        />
+
+        <Route
+        path="/about"
+        element={<About />}
+        />
+
+        <Route path="/rooms/:id"
+          element={<PublicRoomDetails />} />
+
+        <Route path="/signup" element={<SignUp />}/>
+
+        <Route path="/signin" element={<SignIn />}/>
+
+        <Route path="/verify-otp" element={<OTPVerification />} />
+
+        <Route path="/booking" element={<Booking />} />
+
+        
+
+
+        
+      </Routes>
+
+    </BrowserRouter>
+  );
+}
+
+export default AppRouter;

@@ -9,9 +9,9 @@ import type { AuthenticatedUser } from '../auth/types/authenticated-user.type';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { checkRoomAvailability, 
-  validateBookingDates, 
   validateRoomStatus, 
 } from './helpers/booking-validation.helper';
+import { validateBookingDates } from '../common/utils/booking/validate-booking-dates';
 import { generateBookingReference } from './utils/booking-reference.util';
 import {
   calculateBookingAmount,
@@ -22,6 +22,8 @@ import { NotificationService } from '../notifications/notification.service';
 import { formatRoomType } from '../common/utils/room-type.util';
 import { formatBookingStatus } from '../common/utils/booking-status.util';
 import { BookingHousekeepingService } from './booking-housekeeping.service';
+import { applyHotelBookingTimes } from '../common/utils/booking/apply-hotel-booking-dates';
+import { validateRoomAvailability } from '../common/utils/booking/validate-room-availability';
 
 
 @Injectable()
@@ -53,17 +55,14 @@ export class BookingService {
     return room;
   }
 
-  // ==========================================
-  // CREATE BOOKING RECORD
-  // ==========================================
-  async createBookingRecord(
-    userId: string,
-    roomId: string,
-    checkIn: Date,
-    checkOut: Date,
-  ) {
-    const bookingReference =
-      generateBookingReference();
+async createBookingRecord(
+  userId: string,
+  roomId: string,
+  checkIn: Date,
+  checkOut: Date,
+) {
+  const bookingReference =
+    generateBookingReference();
 
   return this.prisma.$transaction(
     async (tx) => {
@@ -79,19 +78,22 @@ export class BookingService {
           },
         });
 
-      await tx.room.update({
-        where: {
-          id: roomId,
-        },
-        data: {
-          status: RoomStatus.BOOKED,
-        },
-      });
+      // ======================================================
+      // I WILL NOT UPDATE ROOM STATUS HERE ANYMORE V2
+      // ======================================================
+      // A room remains AVAILABLE until the guest physically
+      // checks in.
+      //
+      // Room.status is reserved for operational events only:
+      // • Check-in      → OCCUPIED
+      // • Check-out     → AVAILABLE
+      // • Maintenance   → MAINTENANCE
+      // ======================================================
 
       return booking;
     },
   );
-  }
+}
 
   // ==========================================
   // CREATE WALK-IN BOOKING
@@ -140,16 +142,24 @@ export class BookingService {
       );
     }
 
-    // ==========================================
-    // VALIDATE BOOKING DATES
-    // ==========================================
-    const checkIn = new Date(createBookingDto.checkInDate);
-    const checkOut = new Date(createBookingDto.checkOutDate);
-
-    validateBookingDates(
+  // ==========================================
+  // NORMALIZE HOTEL BOOKING DATES
+  // ==========================================
+  const {
     checkIn,
     checkOut,
-    );
+  } = applyHotelBookingTimes(
+    new Date(createBookingDto.checkInDate),
+    new Date(createBookingDto.checkOutDate),
+  );
+
+  // ==========================================
+  // VALIDATE BOOKING DATES
+  // ==========================================
+  validateBookingDates(
+    checkIn,
+    checkOut,
+  );
 
   // ==========================================
   // CALCULATE BOOKING AMOUNT
@@ -172,12 +182,14 @@ export class BookingService {
     validateRoomStatus(room);
 
     // ==========================================
-    // CHECK ROOM AVAILABILITY
+    // VALIDATE ROOM AVAILABILITY
     // ==========================================
-    await checkRoomAvailability(
-      this.prisma,
-      room.id,
-    );
+    await validateRoomAvailability({
+      prisma: this.prisma,
+      roomId: room.id,
+      checkIn,
+      checkOut,
+    });
 
    // ==========================================
   // CREATE BOOKING
@@ -680,25 +692,29 @@ async cancelBookingRecord(
     roomId: string;
   },
 ) {
-  await this.prisma.$transaction([
-    this.prisma.booking.update({
-      where: {
-        id: booking.id,
-      },
-      data: {
-        status: BookingStatus.CANCELLED,
-      },
-    }),
+  await this.prisma.booking.update({
+    where: {
+      id: booking.id,
+    },
+    data: {
+      status: BookingStatus.CANCELLED,
+    },
+  });
 
-    this.prisma.room.update({
-      where: {
-        id: booking.roomId,
-      },
-      data: {
-        status: RoomStatus.AVAILABLE,
-      },
-    }),
-  ]);
+  // ======================================================
+  // DO NOT UPDATE ROOM STATUS HERE
+  // ======================================================
+  // Cancelling a booking only affects the reservation.
+  //
+  // The room's operational status is managed independently
+  // by operational workflows such as:
+  // • Check-in
+  // • Check-out
+  // • Maintenance
+  //
+  // Availability is determined by booking dates, not by
+  // Room.status.
+  // ======================================================
 }
 
 // ==========================================

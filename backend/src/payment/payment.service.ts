@@ -5,7 +5,6 @@ import {
   PaymentProvider,
   PaymentPurpose,
   PaymentStatus,
-  RoomStatus,
   Prisma,
 } from '@prisma/client';
 import { generatePaymentReference } from './utils/payment-reference.util';
@@ -289,40 +288,29 @@ export class PaymentService {
 
   try {
     const [, createdPayment] =
-      await this.prisma.$transaction([
-        this.prisma.booking.update({
-          where: {
-            id: booking.id,
-          },
-          data: {
-            status: BookingStatus.PAID,
-          },
-        }),
+    await this.prisma.$transaction([
+      this.prisma.booking.update({
+        where: {
+          id: booking.id,
+        },
+        data: {
+          status: BookingStatus.PAID,
+        },
+      }),
 
-        this.prisma.payment.create({
-          data: {
-            reference,
-            bookingId: booking.id,
-            amount: paymentData.amount / 100,
-            provider: PaymentProvider.PAYSTACK,
-            method: PaymentMethod.ONLINE,
-            status: PaymentStatus.SUCCESS,
-            purpose: PaymentPurpose.INITIAL_BOOKING,
-            paidAt: new Date(
-              paymentData.paid_at,
-            ),
-          },
-        }),
-
-        this.prisma.room.update({
-          where: {
-            id: booking.roomId,
-          },
-          data: {
-            status: RoomStatus.RESERVED,
-          },
-        }),
-      ]);
+      this.prisma.payment.create({
+        data: {
+          reference,
+          bookingId: booking.id,
+          amount: paymentData.amount / 100,
+          provider: PaymentProvider.PAYSTACK,
+          method: PaymentMethod.ONLINE,
+          status: PaymentStatus.SUCCESS,
+          purpose: PaymentPurpose.INITIAL_BOOKING,
+          paidAt: new Date(paymentData.paid_at),
+        },
+      }),
+    ]);
 
     payment = createdPayment;
   } catch (error) {
@@ -483,45 +471,30 @@ export class PaymentService {
     // RECORD PAYMENT, UPDATE BOOKING & RESERVE ROOM
     // ==========================================
     const [payment] =
-        await this.prisma.$transaction([
+      await this.prisma.$transaction([
         this.prisma.payment.create({
-            data: {
-            reference:
-                generatePaymentReference(),
-            provider:
-                PaymentProvider.MANUAL,
-            method:
-                PaymentMethod.CASH,
+          data: {
+            reference: generatePaymentReference(),
+            provider: PaymentProvider.MANUAL,
+            method: PaymentMethod.CASH,
             amount,
-            status:
-                PaymentStatus.SUCCESS,
-            purpose:
-            PaymentPurpose.INITIAL_BOOKING,
+            status: PaymentStatus.SUCCESS,
+            purpose: PaymentPurpose.INITIAL_BOOKING,
             currency: 'GHS',
             paidAt: new Date(),
             bookingId,
-            },
+          },
         }),
 
         this.prisma.booking.update({
-            where: {
+          where: {
             id: bookingId,
-            },
-            data: {
-            status:
-                BookingStatus.PAID,
-            },
+          },
+          data: {
+            status: BookingStatus.PAID,
+          },
         }),
-
-        this.prisma.room.update({
-            where: {
-            id: booking.roomId,
-            },
-            data: {
-            status: 'RESERVED',
-            },
-        }),
-        ]);
+      ]);
 
     return payment;
     }

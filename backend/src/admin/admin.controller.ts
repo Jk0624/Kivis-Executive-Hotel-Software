@@ -489,11 +489,19 @@ enableAccessDevice(
 }
 
 // ==========================================
-// OCCUPANCY REPORT
+// OPERATIONAL REPORT
 // ==========================================
-@Get('reports/occupancy')
-occupancyReport() {
-  return this.adminService.occupancyReport();
+@Get('reports/operational')
+operationalReport() {
+  return this.adminService.operationalReport();
+}
+
+// ==========================================
+// BOOKING REPORT
+// ==========================================
+@Get('reports/bookings')
+bookingReport() {
+  return this.adminService.bookingReport();
 }
 
 // ==========================================

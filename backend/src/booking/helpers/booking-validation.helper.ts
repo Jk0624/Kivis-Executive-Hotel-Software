@@ -45,7 +45,7 @@ export function validateBookingDates(
   // ==========================================
   if (checkIn < today) {
     throw new BadRequestException(
-      'Check-in date cannot be in the past.',
+      'The scheduled check-in time has already passed. Please select another check-in date.',
     );
   }
 
@@ -60,18 +60,39 @@ export function validateBookingDates(
 }
 
 // ==========================================
-// VALIDATE ROOM STATUS
+// VALIDATE ROOM OPERATIONAL STATUS
 // ==========================================
+//
+// Room.status represents the room's physical
+// operational state only.
+//
+// Booking availability is handled separately by
+// validateRoomAvailability().
+//
 export function validateRoomStatus(
   room: Room,
 ) {
-  if (room.status !== RoomStatus.AVAILABLE) {
+  if (room.status === RoomStatus.MAINTENANCE) {
     throw new BadRequestException(
-      'Room is currently unavailable.',
+      'This room is currently under maintenance.',
     );
   }
 }
 
+/**
+ * @deprecated
+ *
+ * This helper was designed for the original
+ * "one room = one active booking" architecture.
+ *
+ * The system now supports date-based room availability.
+ *
+ * Use validateRoomAvailability() from:
+ *
+ * src/common/utils/booking/validate-room-availability.ts
+ *
+ * instead.
+ */
 // ==========================================
 // CHECK ROOM AVAILABILITY
 // ==========================================

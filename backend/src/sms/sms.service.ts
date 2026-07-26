@@ -1,86 +1,43 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
-import { SendSmsOptions } from './interfaces/send-sms.interface';
-import { SendAccessPinOptions } from './interfaces/send-access-pin.interface';
-import { SendOtpOptions } from './interfaces/send-otp.interface';
 
+import { SendSmsOptions } from './interfaces/send-sms.interface';
+import { SendOtpOptions } from './interfaces/send-otp.interface';
+import { SendAccessPinOptions } from './interfaces/send-access-pin.interface';
+
+import { ArkeselProvider } from './providers/arkesel.provider';
+import { SmsOnlineGhProvider } from './providers/smsonlinegh.provider';
 
 @Injectable()
 export class SmsService {
   private readonly logger = new Logger(SmsService.name);
 
-  private readonly apiUrl =
-    'https://sms.arkesel.com/api/v2/sms/send';
-
-  private readonly apiKey: string;
-
-  private readonly senderId: string;
-
-  private readonly sandbox: boolean;
+  private readonly provider: string;
 
   constructor(
     private readonly configService: ConfigService,
+    private readonly arkeselProvider: ArkeselProvider,
+    private readonly smsOnlineGhProvider: SmsOnlineGhProvider,
   ) {
-    this.apiKey =
-      this.configService.get<string>(
-        'ARKASEL_API_KEY',
-      ) ?? '';
+    this.provider = (
+      this.configService.get<string>('SMS_PROVIDER') ??
+      'ARKASEL'
+    ).toUpperCase();
 
-    this.senderId =
-      this.configService.get<string>(
-        'ARKASEL_SENDER',
-      ) ?? '';
-
-    this.sandbox =
-      this.configService.get<string>(
-        'ARKASEL_SANDBOX',
-      ) === 'true';
+    this.logger.log(
+      `SMS Provider: ${this.provider}`,
+    );
   }
 
-  // ==========================
+  // ==========================================
   // SEND SMS
-  // ==========================
-
-  async sendSms({
-    recipient,
-    message,
-    sender,
-  }: SendSmsOptions) {
-    try {
-      const response = await axios.post(
-        this.apiUrl,
-        {
-          sender: sender ?? this.senderId,
-
-          recipients: [recipient],
-
-          message,
-
-          sandbox: this.sandbox,
-        },
-        {
-          headers: {
-            'api-key': this.apiKey,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      return response.data;
-    } catch (error: any) {
-      this.logger.error(
-        error.response?.data || error.message,
-      );
-
-      throw new InternalServerErrorException(
-        'Failed to send SMS.',
-      );
+  // ==========================================
+  async sendSms(options: SendSmsOptions): Promise<void> {
+    if (this.provider === 'SMSONLINEGH') {
+      return this.smsOnlineGhProvider.sendSms(options);
     }
+
+    return this.arkeselProvider.sendSms(options);
   }
 
   // ==========================================
@@ -89,57 +46,50 @@ export class SmsService {
   async sendOtp({
     recipient,
     otp,
-  }: SendOtpOptions) {
-
+  }: SendOtpOptions): Promise<void> {
     const message = `Kiviz Executive Lodge
 
-  Your verification code is:
+Your verification code is:
 
-  ${otp}
+${otp}
 
-  This code expires in 5 mins.
+This code expires in 5 mins.
 
-  Do not share this code with anyone.`;
+Do not share this code with anyone.`;
 
     return this.sendSms({
       recipient,
       message,
     });
   }
-    
-    // ==========================================
-    // SEND ACCESS PIN
-    // ==========================================
-    async sendAccessPin({
+
+  // ==========================================
+  // SEND ACCESS PIN
+  // ==========================================
+  async sendAccessPin({
     recipient,
     guestName,
     bookingReference,
     roomNumber,
     accessPin,
-    }: SendAccessPinOptions) {
-    const message =
-    `Kiviz Executive Lodge
+  }: SendAccessPinOptions): Promise<void> {
+    const message = `Kiviz Lodge
 
-    Hello ${guestName},
+Hello ${guestName},
 
-    Your check-in is complete.
+Booking Ref: ${bookingReference}
+Room: ${roomNumber}
 
-    Booking Ref: ${bookingReference}
-    Room: ${roomNumber}
+Access PIN:
+${accessPin}
 
-    Room Access PIN:
-    ${accessPin}
+Use this PIN to unlock your room.
 
-    This PIN is required to unlock your room.
-
-    Keep it confidential.
-
-    Enjoy your stay!`;
+Do not share it.`;
 
     return this.sendSms({
-        recipient,
-        message,
+      recipient,
+      message,
     });
-    }
-
+  }
 }

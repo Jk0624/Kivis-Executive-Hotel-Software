@@ -1,26 +1,26 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# ======================================
+# ROOT MONOREPO RULES
+# ======================================
 
-node_modules
-dist-ssr
+# Environment files at the repository root
 .env
 .env.*
-!.env.example
-*.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Operating System files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Archives
+*.zip
+*.tar
+*.gz
+
+# IDE folders (only at the repository root)
+.idea/

@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateReceptionistDto } from './dto/create-receptionist.dto';
 import { Role } from '@prisma/client';
 import { CreateRoomDto } from './dto/create-room.dto';
-import { RoomStatus } from '@prisma/client';
+import { RoomStatus, BookingStatus, } from '@prisma/client';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { MarkRoomMaintenanceDto } from './dto/mark-room-maintenance.dto';
 import { UpdateReceptionistDto } from './dto/update-receptionist.dto';
@@ -1453,15 +1453,13 @@ async enableAccessDevice(
 }
 
 // ==========================================
-// OCCUPANCY REPORT
+// OPERATIONAL REPORT
 // ==========================================
-async occupancyReport() {
+async operationalReport() {
 
   const [
     totalRooms,
     available,
-    booked,
-    reserved,
     occupied,
     maintenance,
   ] = await Promise.all([
@@ -1471,18 +1469,6 @@ async occupancyReport() {
     this.prisma.room.count({
       where: {
         status: RoomStatus.AVAILABLE,
-      },
-    }),
-
-    this.prisma.room.count({
-      where: {
-        status: RoomStatus.BOOKED,
-      },
-    }),
-
-    this.prisma.room.count({
-      where: {
-        status: RoomStatus.RESERVED,
       },
     }),
 
@@ -1503,10 +1489,62 @@ async occupancyReport() {
   return {
     totalRooms,
     available,
-    booked,
-    reserved,
     occupied,
     maintenance,
+  };
+}
+
+// ==========================================
+// BOOKING REPORT
+// ==========================================
+async bookingReport() {
+
+  const [
+    pendingBookings,
+    paidBookings,
+    checkedInBookings,
+    checkedOutBookings,
+    cancelledBookings,
+  ] = await Promise.all([
+
+    this.prisma.booking.count({
+      where: {
+        status: BookingStatus.PENDING,
+      },
+    }),
+
+    this.prisma.booking.count({
+      where: {
+        status: BookingStatus.PAID,
+      },
+    }),
+
+    this.prisma.booking.count({
+      where: {
+        status: BookingStatus.CHECKED_IN,
+      },
+    }),
+
+    this.prisma.booking.count({
+      where: {
+        status: BookingStatus.CHECKED_OUT,
+      },
+    }),
+
+    this.prisma.booking.count({
+      where: {
+        status: BookingStatus.CANCELLED,
+      },
+    }),
+
+  ]);
+
+  return {
+    pendingBookings,
+    paidBookings,
+    checkedInBookings,
+    checkedOutBookings,
+    cancelledBookings,
   };
 }
 

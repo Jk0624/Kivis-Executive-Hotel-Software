@@ -37,15 +37,26 @@ function Navbar() {
       }
 
       try {
-        const response = await api.get("/profile");
+  const response = await api.get("/profile");
 
-        setIsLoggedIn(true);
+  const currentUser = response.data.user;
 
-        setUser({
-          name: response.data.user.name || "Guest",
-          email: response.data.user.email || "",
-        });
-      } catch (error) {
+  if (currentUser.role === "GUEST") {
+    setIsLoggedIn(true);
+
+    setUser({
+      name: currentUser.name || "Guest",
+      email: currentUser.email || "",
+    });
+  } else {
+    setIsLoggedIn(false);
+
+    setUser({
+      name: "",
+      email: "",
+    });
+  }
+} catch (error) {
         console.error(error);
 
         localStorage.removeItem("token");

@@ -291,7 +291,7 @@ function SignUp() {
                       setPhoneError("");
                     }
                   }}
-                  placeholder="+233 XX XXX XXXX"
+                  placeholder="05xxxxxxxx"
                   className={`w-full rounded-xl bg-white/10 py-3 pl-12 pr-4 text-white placeholder-gray-300 outline-none backdrop-blur-md transition disabled:cursor-not-allowed disabled:opacity-60 ${
                     phoneError
                       ? "border border-red-500 focus:border-red-500"

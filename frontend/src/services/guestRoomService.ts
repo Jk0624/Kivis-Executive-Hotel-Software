@@ -13,7 +13,8 @@ export interface GuestRoom {
 }
 
 export interface GetGuestRoomsParams {
-  status?: string;
+  checkIn?: string;
+  checkOut?: string;
   roomType?: string;
   maxPrice?: number;
 }
@@ -32,11 +33,11 @@ export async function getGuestRooms(
   params?: GetGuestRoomsParams
 ): Promise<GuestRoom[]> {
   const response = await api.get<GuestRoomsResponse>(
-    "/guest/rooms",
-    {
-      params,
-    }
-  );
+  "/guest/rooms/filter",
+  {
+    params,
+  }
+);
 
   return response.data.rooms;
 }

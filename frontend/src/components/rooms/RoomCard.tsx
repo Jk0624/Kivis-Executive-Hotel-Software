@@ -21,52 +21,7 @@ function RoomCard({ room }: RoomCardProps) {
       );
     }
   };
-  const getStatus = () => {
-    switch (room.status.toUpperCase()) {
-      case "AVAILABLE":
-        return {
-          label: "Available",
-          badge:
-            "bg-emerald-50/90 text-emerald-700 border border-emerald-200",
-          dot: "bg-emerald-500",
-        };
-
-      case "RESERVED":
-        return {
-          label: "Reserved",
-          badge:
-            "bg-blue-50/90 text-blue-700 border border-blue-200",
-          dot: "bg-blue-500",
-        };
-
-      case "BOOKED":
-      case "OCCUPIED":
-        return {
-          label: "Occupied",
-          badge:
-            "bg-red-50/90 text-red-700 border border-red-200",
-          dot: "bg-red-500",
-        };
-
-      case "MAINTENANCE":
-        return {
-          label: "Maintenance",
-          badge:
-            "bg-orange-50/90 text-orange-700 border border-orange-200",
-          dot: "bg-orange-500",
-        };
-
-      default:
-        return {
-          label: room.status,
-          badge:
-            "bg-slate-100 text-slate-700 border border-slate-200",
-          dot: "bg-slate-500",
-        };
-    }
-  };
-
-  const status = getStatus();
+  
 
   const amenities = room.amenities ?? [];
 
@@ -91,18 +46,7 @@ const remainingAmenities =
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-        <div className="absolute right-3 top-3 sm:right-5 sm:top-5">
-          <div
-            className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold shadow-lg backdrop-blur-md sm:px-4 sm:py-2 sm:text-sm ${status.badge}`}
-          >
-            <span
-              className={`h-2.5 w-2.5 rounded-full ${status.dot} animate-pulse sm:h-3 sm:w-3`}
-            />
-
-            {status.label}
-          </div>
-        </div>
-
+        
         <div className="absolute bottom-5 left-5 sm:bottom-6 sm:left-6">
           <p className="text-[11px] uppercase tracking-[0.3em] text-white/70 sm:text-xs sm:tracking-[0.35em]">
             Room

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import PaymentSuccess from "../pages/public/PaymentSuccess";
 import AdminBookingDetails from "../pages/admin/BookingDetails";
 import ScrollToTop from "../components/navigation/ScrollToTop";
 import Home from "../pages/public/Home";
@@ -75,6 +76,8 @@ function AppRouter() {
           path="/guest/payments"
           element={<PaymentHistory />}
         />
+
+        <Route path="/payment/success" element={<PaymentSuccess />} />
 
         <Route
           path="/guest/notifications"

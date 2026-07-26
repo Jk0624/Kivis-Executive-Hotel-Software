@@ -15,11 +15,13 @@ import {
 
 export class FilterGuestRoomsDto {
 
-  @IsDateString()
-  checkIn!: string;
+  @IsOptional()
+@IsDateString()
+checkIn?: string;
 
-  @IsDateString()
-  checkOut!: string;
+@IsOptional()
+@IsDateString()
+checkOut?: string;
 
   @IsOptional()
   @IsEnum(RoomType)

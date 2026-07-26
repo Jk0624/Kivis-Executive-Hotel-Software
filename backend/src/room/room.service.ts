@@ -369,6 +369,41 @@ private async findAvailableRooms(
     maxPrice,
   } = query;
 
+  // If no dates are provided, return all guest-visible rooms
+if (!checkIn || !checkOut) {
+  return this.prisma.room.findMany({
+    where: {
+      status: {
+        not: RoomStatus.MAINTENANCE,
+      },
+
+      ...(roomType && {
+        type: roomType,
+      }),
+
+      ...(maxPrice && {
+        price: {
+          lte: maxPrice,
+        },
+      }),
+    },
+
+    orderBy: {
+      roomNo: 'asc',
+    },
+
+    select: {
+      id: true,
+      roomNo: true,
+      type: true,
+      price: true,
+      status: true,
+      amenities: true,
+      photos: true,
+    },
+  });
+}
+
   return this.prisma.room.findMany({
     where: {
       status: {

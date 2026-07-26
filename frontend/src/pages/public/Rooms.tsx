@@ -10,7 +10,9 @@ function Rooms() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [status, setStatus] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+const [checkOut, setCheckOut] = useState("");
+
   const [roomType, setRoomType] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
@@ -20,12 +22,13 @@ function Rooms() {
         setLoading(true);
 
         const data = await getGuestRooms({
-          status: status || undefined,
-          roomType: roomType || undefined,
-          maxPrice: maxPrice
-            ? Number(maxPrice)
-            : undefined,
-        });
+  checkIn: checkIn || undefined,
+  checkOut: checkOut || undefined,
+  roomType: roomType || undefined,
+  maxPrice: maxPrice
+    ? Number(maxPrice)
+    : undefined,
+});
 
         setRooms(data);
       } catch (err) {
@@ -39,7 +42,7 @@ function Rooms() {
     };
 
     fetchRooms();
-  }, [status, roomType, maxPrice]);
+  }, [checkIn, checkOut, roomType, maxPrice]);
 
   return (
     <MainLayout>
@@ -74,9 +77,7 @@ function Rooms() {
               )}
 
               <p className="mt-2 text-sm leading-7 text-slate-600 sm:text-base">
-                Use the filters below to narrow your
-                search by room type, availability or
-                your preferred budget.
+                Use the filters below to search for rooms by your preferred dates, room type and budget.
               </p>
             </div>
 
@@ -90,66 +91,62 @@ function Rooms() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-4">
+              
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Check-in Date
+                </label>
+
+                <input
+                  type="date"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 p-3 focus:border-blue-600 focus:outline-none"
+                />
+              </div>
+
+              <div>
+  <label className="mb-2 block text-sm font-semibold text-slate-700">
+    Check-out Date
+  </label>
+
+  <input
+    type="date"
+    value={checkOut}
+    onChange={(e) => setCheckOut(e.target.value)}
+    className="w-full rounded-xl border border-slate-300 p-3 focus:border-blue-600 focus:outline-none"
+  />
+</div>
+
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Room Type
                 </label>
 
                 <select
-                  value={roomType}
-                  onChange={(e) =>
-                    setRoomType(e.target.value)
-                  }
-                  className="w-full rounded-xl border border-slate-300 p-3 focus:border-blue-600 focus:outline-none"
-                >
-                  <option value="">
-                    All Types
-                  </option>
-                  <option value="STANDARD">
-                    Standard
-                  </option>
-                  <option value="EXECUTIVE">
-                    Executive
-                  </option>
-                  <option value="DELUXE">
-                    Deluxe
-                  </option>
-                  <option value="SUITE">
-                    Suite
-                  </option>
-                </select>
+  value={roomType}
+  onChange={(e) => setRoomType(e.target.value)}
+  className="
+    h-14 w-full appearance-none rounded-2xl
+    border border-slate-200 bg-white px-4 pr-12
+    text-sm font-medium text-slate-700
+    shadow-sm transition-all duration-200
+    hover:border-yellow-400
+    focus:border-yellow-500
+    focus:ring-4 focus:ring-yellow-100
+    focus:outline-none
+  "
+>
+  <option value="">All Room Types</option>
+  <option value="STANDARD">Standard Room</option>
+  <option value="EXECUTIVE">Executive Room</option>
+  <option value="DELUXE">Deluxe Room</option>
+  <option value="SUITE">Suite</option>
+</select>
               </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
-                  Availability
-                </label>
-
-                <select
-                  value={status}
-                  onChange={(e) =>
-                    setStatus(e.target.value)
-                  }
-                  className="w-full rounded-xl border border-slate-300 p-3 focus:border-blue-600 focus:outline-none"
-                >
-                  <option value="">
-                    All Status
-                  </option>
-                  <option value="AVAILABLE">
-                    Available
-                  </option>
-                  <option value="RESERVED">
-                    Reserved
-                  </option>
-                  <option value="OCCUPIED">
-                    Occupied
-                  </option>
-                  <option value="MAINTENANCE">
-                    Maintenance
-                  </option>
-                </select>
-              </div>
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
@@ -172,8 +169,9 @@ function Rooms() {
             <div className="mt-6 flex justify-stretch sm:justify-end">
               <button
                 onClick={() => {
+                  setCheckIn("");
+                  setCheckOut("");
                   setRoomType("");
-                  setStatus("");
                   setMaxPrice("");
                 }}
                 className="w-full rounded-xl border border-slate-300 px-5 py-3 font-semibold text-slate-700 transition hover:border-blue-600 hover:text-blue-700 sm:w-auto"

@@ -11,7 +11,7 @@ interface OccupancyReport {
 }
 
 export default function OperationalReport() {
-  const [report, setReport] = useState<OccupancyReport | null>(null);
+  const [report, setReport] = useState<OccupancyReport | null>(null); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,8 +23,8 @@ export default function OperationalReport() {
       setLoading(true);
 
       const response = await api.get(
-        "/admin/reports/occupancy"
-      );
+  "/admin/reports/operational"
+);
 
       setReport(response.data);
     } catch (error) {
@@ -102,17 +102,6 @@ export default function OperationalReport() {
           color="text-red-600"
         />
 
-        <StatCard
-          title="Reserved"
-          value={report.reserved}
-          color="text-blue-600"
-        />
-
-        <StatCard
-          title="Booked"
-          value={report.booked}
-          color="text-amber-600"
-        />
 
         <StatCard
           title="Maintenance"
@@ -141,26 +130,7 @@ export default function OperationalReport() {
 
           <div className="flex h-full">
 
-            <div
-              className="bg-emerald-500"
-              style={{
-                width: `${percentages.available}%`,
-              }}
-            />
-
-            <div
-              className="bg-amber-500"
-              style={{
-                width: `${percentages.booked}%`,
-              }}
-            />
-
-            <div
-              className="bg-blue-500"
-              style={{
-                width: `${percentages.reserved}%`,
-              }}
-            />
+            
 
             <div
               className="bg-red-500"
@@ -188,17 +158,7 @@ export default function OperationalReport() {
             percent={percentages.available}
           />
 
-          <StatusRow
-            label="Booked"
-            value={report.booked}
-            percent={percentages.booked}
-          />
-
-          <StatusRow
-            label="Reserved"
-            value={report.reserved}
-            percent={percentages.reserved}
-          />
+          
 
           <StatusRow
             label="Occupied"

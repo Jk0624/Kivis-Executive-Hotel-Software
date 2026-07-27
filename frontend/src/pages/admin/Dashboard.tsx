@@ -1,5 +1,6 @@
 import AdminLayout from "../../layouts/AdminLayout";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
 import {
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 
 function Dashboard() {
+  const navigate = useNavigate();
   const [summary, setSummary] =
     useState<any | null>(null);
 
@@ -219,41 +221,45 @@ function Dashboard() {
 
         <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
 
-          <button className="rounded-2xl bg-blue-700 p-8 text-left text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-blue-800 hover:shadow-lg">
+          <button
+  onClick={() => navigate("/admin/receptionists?create=true")}
+  className="rounded-2xl bg-blue-700 p-8 text-left text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-blue-800 hover:shadow-lg"
+>
+  <h3 className="text-lg font-semibold">
+    Add Receptionist
+  </h3>
 
-            <h3 className="text-lg font-semibold">
-              Add Receptionist
-            </h3>
+  <p className="mt-2 text-sm text-blue-100">
+    Register a new receptionist account.
+  </p>
+</button>
 
-            <p className="mt-2 text-sm text-blue-100">
-              Register a new receptionist account.
-            </p>
+          <button
+          
+onClick={() => navigate("/admin/access-devices?create=true")}
+  className="rounded-2xl bg-emerald-700 p-8 text-left text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-800 hover:shadow-lg"
+>
+  <h3 className="text-lg font-semibold">
+    Register ESP32 Device
+  </h3>
 
-          </button>
+  <p className="mt-2 text-sm text-emerald-100">
+    Connect a new smart access device.
+  </p>
+</button>
 
-          <button className="rounded-2xl bg-emerald-700 p-8 text-left text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-800 hover:shadow-lg">
+          <button
+  onClick={() => navigate("/admin/security-audit")}
+  className="rounded-2xl bg-slate-800 p-8 text-left text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-slate-900 hover:shadow-lg"
+>
+  <h3 className="text-lg font-semibold">
+    View Reports
+  </h3>
 
-            <h3 className="text-lg font-semibold">
-              Register ESP32 Device
-            </h3>
-
-            <p className="mt-2 text-sm text-emerald-100">
-              Connect a new smart access device.
-            </p>
-
-          </button>
-
-          <button className="rounded-2xl bg-slate-800 p-8 text-left text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-slate-900 hover:shadow-lg">
-
-            <h3 className="text-lg font-semibold">
-              View Security Audit
-            </h3>
-
-            <p className="mt-2 text-sm text-slate-300">
-              Review system activity and access logs.
-            </p>
-
-          </button>
+  <p className="mt-2 text-sm text-slate-300">
+    Review system activity and access logs.
+  </p>
+</button>
 
         </div>
 

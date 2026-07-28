@@ -369,178 +369,175 @@ async searchBookings(
   );
 }
 
-    // ==========================================
-    // CREATE WALK-IN BOOKING
-    // ==========================================
-    async createWalkInBooking(
-    createWalkInBookingDto: CreateWalkInBookingDto,
-    ) {
+// ==========================================
+// CREATE WALK-IN BOOKING
+// ==========================================
+async createWalkInBooking(
+  createWalkInBookingDto: CreateWalkInBookingDto,
+) {
 
+  // ==========================================
+  // FIND OR CREATE GUEST
+  // ==========================================
+  const guest =
+    await this.findOrCreateGuest(
+      createWalkInBookingDto,
+    );
 
-    // ==========================================
-    // FIND OR CREATE GUEST
-    // ==========================================
-    const guest =
-        await this.findOrCreateGuest(
-        createWalkInBookingDto,
-        );
-    
-    // ==========================================
-    // RELEASE EXPIRED BOOKINGS
-    // ==========================================
-    await this.bookingHousekeepingService.cleanupExpiredBookings();
+  // ==========================================
+  // RELEASE EXPIRED BOOKINGS
+  // ==========================================
+  await this.bookingHousekeepingService.cleanupExpiredBookings();
 
-    // ==========================================
-    // FIND ROOM
-    // ==========================================
-    const room =
+  // ==========================================
+  // FIND ROOM
+  // ==========================================
+  const room =
     await this.findRoomByNumber(
-        createWalkInBookingDto.roomNo,
+      createWalkInBookingDto.roomNo,
     );
 
-    // ==========================================
-    // VALIDATE BOOKING
-    // ==========================================
-    const rawCheckIn = new Date(
-    createWalkInBookingDto.checkInDate,
+  // ==========================================
+  // PARSE REQUEST DATES
+  // ==========================================
+  const rawCheckIn =
+    new Date(createWalkInBookingDto.checkInDate);
+
+  const rawCheckOut =
+    new Date(createWalkInBookingDto.checkOutDate);
+
+  // ==========================================
+  // APPLY HOTEL CHECK-IN / CHECK-OUT TIMES
+  // ==========================================
+  const hotelDates =
+    applyHotelBookingTimes(
+      rawCheckIn,
+      rawCheckOut,
     );
 
-    const rawCheckOut = new Date(
-    createWalkInBookingDto.checkOutDate,
-    );
+  const hotelCheckIn =
+    hotelDates.checkIn;
 
-    const {
-    checkIn,
-    checkOut,
-    } = applyHotelBookingTimes(
-    rawCheckIn,
-    rawCheckOut,
-    );
+  const hotelCheckOut =
+    hotelDates.checkOut;
 
-    validateBookingDates(
-    checkIn,
-    checkOut,
-    );
+  // ==========================================
+  // VALIDATE DATES
+  // ==========================================
+  validateBookingDates(
+    hotelCheckIn,
+    hotelCheckOut,
+  );
 
-    validateRoomStatus(room);
+  validateRoomStatus(room);
 
-    await validateRoomAvailability({
-        prisma: this.prisma,
-        roomId: room.id,
-        checkIn,
-        checkOut,
-    });
+  await validateRoomAvailability({
+    prisma: this.prisma,
+    roomId: room.id,
+    checkIn: hotelCheckIn,
+    checkOut: hotelCheckOut,
+  });
 
-    
-    // ==========================================
-    // CALCULATE BOOKING AMOUNT
-    // ==========================================
-    const pricing =
+  // ==========================================
+  // CALCULATE PRICE
+  // ==========================================
+  const pricing =
     calculateBookingAmount(
-        room.price,
-        checkIn,
-        checkOut,
+      room.price,
+      hotelCheckIn,
+      hotelCheckOut,
     );
 
-    // ==========================================
-    // VALIDATE PAYMENT AMOUNT
-    // ==========================================
-    validatePaymentAmount(
+  // ==========================================
+  // VALIDATE PAYMENT
+  // ==========================================
+  validatePaymentAmount(
     pricing.totalAmount,
     createWalkInBookingDto.amount,
-    );
+  );
 
-    // ==========================================
-    // CREATE BOOKING
-    // ==========================================
-    const booking =
+  // ==========================================
+  // CREATE BOOKING
+  // ==========================================
+  const booking =
     await this.bookingService.createWalkInBooking(
-        guest.id,
-        room.id,
-        checkIn,
-        checkOut,
+      guest.id,
+      room.id,
+      hotelCheckIn,
+      hotelCheckOut,
     );
 
-    const payment =
+  // ==========================================
+  // RECORD PAYMENT
+  // ==========================================
+  const payment =
     await this.paymentService.recordCashPayment(
-        booking.id,
-        createWalkInBookingDto.amount,
+      booking.id,
+      createWalkInBookingDto.amount,
     );
 
-    // ==========================================
-    // I WILL UPDATE ROOM STATUS HERE ANYMORE V2
-    // ==========================================
-    // Walk-in bookings no longer change the room's
-    // operational status.
-    //
-    // The room remains AVAILABLE until the guest
-    // physically checks in.
-    //
-    // Availability is determined by booking dates,
-    // not by Room.status.
-
-    // ==========================================
-    // FETCH UPDATED BOOKING
-    // ==========================================
-    const updatedBooking =
+  // ==========================================
+  // FETCH UPDATED BOOKING
+  // ==========================================
+  const updatedBooking =
     await this.prisma.booking.findUnique({
-        where: {
+      where: {
         id: booking.id,
-        },
+      },
     });
 
-    // ==========================================
-    // CREATE RECEPTIONIST NOTIFICATION
-    // ==========================================
-    try {
-        const notification =
-            await this.notificationService.createNotification(
-                'Walk-in Booking Created',
-                `${guest.name} booked Room ${room.roomNo}. Booking Reference: ${updatedBooking!.bookingId}.`,
-            );
+  // ==========================================
+  // CREATE NOTIFICATIONS
+  // ==========================================
+  try {
+    const notification =
+      await this.notificationService.createNotification(
+        'Walk-in Booking Created',
+        `${guest.name} booked Room ${room.roomNo}. Booking Reference: ${updatedBooking!.bookingId}.`,
+      );
 
-        await this.notificationService.notifyReceptionists(
-            notification.id,
-        );
+    await this.notificationService.notifyReceptionists(
+      notification.id,
+    );
 
-        await this.notificationService.notifyAdmins(
-            notification.id,
-        );
-    } catch (error) {
-        this.logger.error(
-            'Failed to create walk-in booking notification.',
-            error instanceof Error
-                ? error.stack
-                : String(error),
-        );
-    }
+    await this.notificationService.notifyAdmins(
+      notification.id,
+    );
+  } catch (error) {
+    this.logger.error(
+      'Failed to create walk-in booking notification.',
+      error instanceof Error
+        ? error.stack
+        : String(error),
+    );
+  }
 
-    // ==========================
-    // RETURN
-    // ==========================
-    return {
+  // ==========================================
+  // RETURN RESPONSE
+  // ==========================================
+  return {
     message: 'Walk-in booking created successfully.',
 
     booking: {
-        bookingReference:
+      bookingReference:
         updatedBooking!.bookingId,
 
-        status:
+      status:
         updatedBooking!.status,
     },
 
     payment: {
-        amount:
+      amount:
         payment.amount,
 
-        method:
+      method:
         payment.method,
 
-        status:
+      status:
         payment.status,
     },
-    };
-    } //WALK- IN BOOKING ENDS HER ============
+  };
+}//WALK- IN BOOKING ENDS HER ============
 
     // ==========================================
     // FIND CHECK-IN BOOKING BY PHONE

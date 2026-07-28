@@ -83,12 +83,6 @@ async createBookingRecord(
       // ======================================================
       // A room remains AVAILABLE until the guest physically
       // checks in.
-      //
-      // Room.status is reserved for operational events only:
-      // • Check-in      → OCCUPIED
-      // • Check-out     → AVAILABLE
-      // • Maintenance   → MAINTENANCE
-      // ======================================================
 
       return booking;
     },

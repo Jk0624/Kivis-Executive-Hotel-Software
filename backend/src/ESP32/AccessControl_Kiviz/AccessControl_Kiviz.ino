@@ -14,7 +14,7 @@ const char* WIFI_SSID = "Ultra-Violet";
 const char* WIFI_PASSWORD = "Kiviz_IoT@Final26";
 
 const char* BACKEND_URL = "http://192.168.8.101:3001";
-const char* DEVICE_API_KEY = "kiviz_ad_1d5880fa01ab3ed0abe2b433";
+const char* DEVICE_API_KEY = "kiviz_ad_549494ba6609b6a9e11cd0d1";
 
 
 
@@ -290,7 +290,6 @@ bool verifyPin(String pin)
 
     StaticJsonDocument<200> request;
 
-    request["method"] = "PIN";
     request["pin"] = pin;
 
     String body;

@@ -17,35 +17,26 @@ export function validateBookingDates(
   checkIn: Date,
   checkOut: Date,
 ) {
-  const today = new Date();
-
-  today.setHours(
-    0,
-    0,
-    0,
-    0,
-  );
-
-  checkIn.setHours(
-    0,
-    0,
-    0,
-    0,
-  );
-
-  checkOut.setHours(
-    0,
-    0,
-    0,
-    0,
-  );
+  const now = new Date();
 
   // ==========================================
   // CHECK CHECK-IN DATE
   // ==========================================
-  if (checkIn < today) {
+  // Bookings are only rejected if the
+  // check-in date is before today.
+  //
+  // Same-day bookings are allowed regardless
+  // of the current time.
+  // ==========================================
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+
+  const checkInDate = new Date(checkIn);
+  checkInDate.setHours(0, 0, 0, 0);
+
+  if (checkInDate < today) {
     throw new BadRequestException(
-      'The scheduled check-in time has already passed. Please select another check-in date.',
+      'Check-in date cannot be in the past.',
     );
   }
 

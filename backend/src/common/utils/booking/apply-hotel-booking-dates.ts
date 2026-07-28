@@ -5,6 +5,7 @@ export function applyHotelBookingTimes(
   checkIn: Date,
   checkOut: Date,
 ) {
+
   const normalizedCheckIn =
     new Date(checkIn);
 

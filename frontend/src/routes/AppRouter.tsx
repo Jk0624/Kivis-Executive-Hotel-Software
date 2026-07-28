@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import PaymentSuccess from "../pages/public/PaymentSuccess";
+
 import AdminBookingDetails from "../pages/admin/BookingDetails";
 import ScrollToTop from "../components/navigation/ScrollToTop";
 import Home from "../pages/public/Home";
@@ -48,6 +48,8 @@ import Booking from "../pages/booking/Booking";
 import MyBookings from "../pages/public/guest/Bookings";
 
 import PaymentHistory from "../pages/public/guest/Payments";
+
+import PaymentSuccess from "../pages/public/guest/PaymentSuccess";
 
 function AppRouter() {
   return (
@@ -120,6 +122,8 @@ function AppRouter() {
           path="/admin/payments/:paymentId"
           element={<PaymentDetails />}
         />
+
+        
 
         <Route path="/admin/guests" element={<AdminGuests />}/>
 

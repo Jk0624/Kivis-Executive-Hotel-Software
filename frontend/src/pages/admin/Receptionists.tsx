@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import LoadingButton from "../../components/common/LoadingButton";
 import {
@@ -25,6 +26,7 @@ interface Receptionist {
 }
 
 function Receptionists() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showDrawer, setShowDrawer] = useState(false);
 
   const [loadingReceptionists, setLoadingReceptionists] =
@@ -80,6 +82,13 @@ function Receptionists() {
   useEffect(() => {
     fetchReceptionists();
   }, []);
+
+  useEffect(() => {
+  if (searchParams.get("create") === "true") {
+    setSelectedReceptionist(null);
+    setShowDrawer(true);
+  }
+}, [searchParams]);
 
   const filteredReceptionists = useMemo(() => {
     const query = searchTerm.toLowerCase().trim();
@@ -425,9 +434,10 @@ function Receptionists() {
       <CreateReceptionistDrawer
         isOpen={showDrawer}
         onClose={() => {
-          setShowDrawer(false);
-          setSelectedReceptionist(null);
-        }}
+  setShowDrawer(false);
+  setSelectedReceptionist(null);
+  setSearchParams({});
+}}
         onCreated={fetchReceptionists}
         receptionist={selectedReceptionist}
       />

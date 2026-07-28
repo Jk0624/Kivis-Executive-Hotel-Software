@@ -70,7 +70,7 @@ function Guests() {
             </h1>
 
             <p className="mt-2 text-gray-600">
-              View and manage every registered guest in the hotel.
+              View and manage every registered guest in the lodge.
             </p>
 
           </div>

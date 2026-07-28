@@ -33,11 +33,14 @@ function WalkIn() {
 
       const response = await api.get("/reception/rooms");
 
-      const availableRooms = response.data.rooms.filter(
-        (room: any) => room.status === "AVAILABLE"
-      );
+const availableRooms = response.data.rooms.filter(
+  (room: any) =>
+    room.status?.toLowerCase() === "available"
+);
 
-      setRooms(availableRooms);
+console.log("Available Rooms:", availableRooms);
+
+setRooms(availableRooms);
     } catch (error) {
       console.error("Failed to load rooms:", error);
     } finally {

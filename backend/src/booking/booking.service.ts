@@ -471,8 +471,8 @@ async findCheckInBookingByPhone(
   phone: string,
 ) {
 
-  const booking =
-    await this.prisma.booking.findFirst({
+  const bookings =
+  await this.prisma.booking.findMany({
       where: {
         status: BookingStatus.PAID,
 
@@ -521,34 +521,31 @@ async findCheckInBookingByPhone(
       },
     });
 
-  if (!booking) {
-    throw new NotFoundException(
-      'No paid booking found for this phone number.',
-    );
-  }
+  if (bookings.length === 0) {
+  throw new NotFoundException(
+    'No paid booking found for this phone number.',
+  );
+}
 
-  return {
-    message: 'Booking found.',
+return {
+  message: 'Bookings found.',
 
-    booking: {
-      bookingReference:
-        booking.bookingId,
+  bookings: bookings.map((booking) => ({
+    bookingReference: booking.bookingId,
 
-      guest: booking.user,
+    guest: booking.user,
 
-      paymentStatus:
-        booking.payments[0]?.status ??
-        'UNPAID',
+    paymentStatus:
+      booking.payments[0]?.status ??
+      'UNPAID',
 
-      room: booking.room,
+    room: booking.room,
 
-      checkIn:
-        booking.checkIn,
+    checkIn: booking.checkIn,
 
-      checkOut:
-        booking.checkOut,
-    },
-  };
+    checkOut: booking.checkOut,
+  })),
+};
 }
 
 // ==========================================

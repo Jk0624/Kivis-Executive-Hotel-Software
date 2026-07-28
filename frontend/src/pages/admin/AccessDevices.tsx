@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import api from "../../services/api";
 import RegisterDeviceModal from "../../components/admin/access-devices/RegisterDeviceModal";
@@ -20,6 +20,7 @@ interface AccessDevice {
 }
 
 function AccessDevices() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [devices, setDevices] = useState<AccessDevice[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +38,12 @@ function AccessDevices() {
   useEffect(() => {
     fetchDevices();
   }, []);
+
+  useEffect(() => {
+  if (searchParams.get("create") === "true") {
+    setShowRegisterModal(true);
+  }
+}, [searchParams]);
 
   const fetchDevices = async () => {
     try {
@@ -351,11 +358,15 @@ function AccessDevices() {
 
       <RegisterDeviceModal
         isOpen={showRegisterModal}
-        onClose={() => setShowRegisterModal(false)}
+        onClose={() => {
+  setShowRegisterModal(false);
+  setSearchParams({});
+}}
         onSuccess={() => {
-          setShowRegisterModal(false);
-          fetchDevices();
-        }}
+  setShowRegisterModal(false);
+  setSearchParams({});
+  fetchDevices();
+}}
       />
 
       {selectedDevice && (

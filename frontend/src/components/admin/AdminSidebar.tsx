@@ -103,7 +103,7 @@ function AdminSidebar({
 
   const system: MenuItem[] = [
     {
-      name: "Security Audit",
+      name: "Reports",
       path: "/admin/security-audit",
       icon: ShieldCheck,
     },

@@ -7,7 +7,7 @@ import { notify } from "../../utils/notify";
 
 function CheckIn() {
   const [phone, setPhone] = useState("");
-  const [booking, setBooking] = useState<any | null>(null);
+  const [bookings, setBookings] = useState<any[]>([]);
 
   const [searching, setSearching] = useState(false);
   const [checkingIn, setCheckingIn] = useState(false);
@@ -38,11 +38,11 @@ function CheckIn() {
 
       notify.success("Booking found.");
 
-      setBooking(response.data.booking);
+      setBookings(response.data.bookings);
     } catch (error: any) {
       notify.dismiss(loadingToast);
 
-      setBooking(null);
+      setBookings([]);
 
       notify.error(
         error.response?.data?.message ??
@@ -53,41 +53,38 @@ function CheckIn() {
     }
   };
 
-  const checkInGuest = async () => {
-    if (!booking) return;
+const checkInGuest = async (bookingReference: string) => {
+  setCheckingIn(true);
 
-    setCheckingIn(true);
+  const loadingToast = notify.loading(
+    "Checking in guest..."
+  );
 
-    const loadingToast = notify.loading(
-      "Checking in guest..."
+  try {
+    const response = await api.post(
+      "/reception/check-in",
+      {
+        bookingReference,
+      }
     );
 
-    try {
-      const response = await api.post(
-        "/reception/check-in",
-        {
-          bookingReference:
-            booking.bookingReference,
-        }
-      );
+    notify.dismiss(loadingToast);
 
-      notify.dismiss(loadingToast);
+    notify.success(response.data.message);
 
-      notify.success(response.data.message);
+    setBookings([]);
+    setPhone("");
+  } catch (error: any) {
+    notify.dismiss(loadingToast);
 
-      setBooking(null);
-      setPhone("");
-    } catch (error: any) {
-      notify.dismiss(loadingToast);
-
-      notify.error(
-        error.response?.data?.message ??
-          "Failed to check in guest."
-      );
-    } finally {
-      setCheckingIn(false);
-    }
-  };
+    notify.error(
+      error.response?.data?.message ??
+        "Failed to check in guest."
+    );
+  } finally {
+    setCheckingIn(false);
+  }
+};
 
   return (
   <ReceptionistLayout>
@@ -153,55 +150,54 @@ function CheckIn() {
       </div>
     </div>
 
-    {booking && (
-      <>
-        <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
-          <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
-            Guest Details
-          </h2>
+    {bookings.length > 0 && (
+  <div className="mt-8 space-y-6">
+    {bookings.map((booking) => (
+      <div
+        key={booking.bookingReference}
+        className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8"
+      >
+        <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
+          Guest Details
+        </h2>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <p>
-              <strong>Booking Reference:</strong>{" "}
-              {booking.bookingReference}
-            </p>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <p>
+            <strong>Booking Reference:</strong>{" "}
+            {booking.bookingReference}
+          </p>
 
-            <p>
-              <strong>Name:</strong>{" "}
-              {booking.guest.name}
-            </p>
+          <p>
+            <strong>Name:</strong>{" "}
+            {booking.guest.name}
+          </p>
 
-            <p>
-              <strong>Phone:</strong>{" "}
-              {booking.guest.phone}
-            </p>
+          <p>
+            <strong>Phone:</strong>{" "}
+            {booking.guest.phone}
+          </p>
 
-            <p>
-              <strong>Room:</strong>{" "}
-              {booking.room.roomNo} - {booking.room.type}
-            </p>
+          <p>
+            <strong>Room:</strong>{" "}
+            {booking.room.roomNo} - {booking.room.type}
+          </p>
 
-            <p>
-              <strong>Payment Status:</strong>{" "}
-              <span className="font-semibold text-green-600">
-                {booking.paymentStatus}
-              </span>
-            </p>
+          <p>
+            <strong>Payment Status:</strong>{" "}
+            <span className="font-semibold text-green-600">
+              {booking.paymentStatus}
+            </span>
+          </p>
 
-            <p>
-              <strong>Check-in Date:</strong>{" "}
-              {new Date(
-                booking.checkIn
-              ).toLocaleDateString()}
-            </p>
+          <p>
+            <strong>Check-in Date:</strong>{" "}
+            {new Date(booking.checkIn).toLocaleDateString()}
+          </p>
 
-            <p>
-              <strong>Check-out Date:</strong>{" "}
-              {new Date(
-                booking.checkOut
-              ).toLocaleDateString()}
-            </p>
-          </div>
+          <p>
+            <strong>Check-out Date:</strong>{" "}
+            {new Date(booking.checkOut).toLocaleDateString()}
+          </p>
         </div>
 
         <div className="mt-8 flex justify-stretch sm:justify-end">
@@ -209,14 +205,18 @@ function CheckIn() {
             type="button"
             loading={checkingIn}
             loadingText="Checking In..."
-            onClick={checkInGuest}
+            onClick={() =>
+              checkInGuest(booking.bookingReference)
+            }
             className="w-full rounded-lg bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800 sm:w-auto sm:px-10"
           >
             Check In Guest
           </LoadingButton>
         </div>
-      </>
-    )}
+      </div>
+    ))}
+  </div>
+)}
   </ReceptionistLayout>
 );
 }

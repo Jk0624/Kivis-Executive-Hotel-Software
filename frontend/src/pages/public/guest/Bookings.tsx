@@ -80,7 +80,13 @@ export default function MyBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
+  const [payingBookingId, setPayingBookingId] = useState<string | null>(null); 
+
+  const [bookingToCancel, setBookingToCancel] =
+  useState<Booking | null>(null);
+
+  const [cancelling, setCancelling] =
+  useState(false);
 
   const navigate = useNavigate();
 
@@ -147,6 +153,36 @@ export default function MyBookings() {
     setPayingBookingId(null);
   }
 };
+
+const cancelBooking = async () => {
+  if (!bookingToCancel) return;
+
+  try {
+    setCancelling(true);
+
+    await api.patch(
+      `/guest/bookings/${bookingToCancel.bookingId}/cancel`
+    );
+
+    setBookingToCancel(null);
+
+    await fetchBookings();
+  } catch (error: unknown) {
+    console.error(error);
+
+    if (axios.isAxiosError(error)) {
+      alert(
+        error.response?.data?.message ??
+          "Unable to cancel booking."
+      );
+    } else {
+      alert("Unable to cancel booking.");
+    }
+  } finally {
+    setCancelling(false);
+  }
+};
+
   useEffect(() => {
     fetchBookings();
   }, [fetchBookings]);
@@ -267,7 +303,7 @@ export default function MyBookings() {
                 <div>
 
                   <p className="text-sm font-medium text-slate-500">
-                    Booking Value
+                    Total Spent
                   </p>
 
                   <h2 className="mt-2 text-2xl font-bold text-slate-900">
@@ -553,6 +589,18 @@ export default function MyBookings() {
   </LoadingButton>
 )}
 
+{["PENDING", "PAID"].includes(
+  booking.status.toUpperCase()
+) && (
+  <button
+    type="button"
+    onClick={() => setBookingToCancel(booking)}
+    className="mt-4 w-full rounded-xl border border-red-300 bg-red-50 py-4 font-semibold text-red-700 transition hover:border-red-600 hover:bg-red-600 hover:text-white"
+  >
+    Cancel Booking
+  </button>
+)}
+
                         </div>
 
                       </div>
@@ -571,6 +619,51 @@ export default function MyBookings() {
         
 
       </div>
+
+      {bookingToCancel && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+    <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
+
+      <h2 className="text-2xl font-bold text-slate-900">
+        Cancel Booking
+      </h2>
+
+      <p className="mt-4 text-slate-600">
+        Are you sure you want to cancel your reservation for{" "}
+        <span className="font-semibold">
+          Room {bookingToCancel.roomNumber}
+        </span>
+        ?
+      </p>
+
+      <p className="mt-2 text-sm text-red-600">
+        This action cannot be undone.
+      </p>
+
+      <div className="mt-8 flex gap-4">
+        <button
+          type="button"
+          onClick={() => setBookingToCancel(null)}
+          className="flex-1 rounded-xl border border-slate-300 py-3 font-semibold text-slate-700 transition hover:bg-slate-100"
+        >
+          Keep Booking
+        </button>
+
+        <button
+  type="button"
+  onClick={cancelBooking}
+  disabled={cancelling}
+  className="flex-1 rounded-xl bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {cancelling
+    ? "Cancelling..."
+    : "Yes, Cancel Booking"}
+</button>
+      </div>
+
+    </div>
+  </div>
+)}
   
     </MainLayout>
   );

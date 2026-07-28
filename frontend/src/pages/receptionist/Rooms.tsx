@@ -20,6 +20,8 @@ function Rooms() {
         "/reception/rooms"
       );
 
+      console.log(response.data.rooms);
+
       setRooms(response.data.rooms);
     } catch (error) {
       console.error(error);
@@ -159,104 +161,29 @@ const reservedRooms = rooms.filter(
   {rooms.map((room) => (
 
     <article
-      key={room.roomNo}
-      className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
-    >
+  key={room.roomNo}
+  className="group overflow-hidden rounded-3xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-2xl"
+>
+  {/* Status Accent */}
+  <div
+    className={`h-1.5 w-full ${
+      room.status === "AVAILABLE"
+        ? "bg-green-500"
+        : room.status === "OCCUPIED"
+        ? "bg-red-500"
+        : room.status === "RESERVED"
+        ? "bg-amber-500"
+        : "bg-slate-400"
+    }`}
+  />
 
-      <div className="p-6">
-
-        <div className="flex items-start justify-between gap-4">
-
-          <div className="flex items-center gap-4">
-
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
-
-              <svg
-                className="h-7 w-7"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 10h18M5 10V7a2 2 0 012-2h10a2 2 0 012 2v3M6 21v-6m12 6v-6M4 21h16"
-                />
-              </svg>
-
-            </div>
-
-            <div>
-
-              <h2 className="text-2xl font-bold text-slate-900">
-                Room {room.roomNo}
-              </h2>
-
-              <p className="mt-1 text-sm text-slate-500">
-                {room.type}
-              </p>
-
-            </div>
-
-          </div>
-
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold tracking-wide ${
-              room.status === "AVAILABLE"
-                ? "bg-green-100 text-green-700"
-                : room.status === "OCCUPIED"
-                ? "bg-red-100 text-red-700"
-                : room.status === "RESERVED"
-                ? "bg-amber-100 text-amber-700"
-                : "bg-slate-200 text-slate-700"
-            }`}
-          >
-            {room.status}
-          </span>
-
-        </div>
-
-        <div className="mt-6 grid grid-cols-2 gap-4">
-
-          <div className="rounded-xl bg-slate-50 p-4">
-
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
-              Nightly Rate
-            </p>
-
-            <p className="mt-2 text-2xl font-bold text-slate-900">
-              GHS {Number(room.price).toFixed(2)}
-            </p>
-
-          </div>
-
-          <div className="rounded-xl bg-slate-50 p-4">
-
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
-              Status
-            </p>
-
-            <p className="mt-2 font-semibold text-slate-800">
-              {room.status}
-            </p>
-
-          </div>
-
-        </div>
-
-        <button
-          type="button"
-          onClick={() =>
-            navigate(`/receptionist/rooms/${room.id}`)
-          }
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white transition-all duration-200 hover:bg-blue-800 group-hover:shadow-lg"
-        >
-
-          View Room Details
-
+  <div className="p-7">
+    {/* Header */}
+    <div className="flex items-start justify-between">
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 transition group-hover:bg-blue-50 group-hover:text-blue-700">
           <svg
-            className="h-5 w-5 transition-transform group-hover:translate-x-1"
+            className="h-7 w-7"
             fill="none"
             stroke="currentColor"
             strokeWidth={2}
@@ -265,15 +192,93 @@ const reservedRooms = rooms.filter(
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M9 5l7 7-7 7"
+              d="M3 10h18M5 10V7a2 2 0 012-2h10a2 2 0 012 2v3M6 21v-6m12 6v-6M4 21h16"
             />
           </svg>
+        </div>
 
-        </button>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
+            Room
+          </p>
 
+          <h2 className="text-3xl font-bold text-slate-900">
+            {room.roomNo}
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-500">
+            {room.type}
+          </p>
+        </div>
       </div>
 
-    </article>
+      <span
+  className={`rounded-full px-4 py-1.5 text-xs font-semibold ${
+    room.status === "AVAILABLE"
+      ? "bg-green-100 text-green-700"
+      : room.status === "OCCUPIED"
+      ? "bg-red-100 text-red-700"
+      : room.status === "RESERVED"
+      ? "bg-amber-100 text-amber-700"
+      : "bg-slate-100 text-slate-700"
+  }`}
+>
+  {room.status === "AVAILABLE"
+    ? "Available"
+    : room.status === "OCCUPIED"
+    ? "Occupied"
+    : room.status === "RESERVED"
+    ? "Reserved"
+    : room.status}
+</span>
+    </div>
+
+    {/* Divider */}
+    <div className="my-7 border-t border-slate-100" />
+
+    {/* Price */}
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
+        Starting From
+      </p>
+
+      <div className="mt-2 flex items-end gap-2">
+        <span className="text-4xl font-bold text-slate-900">
+          GHS {Number(room.price).toFixed(2)}
+        </span>
+
+        <span className="mb-1 text-sm text-slate-500">
+          / night
+        </span>
+      </div>
+    </div>
+
+    {/* CTA */}
+    <button
+      type="button"
+      onClick={() =>
+        navigate(`/receptionist/rooms/${room.id}`)
+      }
+      className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3.5 font-semibold text-white transition-all duration-200 hover:bg-blue-700"
+    >
+      Manage Room
+
+      <svg
+        className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M9 5l7 7-7 7"
+        />
+      </svg>
+    </button>
+  </div>
+</article>
 
   ))}
 

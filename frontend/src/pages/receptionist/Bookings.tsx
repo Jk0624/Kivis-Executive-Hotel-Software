@@ -1,5 +1,6 @@
 import { BookOpen, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { notify } from "../../utils/notify";
 
 import api from "../../services/api";
 import ReceptionistLayout from "../../layouts/ReceptionistLayout";
@@ -26,6 +27,29 @@ function Bookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] =
     useState<Booking | null>(null);
+
+    // ==========================================
+// CANCEL BOOKING STATE
+// ==========================================
+
+const [bookingToCancel, setBookingToCancel] =
+  useState<Booking | null>(null);
+
+  // ==========================================
+// CANCEL CONFIRMATION MODAL
+// ==========================================
+
+const [
+  confirmCancelModalOpen,
+  setConfirmCancelModalOpen,
+] = useState(false);
+
+const [cancelReason, setCancelReason] =
+  useState("");
+
+const [cancellingBooking, setCancellingBooking] =
+  useState(false);
+  
 
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [searching, setSearching] = useState(false);
@@ -82,25 +106,136 @@ function Bookings() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "PAID":
-        return "text-amber-600";
+  const getStatusBadge = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "bg-blue-100 text-blue-700";
 
-      case "CHECKED_IN":
-        return "text-emerald-600";
+    case "PAID":
+      return "bg-amber-100 text-amber-700";
 
-      case "CHECKED_OUT":
-        return "text-slate-600";
+    case "CHECKED_IN":
+      return "bg-emerald-100 text-emerald-700";
 
-      case "CANCELLED":
-        return "text-red-600";
+    case "CHECKED_OUT":
+      return "bg-slate-200 text-slate-700";
 
-      default:
-        return "text-blue-600";
+    case "CANCELLED":
+      return "bg-red-100 text-red-700";
+
+    default:
+      return "bg-slate-100 text-slate-700";
+  }
+};
+
+  // ==========================================
+// CAN CANCEL BOOKING
+// ==========================================
+
+const canCancelBooking = (
+  booking: Booking
+) => {
+  return (
+    booking.status === "PENDING" ||
+    booking.status === "PAID"
+  );
+};
+
+// ==========================================
+// OPEN CANCEL MODAL
+// ==========================================
+
+const openCancelModal = (
+  booking: Booking
+) => {
+  setBookingToCancel(booking);
+
+  setCancelReason("");
+
+  setConfirmCancelModalOpen(true);
+};
+
+// ==========================================
+// PROCEED TO REASON MODAL
+// ==========================================
+
+
+// ==========================================
+// CANCEL BOOKING
+// ==========================================
+
+const confirmCancelBooking =
+  async () => {
+    if (!bookingToCancel) return;
+
+    if (
+      bookingToCancel.status ===
+        "PAID" &&
+      !cancelReason.trim()
+    ) {
+      return;
+    }
+
+    try {
+      setCancellingBooking(true);
+
+      const response =
+        await api.patch(
+          `/reception/bookings/${bookingToCancel.bookingId}/cancel`,
+          {
+            reason:
+              bookingToCancel.status ===
+              "PAID"
+                ? cancelReason.trim()
+                : undefined,
+          }
+        );
+
+      notify.success(
+  response.data.message ??
+    "Booking cancelled successfully."
+);
+
+      closeCancelModal();
+
+if (
+  selectedBooking?.bookingId ===
+  bookingToCancel.bookingId
+) {
+  setSelectedBooking(null);
+}
+
+await fetchBookings();
+    } catch (error: any) {
+      console.error(error);
+
+      notify.error(
+  error?.response?.data?.message ??
+    "Unable to cancel booking."
+);
+    } finally {
+      setCancellingBooking(false);
     }
   };
 
+
+  
+
+// ==========================================
+// CLOSE CANCEL MODAL
+// ==========================================
+
+const closeCancelModal = () => {
+  if (cancellingBooking) return;
+
+  setConfirmCancelModalOpen(false);
+
+
+
+  setBookingToCancel(null);
+
+  setCancelReason("");
+};
    return (
   <ReceptionistLayout>
 
@@ -326,7 +461,7 @@ function Bookings() {
           </div>
 
           <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadge(
               booking.status
             )}`}
           >
@@ -375,22 +510,40 @@ function Bookings() {
 
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setSelectedBooking(booking);
+        <div className="flex flex-col gap-3">
 
-            setTimeout(() => {
-              detailsRef.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }, 100);
-          }}
-          className="w-full rounded-xl border border-blue-700 py-3 font-semibold text-blue-700 transition hover:bg-blue-700 hover:text-white"
-        >
-          View Reservation
-        </button>
+  <button
+    type="button"
+    disabled={cancellingBooking}
+    onClick={() => {
+      setSelectedBooking(booking);
+
+      setTimeout(() => {
+        detailsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }}
+    className="w-full rounded-xl border border-blue-700 py-3 font-semibold text-blue-700 transition hover:bg-blue-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+  >
+    View Reservation
+  </button>
+
+  {canCancelBooking(booking) && (
+
+    <button
+      type="button"
+      disabled={cancellingBooking}
+      onClick={() => openCancelModal(booking)}
+      className="w-full rounded-xl bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-300"
+    >
+      Cancel Booking
+    </button>
+
+  )}
+
+</div>
 
       </div>
 
@@ -464,7 +617,7 @@ function Bookings() {
             <td className="px-6 py-5">
 
               <span
-                className={`whitespace-nowrap text-sm font-semibold ${getStatusColor(
+                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadge(
                   booking.status
                 )}`}
               >
@@ -473,26 +626,44 @@ function Bookings() {
 
             </td>
 
-            <td className="px-8 py-5 text-right">
+            <td className="px-8 py-5">
 
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedBooking(booking);
+  <div className="flex justify-end gap-3">
 
-                  setTimeout(() => {
-                    detailsRef.current?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  }, 100);
-                }}
-                className="font-semibold text-blue-700 transition hover:text-blue-900"
-              >
-                View →
-              </button>
+    <button
+      type="button"
+      disabled={cancellingBooking}
+      onClick={() => {
+        setSelectedBooking(booking);
 
-            </td>
+        setTimeout(() => {
+          detailsRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      }}
+      className="rounded-lg border border-blue-700 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      View
+    </button>
+
+    {canCancelBooking(booking) && (
+
+      <button
+        type="button"
+        disabled={cancellingBooking}
+        onClick={() => openCancelModal(booking)}
+        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-300"
+      >
+        Cancel Booking
+      </button>
+
+    )}
+
+  </div>
+
+</td>
 
           </tr>
 
@@ -508,6 +679,170 @@ function Bookings() {
         )}
 
             </section>
+
+            {/* ========================================== */}
+{/* CANCEL CONFIRMATION MODAL */}
+{/* ========================================== */}
+
+{confirmCancelModalOpen && bookingToCancel && (
+
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-md p-4">
+
+    <div className="w-full max-w-lg rounded-3xl bg-white shadow-2xl">
+
+  {/* Header */}
+
+  <div className="flex items-center gap-3 border-b border-slate-200 px-6 py-5">
+
+    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-100">
+
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 text-red-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 9v4m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"
+        />
+      </svg>
+
+    </div>
+
+    <div>
+
+      <h2 className="text-xl font-bold text-slate-900">
+        Cancel Booking
+      </h2>
+
+      <p className="text-sm text-slate-500">
+        This action cannot be undone.
+      </p>
+
+    </div>
+
+  </div>
+
+  {/* Booking Summary */}
+
+  <div className="space-y-4 px-6 py-6">
+
+    <div className="flex justify-between">
+
+      <span className="text-sm text-slate-500">
+        Guest
+      </span>
+
+      <span className="font-semibold text-slate-900">
+        {bookingToCancel.user.name}
+      </span>
+
+    </div>
+
+    <div className="flex justify-between">
+
+      <span className="text-sm text-slate-500">
+        Room
+      </span>
+
+      <span className="font-semibold text-blue-700">
+        {bookingToCancel.room.roomNo}
+      </span>
+
+    </div>
+
+    <div className="flex justify-between">
+
+      <span className="text-sm text-slate-500">
+        Reference
+      </span>
+
+      <span className="font-mono text-sm text-slate-700">
+        {bookingToCancel.bookingId}
+      </span>
+
+    </div>
+
+    <div className="flex justify-between">
+
+      <span className="text-sm text-slate-500">
+        Status
+      </span>
+
+      <span
+        className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadge(
+          bookingToCancel.status
+        )}`}
+      >
+        {bookingToCancel.status.replaceAll("_", " ")}
+      </span>
+
+    </div>
+
+  </div>
+
+  {/* Reason */}
+
+  <div className="px-6">
+
+    <label className="mb-2 block text-sm font-semibold text-slate-700">
+      Cancellation Reason
+      <span className="text-red-600"> *</span>
+    </label>
+
+    <textarea
+      rows={3}
+      value={cancelReason}
+      disabled={cancellingBooking}
+      onChange={(e) =>
+        setCancelReason(e.target.value)
+      }
+      placeholder="Enter cancellation reason..."
+      className="w-full resize-none rounded-2xl border border-slate-300 p-4 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-100"
+    />
+
+  </div>
+
+  {/* Footer */}
+
+  <div className="mt-6 flex gap-3 border-t border-slate-200 px-6 py-5">
+
+    <button
+      type="button"
+      onClick={closeCancelModal}
+      disabled={cancellingBooking}
+      className="flex-1 rounded-xl border border-slate-300 py-3 font-semibold text-slate-700 transition hover:bg-slate-100"
+    >
+      Keep Booking
+    </button>
+
+    <button
+      type="button"
+      disabled={
+        cancellingBooking ||
+        !cancelReason.trim()
+      }
+      onClick={confirmCancelBooking}
+      className="flex-1 rounded-xl bg-red-600 py-3 font-semibold text-white transition-all duration-200 hover:bg-red-700 hover:shadow-lg disabled:cursor-not-allowed disabled:bg-red-300"
+    >
+      {cancellingBooking
+        ? "Cancelling..."
+        : "Cancel Booking"}
+    </button>
+
+  </div>
+
+</div>
+
+  </div>
+
+)}
+
+                  
 
       {selectedBooking && (
 

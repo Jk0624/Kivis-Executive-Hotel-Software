@@ -258,6 +258,7 @@ enum SecurityAction {
 
 enum AccessMethod {
   PIN
+  BUTTON
 }
 
 enum AccessStatus {

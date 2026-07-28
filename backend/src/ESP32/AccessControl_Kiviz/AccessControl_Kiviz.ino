@@ -49,8 +49,10 @@ byte colPins[COLS] = {27, 14, 12, 13};
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 
-// ================= OUTPUTS ==============
-#define RELAY_PIN  15
+// ================= INPUTS & OUTPUTS ==============
+#define EXIT_BUTTON_PIN 2
+
+#define RELAY_PIN 15
 #define BUZZER_PIN 17
 
 
@@ -124,18 +126,7 @@ void accessGranted()
   Serial.println(now.second());
 
   // Unlock the door
-  digitalWrite(RELAY_PIN, LOW);
-
-  Serial.println("Door Unlocked");
-  showMessage("DOOR OPEN");
-
-  // Keep unlocked for 5 seconds
-  delay(5000);
-
-  // Lock the door
-  digitalWrite(RELAY_PIN, HIGH);
-
-  Serial.println("Door Locked");
+  unlockDoor();
 
   display.clearDisplay();
   display.setTextSize(2);
@@ -149,6 +140,28 @@ void accessGranted()
   Serial.println("================================");
 }
 
+// ==========================================
+// UNLOCK DOOR
+// ==========================================
+const unsigned long DOOR_UNLOCK_TIME = 8000;
+
+void unlockDoor()
+{
+  // Unlock the door
+  digitalWrite(RELAY_PIN, LOW);
+
+  Serial.println("Door Unlocked");
+
+  showMessage("DOOR OPEN");
+
+  // Keep unlocked
+  delay(DOOR_UNLOCK_TIME);
+
+  // Lock the door
+  digitalWrite(RELAY_PIN, HIGH);
+
+  Serial.println("Door Locked");
+}
 
 void accessDenied()
 {
@@ -331,6 +344,8 @@ void setup()
 {
   Serial.begin(115200);
 
+  pinMode(EXIT_BUTTON_PIN, INPUT_PULLUP);
+
   pinMode(RELAY_PIN, OUTPUT);
   pinMode(BUZZER_PIN, OUTPUT);
   
@@ -373,6 +388,14 @@ void setup()
 
 void loop()
 {
+  // ================= EXIT BUTTON =================
+  if (digitalRead(EXIT_BUTTON_PIN) == LOW)
+  {
+    Serial.println("EXIT BUTTON PRESSED");
+
+    delay(300);
+  }
+
   // ================= PIN FIRST =================
 char firstKey = keypad.getKey();
 

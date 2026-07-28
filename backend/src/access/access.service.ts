@@ -4,6 +4,11 @@ import {
 } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
+
+import {
+  AccessMethod,
+  AccessStatus,
+} from '@prisma/client';
 import {
   VerifyAccessDto,
 } from './dto/verify-access.dto';
@@ -80,32 +85,32 @@ export class AccessService {
     }
 
 
-// ==========================================
-// CREATE ACCESS LOG
-// ==========================================
-private async createAccessLog({
-  bookingId,
-  accessDeviceId,
-  method = 'PIN',
-  status,
-  reason,
-}: {
-  bookingId?: string;
-  accessDeviceId: string;
-  method?: 'PIN';
-  status: 'SUCCESS' | 'FAILED';
-  reason?: string;
-}) {
-  await this.prisma.accessLog.create({
-    data: {
-      bookingId,
-      accessDeviceId,
-      method,
-      status,
-      reason,
-    },
-  });
-}
+    // ==========================================
+    // CREATE ACCESS LOG
+    // ==========================================
+    private async createAccessLog({
+    bookingId,
+    accessDeviceId,
+    method,
+    status,
+    reason,
+    }: {
+    bookingId?: string;
+    accessDeviceId: string;
+    method: AccessMethod;
+    status: AccessStatus;
+    reason?: string;
+    }) {
+    await this.prisma.accessLog.create({
+        data: {
+        bookingId,
+        accessDeviceId,
+        method,
+        status,
+        reason,
+        },
+    });
+    }
 
     // ==========================================
     // VERIFY PIN
@@ -137,8 +142,8 @@ private async createAccessLog({
     if (!booking) {
         await this.createAccessLog({
         accessDeviceId: accessDevice.id,
-        method: 'PIN',
-        status: 'FAILED',
+        method: AccessMethod.PIN,
+        status: AccessStatus.FAILED,
         reason: 'NO_ACTIVE_BOOKING',
         });
 
@@ -151,56 +156,98 @@ private async createAccessLog({
     // VERIFY PIN
     // ==========================================
     if (booking.accessPin !== verifyAccessDto.pin) {
-    await this.createAccessLog({
+        await this.createAccessLog({
         bookingId: booking.id,
         accessDeviceId: accessDevice.id,
-        method: 'PIN',
-        status: 'FAILED',
+        method: AccessMethod.PIN,
+        status: AccessStatus.FAILED,
         reason: 'INVALID_PIN',
-    });
+        });
 
-    throw new UnauthorizedException(
+        throw new UnauthorizedException(
         'Invalid access PIN.',
-    );
+        );
     }
 
     // ==========================================
     // VERIFY BOOKING DATES
     // ==========================================
     if (!this.verifyBookingDates(booking)) {
-    await this.createAccessLog({
+        await this.createAccessLog({
         bookingId: booking.id,
         accessDeviceId: accessDevice.id,
-        method: 'PIN',
-        status: 'FAILED',
+        method: AccessMethod.PIN,
+        status: AccessStatus.FAILED,
         reason: 'BOOKING_NOT_CURRENTLY_VALID',
-    });
+        });
 
-    throw new UnauthorizedException(
+        throw new UnauthorizedException(
         'Booking is not currently valid.',
-    );
+        );
     }
 
     // ==========================================
     // CREATE ACCESS LOG
     // ==========================================
     await this.createAccessLog({
-    bookingId: booking.id,
-    accessDeviceId: accessDevice.id,
-    method: 'PIN',
-    status: 'SUCCESS',
+        bookingId: booking.id,
+        accessDeviceId: accessDevice.id,
+        method: AccessMethod.PIN,
+        status: AccessStatus.SUCCESS,
     });
 
     // ==========================================
     // RETURN RESPONSE
     // ==========================================
     return {
-    granted: true,
-    method: 'PIN',
-    code: 'ACCESS_GRANTED',
-    message: 'Access granted.',
+        granted: true,
+        method: AccessMethod.PIN,
+        code: 'ACCESS_GRANTED',
+        message: 'Access granted.',
     };
+    }
 
+    // ==========================================
+    // RECORD BUTTON ACCESS
+    // ==========================================
+    async recordButtonAccess(
+    deviceKey: string,
+    ) {
+    // ==========================================
+    // AUTHENTICATE DEVICE
+    // ==========================================
+    const accessDevice =
+        await this.authenticateDevice(
+        deviceKey,
+        );
+
+    // ==========================================
+    // FIND ACTIVE BOOKING (IF ANY)
+    // ==========================================
+    const booking =
+        await this.verifyActiveBooking(
+        accessDevice.roomId,
+        );
+
+    // ==========================================
+    // CREATE ACCESS LOG
+    // ==========================================
+    await this.createAccessLog({
+        bookingId: booking?.id,
+        accessDeviceId: accessDevice.id,
+        method: AccessMethod.BUTTON,
+        status: AccessStatus.SUCCESS,
+    });
+
+    // ==========================================
+    // RETURN RESPONSE
+    // ==========================================
+    return {
+        logged: true,
+        method: AccessMethod.BUTTON,
+        message:
+        'Button access recorded successfully.',
+    };
     }
 
     // ==========================================

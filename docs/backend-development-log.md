@@ -3338,3 +3338,99 @@ SmsService
 - Remove the `/sms/test` endpoint.
 - Use `POST /auth/request-otp` as the permanent SMS testing endpoint.
 - Continue with the next backend module.
+
+# Milestone 31 — Booking Date Validation Fix & Walk-in Booking Resolution
+
+## Overview
+Resolved two related issues affecting the booking system:
+
+1. Booking validation incorrectly rejected same-day bookings after the hotel's official check-in time.
+2. Walk-in bookings were being saved with incorrect check-in (00:00) and check-out (00:00) times instead of the configured hotel times (14:00 and 12:00).
+
+---
+
+## Problem 1 — Same-Day Booking Validation
+
+### Issue
+The system rejected bookings for the current day if the guest attempted to book after the hotel's official check-in time.
+
+Example:
+
+- Current Date: 27 July
+- Current Time: 3:00 PM
+- Requested Check-in Date: 27 July
+
+Result:
+Booking was rejected even though the room was still available.
+
+### Root Cause
+The booking validation helper modified the original Date objects using:
+
+```ts
+checkIn.setHours(0, 0, 0, 0);
+checkOut.setHours(0, 0, 0, 0);
+```
+
+Besides normalizing dates for comparison, this unintentionally altered the original booking dates passed into the function.
+
+### Solution
+Refactored `validateBookingDates()` to:
+
+- Create copies of the Date objects before comparison.
+- Compare only normalized copies.
+- Preserve the original booking timestamps.
+- Allow same-day bookings regardless of the current time.
+- Continue rejecting bookings for past dates.
+- Continue enforcing that check-out must occur after check-in.
+
+---
+
+## Problem 2 — Walk-in Booking Time Corruption
+
+### Issue
+Walk-in bookings were stored as:
+
+- Check-in: 00:00
+- Check-out: 00:00
+
+instead of:
+
+- Check-in: 14:00
+- Check-out: 12:00
+
+### Root Cause
+The booking validation helper mutated the same Date objects later used by the booking creation service.
+
+As a result, the correctly normalized hotel times produced by `applyHotelBookingTimes()` were overwritten before the booking was saved.
+
+### Resolution
+After preventing mutation inside `validateBookingDates()`, the original hotel booking times remained intact throughout the booking creation process.
+
+Walk-in bookings now correctly store:
+
+- Check-in → 14:00
+- Check-out → 12:00
+
+No changes were required to the Reception Service or Booking Service.
+
+---
+
+## Verification
+
+Successfully verified:
+
+- ✅ Same-day bookings are accepted.
+- ✅ Past bookings are rejected.
+- ✅ Hotel check-in time is stored as 14:00.
+- ✅ Hotel check-out time is stored as 12:00.
+- ✅ Online bookings behave correctly.
+- ✅ Walk-in bookings behave correctly.
+- ✅ Access verification now works correctly with walk-in bookings.
+
+---
+
+## Lessons Learned
+
+Avoid mutating Date objects received as function parameters.
+
+Validation helpers should treat incoming objects as immutable and create copies whenever normalization or comparison is required. This prevents subtle side effects from propagating into business logic and database operations.

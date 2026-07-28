@@ -19,15 +19,15 @@ export class AccessController {
 
 
   // ==========================================
-// CONNECTION TEST
-// ==========================================
-@Get('ping')
-ping() {
-  return {
-    message:
-      'ESP32 connection successful.',
-  };
-}
+  // CONNECTION TEST
+  // ==========================================
+  @Get('ping')
+  ping() {
+    return {
+      message:
+        'ESP32 connection successful.',
+    };
+  }
 
   // ==========================================
   // VERIFY ACCESS
@@ -44,6 +44,20 @@ ping() {
     return this.accessService.verifyAccess(
       deviceKey,
       verifyAccessDto,
+    );
+  }
+
+  // ==========================================
+  // RECORD BUTTON ACCESS
+  // ==========================================
+  @Post('button')
+  @HttpCode(HttpStatus.OK)
+  recordButtonAccess(
+    @Headers('x-device-key')
+    deviceKey: string,
+  ) {
+    return this.accessService.recordButtonAccess(
+      deviceKey,
     );
   }
 }

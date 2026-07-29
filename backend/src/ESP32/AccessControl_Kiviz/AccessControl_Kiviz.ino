@@ -50,7 +50,7 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 
 // ================= INPUTS & OUTPUTS ==============
-#define EXIT_BUTTON_PIN 2
+#define EXIT_BUTTON_PIN 16
 
 #define RELAY_PIN 15
 #define BUZZER_PIN 17
@@ -161,6 +161,15 @@ void unlockDoor()
   digitalWrite(RELAY_PIN, HIGH);
 
   Serial.println("Door Locked");
+
+  display.clearDisplay();
+display.setTextSize(2);
+display.setTextColor(WHITE);
+display.setCursor(0, 0);
+display.println("ENTER PIN");
+display.setCursor(0, 35);
+display.println("TO UNLOCK");
+display.display();
 }
 
 void accessDenied()
@@ -332,17 +341,49 @@ bool verifyPin(String pin)
         return false;
     }
 
-    bool granted =
-        document["granted"];
+    bool granted = document["granted"];
 
     http.end();
 
     return granted;
+
+}
+
+// ==========================================
+// RECORD BUTTON ACCESS
+// ==========================================
+void recordButtonAccess()
+{
+  HTTPClient http;
+
+  String url =
+      String(BACKEND_URL) +
+      "/access/button";
+
+  http.begin(url);
+
+  http.addHeader(
+      "x-device-key",
+      DEVICE_API_KEY
+  );
+
+  int httpCode = http.POST("");
+
+  Serial.print("Button HTTP Code: ");
+  Serial.println(httpCode);
+
+  String response = http.getString();
+
+  Serial.println(response);
+
+  http.end();
 }
 
 void setup()
 {
   Serial.begin(115200);
+  Serial.print("Using EXIT_BUTTON_PIN = ");
+  Serial.println(EXIT_BUTTON_PIN);
 
   pinMode(EXIT_BUTTON_PIN, INPUT_PULLUP);
 
@@ -386,15 +427,27 @@ void setup()
 }
 
 
+
+
+
 void loop()
 {
-  // ================= EXIT BUTTON =================
-  if (digitalRead(EXIT_BUTTON_PIN) == LOW)
-  {
+  Serial.print("GPIO16 = ");
+Serial.println(digitalRead(EXIT_BUTTON_PIN));
+
+ if (digitalRead(EXIT_BUTTON_PIN) == LOW)
+{
     Serial.println("EXIT BUTTON PRESSED");
 
-    delay(300);
-  }
+    recordButtonAccess();
+
+    unlockDoor();
+
+    while (digitalRead(EXIT_BUTTON_PIN) == LOW)
+    {
+        delay(10);
+    }
+}
 
   // ================= PIN FIRST =================
 char firstKey = keypad.getKey();

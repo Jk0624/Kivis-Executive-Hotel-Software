@@ -362,9 +362,9 @@ function Navbar() {
             </Link>
 
             <Link
-              to="/rooms"
+              to="/guest/rooms"
               onClick={closeMobileMenu}
-              className={`${navLinkClass("/rooms")} rounded-lg px-2 py-3 after:hidden`}
+              className={`${navLinkClass("/guest/rooms")} rounded-lg px-2 py-3 after:hidden`}
             >
               Rooms
             </Link>

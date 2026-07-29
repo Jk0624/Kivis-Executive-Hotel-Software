@@ -11,7 +11,6 @@ import {
   BedDouble,
   CreditCard,
   Hash,
-  Loader2,
   AlertCircle,
   RefreshCw,
   Receipt,

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 import {
   Link,
   useLocation,
@@ -9,6 +8,7 @@ import { Phone, PhoneCall, X } from "lucide-react";
 
 import MainLayout from "../../layouts/MainLayout";
 import LoadingButton from "../../components/common/LoadingButton";
+import api from "../../services/api";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -38,8 +38,8 @@ function SignIn() {
     setSendingCode(true);
 
     try {
-      await axios.post(
-        "http://localhost:3001/auth/request-otp",
+      await api.post(
+        "/auth/request-otp",
         {
           phone: trimmedPhone,
           mode: "SIGN_IN",

@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
 import { CheckCircle2, X } from "lucide-react";
 
 import MainLayout from "../../layouts/MainLayout";
 import OTPInput from "../../components/auth/OTPInput";
 import LoadingButton from "../../components/common/LoadingButton";
+import api from "../../services/api";
 
 function OTPVerification() {
   const navigate = useNavigate();
@@ -58,8 +58,8 @@ function OTPVerification() {
               mode: "SIGN_IN",
             };
 
-      const response = await axios.post(
-        "http://localhost:3001/auth/verify-otp",
+      const response = await api.post(
+        "/auth/verify-otp",
         payload
       );
 

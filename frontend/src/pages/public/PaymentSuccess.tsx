@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import api from "../../services/api";
+
 function PaymentSuccess() {
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -20,13 +22,13 @@ function PaymentSuccess() {
       }
 
       try {
-        const response = await fetch(
-          `http://localhost:3001/payments/verify/${reference}`
+        const response = await api.get(
+          `/payments/verify/${reference}`
         );
 
-        const data = await response.json();
+        const data = response.data;
 
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           setMessage(data.message);
 
           // Redirect back to My Bookings after 2 seconds

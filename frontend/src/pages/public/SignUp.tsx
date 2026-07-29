@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import {
   User,
   Mail,
@@ -11,6 +10,7 @@ import {
 
 import MainLayout from "../../layouts/MainLayout";
 import LoadingButton from "../../components/common/LoadingButton";
+import api from "../../services/api";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -64,8 +64,8 @@ function SignUp() {
     setSendingCode(true);
 
     try {
-      await axios.post(
-        "http://localhost:3001/auth/request-otp",
+      await api.post(
+        "/auth/request-otp",
         {
           name: trimmedName,
           email: trimmedEmail,

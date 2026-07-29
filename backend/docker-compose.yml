@@ -3,7 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: kivis-backend
     restart: unless-stopped
     env_file:
       - .env
@@ -11,10 +10,12 @@ services:
       NODE_ENV: production
       PORT: ${PORT:-3001}
     ports:
-      - "${HOST_PORT:-3001}:${PORT:-3001}"
+      # Only Nginx on this VPS can reach the API. Do not expose it publicly.
+      - "127.0.0.1:${HOST_PORT:-3001}:${PORT:-3001}"
     volumes:
       - uploads:/app/uploads
-    command: sh -c "./node_modules/.bin/prisma migrate deploy && node dist/main.js"
+    command: sh -c "./node_modules/.bin/prisma migrate deploy && node dist/src/main.js"
 
 volumes:
   uploads:
+    name: kivis_backend_uploads

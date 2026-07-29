@@ -6,7 +6,7 @@ type RoomCardProps = {
 };
 
 function RoomCard({ room }: RoomCardProps) {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleBookNow = () => {
     const token = localStorage.getItem("token");
@@ -21,17 +21,34 @@ function RoomCard({ room }: RoomCardProps) {
       );
     }
   };
-  
 
   const amenities = room.amenities ?? [];
+  const visibleAmenities = amenities.slice(0, 4);
+  const remainingAmenities =
+    amenities.length - visibleAmenities.length;
 
-const visibleAmenities = amenities.slice(0, 4);
+  const getRoomTeaser = (roomType: string) => {
+    switch (roomType.toUpperCase()) {
+      case "STANDARD":
+        return "Perfect for solo travelers and short stays with everything you need for a relaxing visit.";
 
-const remainingAmenities =
-  amenities.length - visibleAmenities.length;
+      case "DELUXE":
+        return "Enjoy extra comfort, elegant furnishings and a spacious environment for a memorable stay.";
+
+      case "EXECUTIVE":
+        return "Designed for business and premium travelers seeking style, productivity and comfort.";
+
+      case "SUITE":
+        return "Experience our finest accommodation with generous space and luxurious finishes.";
+
+      default:
+        return "Experience comfort and modern hospitality in one of our carefully prepared guest rooms.";
+    }
+  };
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-blue-100 hover:shadow-2xl">
+
       {/* Image */}
 
       <div className="relative overflow-hidden">
@@ -46,7 +63,6 @@ const remainingAmenities =
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-        
         <div className="absolute bottom-5 left-5 sm:bottom-6 sm:left-6">
           <p className="text-[11px] uppercase tracking-[0.3em] text-white/70 sm:text-xs sm:tracking-[0.35em]">
             Room
@@ -61,6 +77,7 @@ const remainingAmenities =
       {/* Content */}
 
       <div className="flex flex-1 flex-col p-5 sm:p-7">
+
         <div>
           <h3 className="text-xl font-bold text-slate-900 sm:text-2xl">
             {room.type} Room
@@ -75,10 +92,13 @@ const remainingAmenities =
           </div>
         </div>
 
+        {/* Short teaser instead of full description */}
+
         <p className="mt-5 min-h-[72px] text-sm leading-7 text-slate-600 sm:text-base">
-          {room.description ||
-            "Experience comfort, elegance and modern convenience in a thoughtfully designed room, perfect for business and leisure stays."}
+          {getRoomTeaser(room.type)}
         </p>
+
+        {/* Amenities */}
 
         <div className="mt-6">
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500 sm:text-sm">
@@ -108,6 +128,7 @@ const remainingAmenities =
         {/* Footer */}
 
         <div className="mt-auto">
+
           <div className="mb-6">
             <p className="text-2xl font-bold text-amber-600 sm:text-3xl">
               GHS {room.price}
@@ -119,6 +140,7 @@ const remainingAmenities =
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
             <Link
               to={`/rooms/${room.id}`}
               className="rounded-xl border border-slate-300 bg-white px-5 py-3 text-center font-semibold text-slate-700 transition-all duration-300 hover:border-blue-700 hover:bg-blue-50 hover:text-blue-700"
@@ -133,10 +155,14 @@ const remainingAmenities =
             >
               Book Now
             </button>
+
           </div>
+
         </div>
+
       </div>
-    </article> 
+
+    </article>
   );
 }
 

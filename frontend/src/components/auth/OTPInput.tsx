@@ -28,8 +28,14 @@ function OTPInput({
       inputs.current[index + 1]?.focus();
     }
 
+    // Automatically verify after the final digit
     if (updatedOTP.every((digit) => digit !== "")) {
-      onComplete?.(updatedOTP.join(""));
+      const finalOTP = updatedOTP.join("");
+
+      // Wait until React finishes updating the last input
+      setTimeout(() => {
+        onComplete?.(finalOTP);
+      }, 50);
     }
   };
 
@@ -48,9 +54,7 @@ function OTPInput({
 
   return (
     <div className="flex justify-center gap-2 sm:gap-3">
-
       {otp.map((digit, index) => (
-
         <input
           key={index}
           ref={(el) => {
@@ -59,6 +63,7 @@ function OTPInput({
           type="text"
           inputMode="numeric"
           maxLength={1}
+          autoComplete="one-time-code"
           value={digit}
           onChange={(e) =>
             handleChange(e.target.value, index)
@@ -68,9 +73,7 @@ function OTPInput({
           }
           className="h-12 w-12 rounded-xl border border-white/20 bg-white/10 text-center text-xl font-bold text-white outline-none backdrop-blur-md transition focus:border-yellow-400 sm:h-14 sm:w-14 sm:text-2xl"
         />
-
       ))}
-
     </div>
   );
 }

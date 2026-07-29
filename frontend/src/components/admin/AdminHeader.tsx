@@ -31,8 +31,8 @@ function AdminHeader({
     async function fetchRecentNotifications() {
       try {
         const response = await api.get(
-          "/notifications/admin/recent"
-        );
+  "/admin/notifications/recent"
+);
 
         setNotifications(
           response.data.notifications

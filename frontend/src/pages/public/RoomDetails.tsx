@@ -391,14 +391,15 @@ function RoomDetails() {
               </p>
 
               <Link
-                to="#contact"
-                className="mt-8 inline-flex w-full justify-center rounded-xl bg-yellow-500 px-6 py-4 font-semibold text-slate-900 transition hover:bg-yellow-400 sm:w-auto"
-              >
-                Contact Reception
-              </Link>
-            </div>
+  to="/?scroll=contact"
+  className="mt-8 inline-flex w-full justify-center rounded-xl bg-yellow-500 px-6 py-4 font-semibold text-slate-900 transition hover:bg-yellow-400 sm:w-auto"
+>
+  Contact Reception
+</Link>
           </div>
         </div>
+        </div>
+
       </section>
 
             {/* Related Rooms */}

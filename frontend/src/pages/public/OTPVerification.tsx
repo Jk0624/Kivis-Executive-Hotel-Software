@@ -15,7 +15,6 @@ function OTPVerification() {
   const name = location.state?.name || "";
   const email = location.state?.email || "";
   const phone = location.state?.phone || "";
-
   const redirect = location.state?.redirect || null;
 
   const [otp, setOtp] = useState("");
@@ -23,96 +22,24 @@ function OTPVerification() {
   const [verifying, setVerifying] = useState(false);
 
   const maskPhoneNumber = (phone: string) => {
-  if (phone.length < 4) return phone;
+    if (phone.length < 4) return phone;
 
-  return (
-    phone.slice(0, 2) +
-    "*".repeat(phone.length - 4) +
-    phone.slice(-2)
-  );
-};
+    return (
+      phone.slice(0, 2) +
+      "*".repeat(phone.length - 4) +
+      phone.slice(-2)
+    );
+  };
 
-  const handleVerify = () => {
-    if (otp.length !== 6) {
-      setOtpError("Please enter the 6-digit verification code."
-
-      );
-    }
-    };
-  
-
-  return (
-    <MainLayout>
-      <section
-        className="relative flex min-h-screen items-center justify-center bg-cover bg-center px-4 py-8 sm:px-6 sm:py-12"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600')",
-        }}
-      >
-        {/* Overlay */}
-
-        <div className="absolute inset-0 bg-black/60" />
-
-        {/* Glass Card */}
-
-        <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-8">
-          {/* Close Button */}
-
-          <div className="mb-4 flex justify-end">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              disabled={verifying}
-              aria-label="Close"
-              className="rounded-full p-2 text-white transition duration-300 hover:scale-110 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <X size={22} />
-            </button>
-          </div>
-
-          {/* Header */}
-
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-white sm:text-3xl">
-              KIVIS EXECUTIVE LODGE
-            </h1>
-
-            <p className="mt-2 text-xs tracking-[0.2em] text-yellow-400 sm:text-sm sm:tracking-[0.25em]">
-              Luxury • Comfort • Excellence
-            </p>
-
-            <h2 className="mt-6 text-xl font-semibold text-white sm:mt-8 sm:text-2xl">
-              {flow === "signup"
-                ? "Complete Your Registration"
-                : "Welcome Back"}
-            </h2>
-
-            <p className="mt-3 text-sm leading-6 text-gray-200">
-              {flow === "signup"
-                ? "Enter the verification code sent to your phone."
-                : "Verify your phone number to continue."}
-            </p>
-
-            <p className="mt-4 font-medium tracking-wide text-yellow-300">
-  {maskPhoneNumber(phone)}
-</p>
-          </div>
-
-          {/* OTP */}
-
-          <div className="mt-8 sm:mt-10">
-            <OTPInput
-  onComplete={async (value) => {
-    setOtp(value);
-
-    if (otpError) {
-      setOtpError("");
-    }
-
-    // Prevent duplicate verification requests
+  const verifyOTP = async (code: string) => {
     if (verifying) return;
 
+    if (code.length !== 6) {
+      setOtpError("Please enter the 6-digit verification code.");
+      return;
+    }
+
+    setOtpError("");
     setVerifying(true);
 
     try {
@@ -122,12 +49,12 @@ function OTPVerification() {
               name,
               phone,
               email,
-              otp: value,
+              otp: code,
               mode: "SIGN_UP",
             }
           : {
               phone,
-              otp: value,
+              otp: code,
               mode: "SIGN_IN",
             };
 
@@ -138,22 +65,13 @@ function OTPVerification() {
 
       const data = response.data;
 
-      localStorage.setItem(
-        "token",
-        data.accessToken
-      );
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(data.user)
-      );
+      localStorage.setItem("token", data.accessToken);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       const role = data.user.role;
 
       if (redirect) {
-        navigate(redirect, {
-          replace: true,
-        });
+        navigate(redirect, { replace: true });
         return;
       }
 
@@ -179,8 +97,74 @@ function OTPVerification() {
     } finally {
       setVerifying(false);
     }
-  }}
-/>
+  };
+
+  const handleVerify = () => {
+    verifyOTP(otp);
+  };
+
+  return (
+    <MainLayout>
+      <section
+        className="relative flex min-h-screen items-center justify-center bg-cover bg-center px-4 py-8 sm:px-6 sm:py-12"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600')",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60" />
+
+        <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-8">
+          <div className="mb-4 flex justify-end">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              disabled={verifying}
+              aria-label="Close"
+              className="rounded-full p-2 text-white transition duration-300 hover:scale-110 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <X size={22} />
+            </button>
+          </div>
+
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white sm:text-3xl">
+              KIVIS EXECUTIVE LODGE
+            </h1>
+
+            <p className="mt-2 text-xs tracking-[0.2em] text-yellow-400 sm:text-sm sm:tracking-[0.25em]">
+              Luxury • Comfort • Excellence
+            </p>
+
+            <h2 className="mt-6 text-xl font-semibold text-white sm:mt-8 sm:text-2xl">
+              {flow === "signup"
+                ? "Complete Your Registration"
+                : "Welcome Back"}
+            </h2>
+
+            <p className="mt-3 text-sm leading-6 text-gray-200">
+              {flow === "signup"
+                ? "Enter the verification code sent to your phone."
+                : "Verify your phone number to continue."}
+            </p>
+
+            <p className="mt-4 font-medium tracking-wide text-yellow-300">
+              {maskPhoneNumber(phone)}
+            </p>
+          </div>
+
+          <div className="mt-8 sm:mt-10">
+            <OTPInput
+              onComplete={(value) => {
+                setOtp(value);
+
+                if (otpError) {
+                  setOtpError("");
+                }
+
+                verifyOTP(value);
+              }}
+            />
 
             {otpError && (
               <p className="mt-4 text-center text-sm font-medium text-red-400">
@@ -188,16 +172,6 @@ function OTPVerification() {
               </p>
             )}
           </div>
-
-          {/* Timer */}
-
-          <div className="mt-6 space-y-2 text-center sm:mt-8">
-            <p className="pt-3 text-sm text-gray-300">
-              Resend code in 01:00
-            </p>
-          </div>
-
-          {/* Verify Button */}
 
           <LoadingButton
             type="button"
@@ -212,8 +186,6 @@ function OTPVerification() {
             </>
           </LoadingButton>
 
-          {/* Footer */}
-
           <p className="mt-6 text-center text-sm leading-6 text-gray-200">
             Wrong phone number?{" "}
             <button
@@ -223,7 +195,7 @@ function OTPVerification() {
               className="font-semibold text-yellow-400 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
             >
               Go Back
-            </button> 
+            </button>
           </p>
         </div>
       </section>

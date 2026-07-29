@@ -1,0 +1,1019 @@
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+{
+  "riderId": "11",
+  "responses": {
+    "/rider/api/v1/earnings/summary": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "totalEarnings": "572.25",
+          "totalOrders": 45,
+          "averageOrderValue": "12.72",
+          "totalDeliveryFees": "800.00",
+          "totalPayouts": "0.00",
+          "completionRate": 100,
+          "comparisonPercent": null
+        }
+      }
+    },
+    "/rider/api/v1/earnings/chart": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "data": [
+            {
+              "label": "Sat",
+              "value": "380.25",
+              "orders": 32
+            },
+            {
+              "label": "Sun",
+              "value": "150.00",
+              "orders": 10
+            },
+            {
+              "label": "Mon",
+              "value": "21.00",
+              "orders": 2
+            },
+            {
+              "label": "Tue",
+              "value": "21.00",
+              "orders": 1
+            }
+          ],
+          "granularity": "daily",
+          "total": "572.25"
+        }
+      }
+    },
+    "/rider/api/v1/earnings/chart?period=week": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "data": [
+            {
+              "label": "Sat",
+              "value": "380.25",
+              "orders": 32
+            },
+            {
+              "label": "Sun",
+              "value": "150.00",
+              "orders": 10
+            },
+            {
+              "label": "Mon",
+              "value": "21.00",
+              "orders": 2
+            },
+            {
+              "label": "Tue",
+              "value": "21.00",
+              "orders": 1
+            }
+          ],
+          "granularity": "daily",
+          "total": "572.25"
+        }
+      }
+    },
+    "/rider/api/v1/earnings/chart?period=month": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "data": [
+            {
+              "label": "Sat",
+              "value": "380.25",
+              "orders": 32
+            },
+            {
+              "label": "Sun",
+              "value": "150.00",
+              "orders": 10
+            },
+            {
+              "label": "Mon",
+              "value": "21.00",
+              "orders": 2
+            },
+            {
+              "label": "Tue",
+              "value": "21.00",
+              "orders": 1
+            }
+          ],
+          "granularity": "daily",
+          "total": "572.25"
+        }
+      }
+    },
+    "/rider/api/v1/earnings/chart?period=year": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "data": [
+            {
+              "label": "Sat",
+              "value": "380.25",
+              "orders": 32
+            },
+            {
+              "label": "Sun",
+              "value": "150.00",
+              "orders": 10
+            },
+            {
+              "label": "Mon",
+              "value": "21.00",
+              "orders": 2
+            },
+            {
+              "label": "Tue",
+              "value": "21.00",
+              "orders": 1
+            }
+          ],
+          "granularity": "daily",
+          "total": "572.25"
+        }
+      }
+    },
+    "/rider/api/v1/earnings/transactions": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": [
+          {
+            "id": "605",
+            "orderId": "605",
+            "customerName": "Cho Markin",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "21.00",
+            "deliveryFee": "30.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-12T17:53:04.806Z"
+          },
+          {
+            "id": "594",
+            "orderId": "594",
+            "customerName": "Michael Adjartey",
+            "itemsSummary": "Assorted Fried Rice + 1 other",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-11T13:42:00.198Z"
+          },
+          {
+            "id": "592",
+            "orderId": "592",
+            "customerName": "Michael Adjartey",
+            "itemsSummary": "Pizza",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-11T13:30:25.055Z"
+          },
+          {
+            "id": "581",
+            "orderId": "581",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:27:11.162Z"
+          },
+          {
+            "id": "580",
+            "orderId": "580",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:27:00.966Z"
+          },
+          {
+            "id": "579",
+            "orderId": "579",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:26:19.371Z"
+          },
+          {
+            "id": "578",
+            "orderId": "578",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:25:28.024Z"
+          },
+          {
+            "id": "577",
+            "orderId": "577",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Pizza",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:24:15.796Z"
+          },
+          {
+            "id": "576",
+            "orderId": "576",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Pizza",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:11:02.145Z"
+          },
+          {
+            "id": "571",
+            "orderId": "571",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:46:28.607Z"
+          }
+        ],
+        "pagination": {
+          "page": 1,
+          "limit": 10,
+          "total": 45,
+          "totalPages": 5
+        }
+      }
+    },
+    "/rider/api/v1/earnings/transactions?limit=50": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": [
+          {
+            "id": "605",
+            "orderId": "605",
+            "customerName": "Cho Markin",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "21.00",
+            "deliveryFee": "30.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-12T17:53:04.806Z"
+          },
+          {
+            "id": "594",
+            "orderId": "594",
+            "customerName": "Michael Adjartey",
+            "itemsSummary": "Assorted Fried Rice + 1 other",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-11T13:42:00.198Z"
+          },
+          {
+            "id": "592",
+            "orderId": "592",
+            "customerName": "Michael Adjartey",
+            "itemsSummary": "Pizza",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-11T13:30:25.055Z"
+          },
+          {
+            "id": "581",
+            "orderId": "581",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:27:11.162Z"
+          },
+          {
+            "id": "580",
+            "orderId": "580",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:27:00.966Z"
+          },
+          {
+            "id": "579",
+            "orderId": "579",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:26:19.371Z"
+          },
+          {
+            "id": "578",
+            "orderId": "578",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:25:28.024Z"
+          },
+          {
+            "id": "577",
+            "orderId": "577",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Pizza",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:24:15.796Z"
+          },
+          {
+            "id": "576",
+            "orderId": "576",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Pizza",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:11:02.145Z"
+          },
+          {
+            "id": "571",
+            "orderId": "571",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:46:28.607Z"
+          },
+          {
+            "id": "570",
+            "orderId": "570",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "11.25",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:46:00.523Z"
+          },
+          {
+            "id": "569",
+            "orderId": "569",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:45:26.632Z"
+          },
+          {
+            "id": "568",
+            "orderId": "568",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:44:32.258Z"
+          },
+          {
+            "id": "567",
+            "orderId": "567",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:44:04.936Z"
+          },
+          {
+            "id": "566",
+            "orderId": "566",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:43:29.706Z"
+          },
+          {
+            "id": "565",
+            "orderId": "565",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:41:55.542Z"
+          },
+          {
+            "id": "564",
+            "orderId": "564",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:41:32.581Z"
+          },
+          {
+            "id": "563",
+            "orderId": "563",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:40:13.549Z"
+          },
+          {
+            "id": "562",
+            "orderId": "562",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:39:50.435Z"
+          },
+          {
+            "id": "561",
+            "orderId": "561",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "11.25",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:39:22.479Z"
+          },
+          {
+            "id": "560",
+            "orderId": "560",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:39:03.719Z"
+          },
+          {
+            "id": "559",
+            "orderId": "559",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "11.25",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:38:43.446Z"
+          },
+          {
+            "id": "558",
+            "orderId": "558",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:38:27.648Z"
+          },
+          {
+            "id": "557",
+            "orderId": "557",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:37:57.042Z"
+          },
+          {
+            "id": "556",
+            "orderId": "556",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:37:24.196Z"
+          },
+          {
+            "id": "555",
+            "orderId": "555",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:37:10.582Z"
+          },
+          {
+            "id": "554",
+            "orderId": "554",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:36:49.179Z"
+          },
+          {
+            "id": "553",
+            "orderId": "553",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Pizza",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:33:49.695Z"
+          },
+          {
+            "id": "550",
+            "orderId": "550",
+            "customerName": "Elikem Treveh",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:13:51.306Z"
+          },
+          {
+            "id": "549",
+            "orderId": "549",
+            "customerName": "Elikem Treveh",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:13:19.130Z"
+          },
+          {
+            "id": "548",
+            "orderId": "548",
+            "customerName": "Angela Treveh",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "21.00",
+            "deliveryFee": "30.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:11:32.240Z"
+          },
+          {
+            "id": "547",
+            "orderId": "547",
+            "customerName": "Angela Treveh",
+            "itemsSummary": "Jollof Rice",
+            "mealAmount": "21.00",
+            "deliveryFee": "30.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:10:28.231Z"
+          },
+          {
+            "id": "546",
+            "orderId": "546",
+            "customerName": "Angela Treveh",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "21.00",
+            "deliveryFee": "30.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:09:20.541Z"
+          },
+          {
+            "id": "545",
+            "orderId": "545",
+            "customerName": "Angela Treveh",
+            "itemsSummary": "Assorted Fried Rice + 1 other",
+            "mealAmount": "21.00",
+            "deliveryFee": "30.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:02:51.560Z"
+          },
+          {
+            "id": "542",
+            "orderId": "542",
+            "customerName": "Angela Treveh",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T19:52:38.515Z"
+          },
+          {
+            "id": "541",
+            "orderId": "541",
+            "customerName": "Elikem Treveh",
+            "itemsSummary": "Pizza",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T19:52:17.781Z"
+          },
+          {
+            "id": "540",
+            "orderId": "540",
+            "customerName": "Elikem Treveh",
+            "itemsSummary": "Banku",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T19:51:32.823Z"
+          },
+          {
+            "id": "539",
+            "orderId": "539",
+            "customerName": "Angela Treveh",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T19:51:27.710Z"
+          },
+          {
+            "id": "538",
+            "orderId": "538",
+            "customerName": "Elikem Treveh",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T19:50:57.085Z"
+          },
+          {
+            "id": "534",
+            "orderId": "534",
+            "customerName": "Cho Markin",
+            "itemsSummary": "Pizza + 2 others",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T19:05:55.641Z"
+          },
+          {
+            "id": "508",
+            "orderId": "508",
+            "customerName": "Elikem Treveh",
+            "itemsSummary": "Kenkey",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-04-19T20:22:04.275Z"
+          },
+          {
+            "id": "275",
+            "orderId": "275",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Waakye",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-04-13T14:28:04.579Z"
+          },
+          {
+            "id": "274",
+            "orderId": "274",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Kenkey",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-04-13T14:24:16.966Z"
+          },
+          {
+            "id": "268",
+            "orderId": "268",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Order",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-04-12T22:44:11.322Z"
+          },
+          {
+            "id": "217",
+            "orderId": "217",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Waakye",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-03-27T09:23:58.838Z"
+          }
+        ],
+        "pagination": {
+          "page": 1,
+          "limit": 50,
+          "total": 45,
+          "totalPages": 1
+        }
+      }
+    },
+    "/rider/api/v1/earnings/top-items": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": []
+      }
+    },
+    "/rider/api/v1/earnings/weekly-summary": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": [
+          {
+            "weekStart": "2026-05-11T00:00:00.000Z",
+            "weekEnd": "2026-05-17T23:59:59.000Z",
+            "orders": 3,
+            "deliveryFees": "60.00",
+            "bandPercent": 70,
+            "riderEarnings": "42.00",
+            "isEligible": true
+          },
+          {
+            "weekStart": "2026-05-04T00:00:00.000Z",
+            "weekEnd": "2026-05-10T23:59:59.000Z",
+            "orders": 42,
+            "deliveryFees": "740.00",
+            "bandPercent": 75,
+            "riderEarnings": "530.25",
+            "isEligible": true
+          }
+        ]
+      }
+    },
+    "/rider/api/v1/earnings/balance": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "totalEarned": "572.25",
+          "availableEarnings": "572.25",
+          "pendingWithdrawals": "0.00",
+          "completedWithdrawals": "0.00"
+        }
+      }
+    },
+    "/rider/api/v1/earnings/withdrawals": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": [],
+        "pagination": {
+          "page": 1,
+          "limit": 20,
+          "total": 0,
+          "totalPages": 0
+        }
+      }
+    },
+    "/rider/api/v1/earnings/activity": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": [
+          {
+            "type": "earning",
+            "id": "605",
+            "orderId": "605",
+            "customerName": "Cho Markin",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "21.00",
+            "deliveryFee": "30.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-12T17:53:04.806Z"
+          },
+          {
+            "type": "earning",
+            "id": "594",
+            "orderId": "594",
+            "customerName": "Michael Adjartey",
+            "itemsSummary": "Assorted Fried Rice + 1 other",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-11T13:42:00.198Z"
+          },
+          {
+            "type": "earning",
+            "id": "592",
+            "orderId": "592",
+            "customerName": "Michael Adjartey",
+            "itemsSummary": "Pizza",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-11T13:30:25.055Z"
+          },
+          {
+            "type": "earning",
+            "id": "581",
+            "orderId": "581",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:27:11.162Z"
+          },
+          {
+            "type": "earning",
+            "id": "580",
+            "orderId": "580",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:27:00.966Z"
+          },
+          {
+            "type": "earning",
+            "id": "579",
+            "orderId": "579",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:26:19.371Z"
+          },
+          {
+            "type": "earning",
+            "id": "578",
+            "orderId": "578",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Gob3 Special",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:25:28.024Z"
+          },
+          {
+            "type": "earning",
+            "id": "577",
+            "orderId": "577",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Pizza",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:24:15.796Z"
+          },
+          {
+            "type": "earning",
+            "id": "576",
+            "orderId": "576",
+            "customerName": "Kenaz Odoom",
+            "itemsSummary": "Pizza",
+            "mealAmount": "15.00",
+            "deliveryFee": "20.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-10T11:11:02.145Z"
+          },
+          {
+            "type": "earning",
+            "id": "571",
+            "orderId": "571",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:46:28.607Z"
+          },
+          {
+            "type": "earning",
+            "id": "570",
+            "orderId": "570",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "11.25",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:46:00.523Z"
+          },
+          {
+            "type": "earning",
+            "id": "569",
+            "orderId": "569",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:45:26.632Z"
+          },
+          {
+            "type": "earning",
+            "id": "568",
+            "orderId": "568",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:44:32.258Z"
+          },
+          {
+            "type": "earning",
+            "id": "567",
+            "orderId": "567",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:44:04.936Z"
+          },
+          {
+            "type": "earning",
+            "id": "566",
+            "orderId": "566",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:43:29.706Z"
+          },
+          {
+            "type": "earning",
+            "id": "565",
+            "orderId": "565",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:41:55.542Z"
+          },
+          {
+            "type": "earning",
+            "id": "564",
+            "orderId": "564",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:41:32.581Z"
+          },
+          {
+            "type": "earning",
+            "id": "563",
+            "orderId": "563",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:40:13.549Z"
+          },
+          {
+            "type": "earning",
+            "id": "562",
+            "orderId": "562",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "10.50",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:39:50.435Z"
+          },
+          {
+            "type": "earning",
+            "id": "561",
+            "orderId": "561",
+            "customerName": "Christiana Mankosah",
+            "itemsSummary": "Assorted Fried Rice",
+            "mealAmount": "11.25",
+            "deliveryFee": "15.00",
+            "status": "DELIVERED",
+            "createdAt": "2026-05-09T20:39:22.479Z"
+          }
+        ],
+        "pagination": {
+          "page": 1,
+          "limit": 20,
+          "total": 45,
+          "totalPages": 3
+        }
+      }
+    }
+  }
+}

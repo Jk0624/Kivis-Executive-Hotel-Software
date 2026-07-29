@@ -230,7 +230,7 @@ const cancelBooking = async () => {
     </div>
 
     <button
-      onClick={() => navigate("/rooms")}
+      onClick={() => navigate("/guest/rooms")}
       className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-yellow-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition duration-200 hover:bg-yellow-600 hover:shadow-lg md:w-auto"
     >
       <Plus className="h-5 w-5" />

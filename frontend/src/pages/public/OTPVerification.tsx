@@ -22,79 +22,24 @@ function OTPVerification() {
   const [otpError, setOtpError] = useState("");
   const [verifying, setVerifying] = useState(false);
 
-  const handleVerify = async () => {
+  const maskPhoneNumber = (phone: string) => {
+  if (phone.length < 4) return phone;
+
+  return (
+    phone.slice(0, 2) +
+    "*".repeat(phone.length - 4) +
+    phone.slice(-2)
+  );
+};
+
+  const handleVerify = () => {
     if (otp.length !== 6) {
-      setOtpError("Please enter the 6-digit verification code.");
-      return;
+      setOtpError("Please enter the 6-digit verification code."
+
+      );
     }
-
-    setOtpError("");
-    setVerifying(true);
-
-    try {
-      const payload =
-        flow === "signup"
-          ? {
-              name,
-              phone,
-              email,
-              otp,
-              mode: "SIGN_UP",
-            }
-          : {
-              phone,
-              otp,
-              mode: "SIGN_IN",
-            };
-
-      const response = await axios.post(
-        "http://localhost:3001/auth/verify-otp",
-        payload
-      );
-
-      const data = response.data;
-
-      console.log("VERIFY OTP RESPONSE:", data);
-
-      localStorage.setItem("token", data.accessToken);
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(data.user)
-      );
-
-      const role = data.user.role;
-
-// If the user was trying to access a protected page,
-// send them there first.
-if (redirect) {
-  navigate(redirect, { replace: true });
-  return;
-}
-
-if (role === "RECEPTIONIST") {
-  navigate("/receptionist/dashboard", {
-    replace: true,
-  });
-} else if (role === "ADMIN") {
-  navigate("/admin/dashboard", {
-    replace: true,
-  });
-} else {
-  navigate("/", {
-    replace: true,
-  });
-}
-    } catch (error) {
-      console.error(error);
-
-      setOtpError(
-        "Invalid verification code. Please try again."
-      );
-    } finally {
-      setVerifying(false);
-    }
-  };
+    };
+  
 
   return (
     <MainLayout>
@@ -149,23 +94,93 @@ if (role === "RECEPTIONIST") {
                 : "Verify your phone number to continue."}
             </p>
 
-            <p className="mt-4 break-all font-medium text-yellow-300">
-              {phone}
-            </p>
+            <p className="mt-4 font-medium tracking-wide text-yellow-300">
+  {maskPhoneNumber(phone)}
+</p>
           </div>
 
           {/* OTP */}
 
           <div className="mt-8 sm:mt-10">
             <OTPInput
-              onComplete={(value) => {
-                setOtp(value);
+  onComplete={async (value) => {
+    setOtp(value);
 
-                if (otpError) {
-                  setOtpError("");
-                }
-              }}
-            />
+    if (otpError) {
+      setOtpError("");
+    }
+
+    // Prevent duplicate verification requests
+    if (verifying) return;
+
+    setVerifying(true);
+
+    try {
+      const payload =
+        flow === "signup"
+          ? {
+              name,
+              phone,
+              email,
+              otp: value,
+              mode: "SIGN_UP",
+            }
+          : {
+              phone,
+              otp: value,
+              mode: "SIGN_IN",
+            };
+
+      const response = await axios.post(
+        "http://localhost:3001/auth/verify-otp",
+        payload
+      );
+
+      const data = response.data;
+
+      localStorage.setItem(
+        "token",
+        data.accessToken
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+
+      const role = data.user.role;
+
+      if (redirect) {
+        navigate(redirect, {
+          replace: true,
+        });
+        return;
+      }
+
+      if (role === "RECEPTIONIST") {
+        navigate("/receptionist/dashboard", {
+          replace: true,
+        });
+      } else if (role === "ADMIN") {
+        navigate("/admin/dashboard", {
+          replace: true,
+        });
+      } else {
+        navigate("/", {
+          replace: true,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+
+      setOtpError(
+        "Invalid verification code. Please try again."
+      );
+    } finally {
+      setVerifying(false);
+    }
+  }}
+/>
 
             {otpError && (
               <p className="mt-4 text-center text-sm font-medium text-red-400">

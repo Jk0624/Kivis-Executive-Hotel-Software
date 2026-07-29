@@ -47,7 +47,7 @@ function OTPInput({
   };
 
   return (
-    <div className="flex justify-center gap-3">
+    <div className="flex justify-center gap-2 sm:gap-3">
 
       {otp.map((digit, index) => (
 
@@ -66,7 +66,7 @@ function OTPInput({
           onKeyDown={(e) =>
             handleKeyDown(e, index)
           }
-          className="h-14 w-14 rounded-xl border border-white/20 bg-white/10 text-center text-2xl font-bold text-white outline-none backdrop-blur-md transition focus:border-yellow-400"
+          className="h-12 w-12 rounded-xl border border-white/20 bg-white/10 text-center text-xl font-bold text-white outline-none backdrop-blur-md transition focus:border-yellow-400 sm:h-14 sm:w-14 sm:text-2xl"
         />
 
       ))}

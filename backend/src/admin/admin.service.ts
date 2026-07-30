@@ -1561,7 +1561,12 @@ async revenueReport() {
 async accessLogReport() {
 
   const accessLogs =
-    await this.prisma.accessLog.findMany({
+  await this.prisma.accessLog.findMany({
+    where: {
+      booking: {
+        isNot: null,
+      },
+    },
       select: {
         id: true,
         method: true,

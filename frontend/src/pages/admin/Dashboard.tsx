@@ -124,24 +124,17 @@ function Dashboard() {
 
       {/* Welcome */}
 
-      <section>
+<section>
 
-        <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-          Welcome Back,
-        </h1>
+  <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
+    Welcome Back
+  </h1>
 
-        <h2 className="mt-2 text-2xl font-semibold text-blue-700 sm:text-3xl">
-          {header?.name ??
-            "Administrator"}
-        </h2>
+  <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
+    KIVIZ Executive Lodge Administration Dashboard
+  </p>
 
-        <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
-          KIVIZ Executive Lodge
-          Administration Dashboard
-        </p>
-
-      </section>
-
+</section>
       {/* Statistics */}
 
       <section className="mt-8 sm:mt-10">
@@ -157,34 +150,19 @@ function Dashboard() {
                 className="flex min-h-[170px] flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
 
-                <div className="flex items-start justify-between">
+<div className="flex items-center justify-between">
 
-                  <div className="pr-3">
+  <h2 className="text-4xl font-bold text-slate-900">
+    {card.value}
+  </h2>
 
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+  <div
+    className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl ${card.color}`}
+  >
+    <Icon size={26} />
+  </div>
 
-                      {card.title}
-
-                    </p>
-
-                    <h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
-
-                      {card.value}
-
-                    </h2>
-
-                  </div>
-
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-xl ${card.color}`}
-                  >
-
-                    <Icon size={22} />
-
-                  </div>
-
-                </div>
-
+</div>
                 <p className="mt-6 text-sm text-slate-500">
 
                   {card.subtitle}

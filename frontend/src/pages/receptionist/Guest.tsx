@@ -7,6 +7,16 @@ import { notify } from "../../utils/notify";
 function Guest() {
   const [guests, setGuests] = useState<any[]>([]);
   const [loadingGuests, setLoadingGuests] = useState(true);
+  const [filters, setFilters] = useState({
+  guestName: "",
+  phoneNumber: "",
+  bookingId: "",
+});
+const [searchFilters, setSearchFilters] = useState({
+  guestName: "",
+  phoneNumber: "",
+  bookingId: "",
+});
 
   // ==========================================
   // PIN VISIBILITY
@@ -67,7 +77,8 @@ function Guest() {
   // ==========================================
   // BOOKING IS CHECKED IN
   // ==========================================
-  const canUsePinActions = (guest: any) => {
+  const canUsePinActions = (guest: any) => { 
+
     return (
       guest.bookingStatus?.toUpperCase() ===
         "CHECKED_IN" &&
@@ -237,12 +248,37 @@ function Guest() {
       );
     }
 
+        
+
     return (
       <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm tracking-[0.3em] text-slate-700">
         ••••••
       </span>
     );
   };
+
+  const filteredGuests = guests.filter((guest) => {
+  const matchesName =
+    guest.guestName
+      ?.toLowerCase()
+      .includes(searchFilters.guestName.toLowerCase());
+
+  const matchesPhone =
+    guest.phoneNumber
+      ?.toLowerCase()
+      .includes(searchFilters.phoneNumber.toLowerCase());
+
+  const matchesBooking =
+    guest.bookingId
+      ?.toLowerCase()
+      .includes(searchFilters.bookingId.toLowerCase());
+
+  return (
+    matchesName &&
+    matchesPhone &&
+    matchesBooking
+  );
+});
 
     return (
     <ReceptionistLayout>
@@ -279,52 +315,64 @@ function Guest() {
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
-          <input
-            type="date"
-            className="rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-          />
+          
 
           <input
-            type="text"
-            placeholder="Guest Name"
-            className="rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-          />
+  type="text"
+  placeholder="Guest Name"
+  value={filters.guestName}
+  onChange={(e) =>
+    setFilters({
+      ...filters,
+      guestName: e.target.value,
+    })
+  }
+  className="rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+/>
 
           <input
-            type="text"
-            placeholder="Phone Number"
-            className="rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-          />
+  type="text"
+  placeholder="Phone Number"
+  value={filters.phoneNumber}
+  onChange={(e) =>
+  setFilters({
+    ...filters,
+    phoneNumber: e.target.value,
+  })
+}
+  className="rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+/>
+
+          
 
           <input
-            type="text"
-            placeholder="Room Number"
-            className="rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-          />
+  type="text"
+  placeholder="Booking ID"
+  value={filters.bookingId}
+  onChange={(e) =>
+    setFilters({
+      ...filters,
+      bookingId: e.target.value,
+    })
+  }
+  className="rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+/>
 
-          <input
-            type="text"
-            placeholder="Booking ID"
-            className="rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-          />
-
-          <select className="rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
-
-            <option>
-              All Booking Status
-            </option>
-
-            <option>
-              Checked In
-            </option>
-
-            <option>
-              Checked Out
-            </option>
-
-          </select>
+          
 
         </div>
+        <div className="mt-6 flex justify-end">
+  <button
+    type="button"
+    onClick={() => {
+  console.log(filters);
+  setSearchFilters(filters);
+}}
+    className="rounded-xl bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-800"
+  >
+    Search
+  </button>
+</div>
 
       </section>
 
@@ -348,7 +396,7 @@ function Guest() {
 
           <div className="self-start rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 sm:self-auto">
 
-            {guests.length} Guest
+            {filteredGuests.length} Guest
             {guests.length !== 1 ? "s" : ""}
 
           </div>
@@ -371,7 +419,7 @@ function Guest() {
 
           </div>
 
-        ) : guests.length === 0 ? (
+        ) : filteredGuests.length === 0 ? (
 
           <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
 
@@ -411,7 +459,7 @@ function Guest() {
 
             <div className="divide-y divide-slate-100 lg:hidden">
 
-              {guests.map((guest) => {
+              {filteredGuests.map((guest) => {
 
                 const canUseActions =
                   canUsePinActions(guest);
@@ -607,7 +655,7 @@ function Guest() {
 
                 <tbody>
 
-                  {guests.map((guest) => {
+                  {filteredGuests.map((guest) => {
 
                     const canUseActions =
                       canUsePinActions(guest);

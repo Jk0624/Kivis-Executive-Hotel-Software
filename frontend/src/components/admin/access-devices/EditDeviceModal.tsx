@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 import api from "../../../services/api";
 
 interface Room {
@@ -44,64 +46,74 @@ export default function EditDeviceModal({
   }, [isOpen, device]);
 
   const loadRooms = async () => {
-    try {
-      setLoadingRooms(true);
+  try {
+    setLoadingRooms(true);
 
-      const response = await api.get("/admin/rooms");
+    const response = await api.get("/admin/rooms");
 
-      setRooms(
-        response.data.rooms ||
-          response.data.data ||
-          []
-      );
-    } catch (error) {
-      console.error(error);
-      alert("Failed to load rooms.");
-    } finally {
-      setLoadingRooms(false);
-    }
-  };
+    setRooms(
+      response.data.rooms ??
+      response.data.data ??
+      []
+    );
+  } catch (error) {
+    console.error(error);
+
+    toast.error("Failed to load rooms.");
+  } finally {
+    setLoadingRooms(false);
+  }
+};
 
   const handleSubmit = async (
-    e: React.FormEvent
-  ) => {
-    e.preventDefault();
+  e: React.FormEvent
+) => {
+  e.preventDefault();
 
-    if (!deviceId.trim()) {
-      alert("Device ID is required.");
-      return;
-    }
+  if (!deviceId.trim()) {
+    toast.error("Device ID is required.");
+    return;
+  }
 
-    if (!roomNo) {
-      alert("Please select a room.");
-      return;
-    }
+  if (!roomNo) {
+    toast.error("Please select a room.");
+    return;
+  }
 
-    try {
-      setSaving(true);
+  try {
+    setSaving(true);
 
-      await api.patch(
-        `/admin/access-devices/${device.id}`,
-        {
-          deviceId,
-          roomNo,
-        }
-      );
+    await api.patch(
+      `/admin/access-devices/${device.id}`,
+      {
+        deviceId: deviceId.trim(),
+        roomNo,
+      }
+    );
 
-      alert("Device updated successfully.");
+    toast.success(
+      "Device updated successfully."
+    );
 
-      onSuccess();
-    } catch (error: any) {
-      console.error(error);
+    onSuccess();
+    onClose();
+  } catch (error: unknown) {
+    console.error(error);
 
-      alert(
-        error?.response?.data?.message ||
+    if (axios.isAxiosError(error)) {
+      toast.error(
+        error.response?.data?.message ??
           "Failed to update device."
       );
-    } finally {
-      setSaving(false);
+    } else {
+      toast.error(
+        "Failed to update device."
+      );
     }
-  };
+  } finally {
+    setSaving(false);
+  }
+};
 
   if (!isOpen) return null;
 

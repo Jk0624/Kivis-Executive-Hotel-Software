@@ -169,7 +169,7 @@ function Bookings() {
       </h1>
 
       <p className="mt-2 text-slate-600">
-        View, search and monitor all hotel reservations from one place.
+        View, search and monitor all bookings from one place.
       </p>
 
     </div>
@@ -272,12 +272,10 @@ function Bookings() {
     <div>
 
       <h2 className="text-xl font-semibold text-slate-900">
-        Find Reservation
+        Find booking
       </h2>
 
-      <p className="text-sm text-slate-500">
-        Search using a booking reference or guest phone number.
-      </p>
+      
 
     </div>
 

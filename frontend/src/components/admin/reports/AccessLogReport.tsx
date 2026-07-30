@@ -57,28 +57,29 @@ export default function AccessLogReport() {
   };
 
   const filteredLogs = useMemo(() => {
-    const keyword = search.toLowerCase();
+  const keyword = search.toLowerCase().trim();
 
-    return logs.filter((log) => {
-      return (
-        log.booking.bookingId
-          .toLowerCase()
-          .includes(keyword) ||
+  return logs.filter((log) => {
+    const bookingId =
+      log.booking?.bookingId ?? "";
 
-        log.booking.user.name
-          .toLowerCase()
-          .includes(keyword) ||
+    const guestName =
+      log.booking?.user?.name ?? "";
 
-        log.accessDevice.room.roomNo
-          .toLowerCase()
-          .includes(keyword) ||
+    const roomNo =
+      log.accessDevice?.room?.roomNo ?? "";
 
-        log.accessDevice.deviceId
-          .toLowerCase()
-          .includes(keyword)
-      );
-    });
-  }, [logs, search]);
+    const deviceId =
+      log.accessDevice?.deviceId ?? "";
+
+    return (
+      bookingId.toLowerCase().includes(keyword) ||
+      guestName.toLowerCase().includes(keyword) ||
+      roomNo.toLowerCase().includes(keyword) ||
+      deviceId.toLowerCase().includes(keyword)
+    );
+  });
+}, [logs, search]);
 
   const successful =
     logs.filter(
@@ -225,17 +226,17 @@ export default function AccessLogReport() {
                     <td className="px-4 py-4">
                       <div>
                         <p className="font-medium">
-                          {log.booking.user.name}
+                          {log.booking?.user?.name ?? "Unknown Guest"}
                         </p>
 
                         <p className="text-sm text-slate-500">
-                          {log.booking.user.phone}
+                          {log.booking?.user?.phone ?? "-"}
                         </p>
                       </div>
                     </td>
 
                     <td className="px-4 py-4">
-                      {log.accessDevice.room.roomNo}
+                      {log.accessDevice?.room?.roomNo ?? "-"}
                     </td>
 
                     <td className="px-4 py-4">

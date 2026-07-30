@@ -88,13 +88,20 @@ function OTPVerification() {
           replace: true,
         });
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+  console.error(error);
 
-      setOtpError(
-        "Invalid verification code. Please try again."
-      );
-    } finally {
+  if (axios.isAxiosError(error)) {
+    setOtpError(
+      error.response?.data?.message ??
+      "Unable to verify OTP. Please try again."
+    );
+  } else {
+    setOtpError(
+      "Unable to verify OTP. Please try again."
+    );
+  }
+} finally {
       setVerifying(false);
     }
   };

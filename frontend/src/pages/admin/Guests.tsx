@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, Users, Eye, Phone, Mail } from "lucide-react";
+
+import { Search, Users, Phone, Mail } from "lucide-react";
 
 import AdminLayout from "../../layouts/AdminLayout";
 import api from "../../services/api";
@@ -19,7 +19,7 @@ interface Guest {
 }
 
 function Guests() {
-  const navigate = useNavigate();
+  
 
   const [guests, setGuests] = useState<Guest[]>([]);
   const [loadingGuests, setLoadingGuests] = useState(true);
@@ -156,9 +156,7 @@ function Guests() {
                     Bookings
                   </th>
 
-                  <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-slate-600">
-                    Action
-                  </th>
+                  
 
                 </tr>
 
@@ -171,7 +169,7 @@ function Guests() {
                   <tr>
 
                     <td
-                      colSpan={5}
+                      colSpan={4}
                       className="px-6 py-14 text-center"
                     >
 
@@ -194,7 +192,7 @@ function Guests() {
                   <tr>
 
                     <td
-                      colSpan={5}
+                      colSpan={4}
                       className="px-6 py-16 text-center"
                     >
 
@@ -274,19 +272,7 @@ function Guests() {
                         </span>
                       </td>
 
-                      <td className="px-6 py-5 text-right">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            navigate(`/admin/guests/${guest.id}`)
-                          }
-                          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200"
-                        >
-                          <Eye size={16} />
-
-                          View
-                        </button>
-                      </td>
+                      
                     </tr>
                   ))
                 )}

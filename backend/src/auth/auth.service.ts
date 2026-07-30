@@ -319,20 +319,41 @@ export class AuthService {
   }
 
   // ==========================================
-  // COMPLETE SIGN-IN
-  // ==========================================
-  private async completeSignIn(
-    phone: string,
-  ) {
-    return this.prisma.user.update({
-      where: {
-        phone,
-      },
-      data: {
-        isVerified: true,
-      },
-    });
+// COMPLETE SIGN-IN
+// ==========================================
+private async completeSignIn(
+  phone: string,
+) {
+  const user = await this.prisma.user.findUnique({
+    where: {
+      phone,
+    },
+  });
+
+  if (!user) {
+    throw new UnauthorizedException(
+      'No account found with this phone number.',
+    );
   }
+
+  // ==========================================
+  // ACCOUNT STATUS CHECK
+  // ==========================================
+  if (!user.isActive) {
+    throw new UnauthorizedException(
+      'Your account has been deactivated. Please contact the system administrator.',
+    );
+  }
+
+  return this.prisma.user.update({
+    where: {
+      phone,
+    },
+    data: {
+      isVerified: true,
+    },
+  });
+}
 
   // ==========================================
   // GENERATE ACCESS TOKEN

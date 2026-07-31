@@ -85,32 +85,45 @@ export class AccessService {
     }
 
 
-    // ==========================================
-    // CREATE ACCESS LOG
-    // ==========================================
-    private async createAccessLog({
+private async createAccessLog({
+  bookingId,
+  accessDeviceId,
+  method,
+  status,
+  reason,
+}: {
+  bookingId?: string;
+  accessDeviceId: string;
+  method: AccessMethod;
+  status: AccessStatus;
+  reason?: string;
+}) {
+  console.log("=== CREATE ACCESS LOG ===");
+  console.log({
     bookingId,
     accessDeviceId,
     method,
     status,
     reason,
-    }: {
-    bookingId?: string;
-    accessDeviceId: string;
-    method: AccessMethod;
-    status: AccessStatus;
-    reason?: string;
-    }) {
-    await this.prisma.accessLog.create({
-        data: {
+  });
+
+  try {
+    const log = await this.prisma.accessLog.create({
+      data: {
         bookingId,
         accessDeviceId,
         method,
         status,
         reason,
-        },
+      },
     });
-    }
+
+    console.log("Access log created:", log.id);
+  } catch (error) {
+    console.error("Access log failed:", error);
+    throw error;
+  }
+}
 
     // ==========================================
     // VERIFY PIN

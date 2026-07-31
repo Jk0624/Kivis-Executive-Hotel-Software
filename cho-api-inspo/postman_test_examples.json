@@ -1,0 +1,298 @@
+{
+  "description": "Postman Test Examples for Food Addons and Orders API",
+  "base_url": "http://localhost:3000/api/v1",
+  "headers": {
+    "Content-Type": "application/json",
+    "note": "Always include Content-Type: application/json header for POST/PUT requests"
+  },
+  "examples": {
+    "addons": {
+      "create_addon_free": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/v1/addons",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "restaurantId": "1",
+          "name": "Stew",
+          "description": "Free stew addon",
+          "price": 0,
+          "isActive": true
+        },
+        "description": "Create a free addon (price = 0)"
+      },
+      "create_addon_paid": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/v1/addons",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "restaurantId": "1",
+          "name": "Extra Egg",
+          "description": "Add an extra egg to your meal",
+          "price": 2.50,
+          "isActive": true
+        },
+        "description": "Create a paid addon"
+      },
+      "get_all_addons": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/v1/addons?restaurantId=1&isActive=true&page=1&limit=20",
+        "description": "Get all addons for a restaurant"
+      },
+      "get_single_addon": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/v1/addons/1",
+        "description": "Get a single addon by ID"
+      },
+      "update_addon": {
+        "method": "PUT",
+        "url": "http://localhost:3000/api/v1/addons/1",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "name": "Extra Egg (Updated)",
+          "price": 3.00,
+          "isActive": true
+        },
+        "description": "Update an addon"
+      },
+      "delete_addon": {
+        "method": "DELETE",
+        "url": "http://localhost:3000/api/v1/addons/1",
+        "description": "Delete an addon (will fail if assigned to foods)"
+      }
+    },
+    "food_addons": {
+      "add_addon_to_food": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/v1/foods/1/addons",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "addonId": "1",
+          "isRequired": false,
+          "maxQuantity": 5
+        },
+        "description": "Add an addon to a food item. maxQuantity is for paid addons only."
+      },
+      "add_free_addon_to_food": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/v1/foods/1/addons",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "addonId": "2",
+          "isRequired": false,
+          "maxQuantity": null
+        },
+        "description": "Add a free addon to a food (maxQuantity should be null for free addons)"
+      },
+      "get_food_addons": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/v1/foods/1/addons?isActive=true",
+        "description": "Get all addons for a specific food"
+      },
+      "remove_addon_from_food": {
+        "method": "DELETE",
+        "url": "http://localhost:3000/api/v1/foods/1/addons/1",
+        "description": "Remove an addon from a food"
+      },
+      "get_food_with_addons": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/v1/foods/1",
+        "description": "Get a single food with its addons included"
+      },
+      "get_all_foods_with_addons": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/v1/foods?includeAddons=true&restaurantId=1",
+        "description": "Get all foods with addons included"
+      }
+    },
+    "orders": {
+      "create_order_simple": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/v1/orders",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "userId": "1",
+          "restaurantId": "1",
+          "deliveryAddress": "123 Main Street, City, Country",
+          "deliveryFee": 5.00,
+          "paymentMethodId": "1",
+          "items": [
+            {
+              "foodId": "1",
+              "quantity": 2,
+              "addons": [
+                {
+                  "addonId": "1",
+                  "quantity": 1
+                }
+              ]
+            }
+          ]
+        },
+        "description": "Create a simple order with one food item and one addon"
+      },
+      "create_order_complex": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/v1/orders",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "userId": "1",
+          "restaurantId": "1",
+          "deliveryAddress": "456 Oak Avenue, City, Country",
+          "deliveryFee": 7.50,
+          "paymentMethodId": "1",
+          "items": [
+            {
+              "foodId": "1",
+              "quantity": 2,
+              "addons": [
+                {
+                  "addonId": "1",
+                  "quantity": 2
+                },
+                {
+                  "addonId": "2",
+                  "quantity": 1
+                }
+              ]
+            },
+            {
+              "foodId": "2",
+              "quantity": 1,
+              "addons": [
+                {
+                  "addonId": "1",
+                  "quantity": 1
+                }
+              ]
+            }
+          ]
+        },
+        "description": "Create a complex order with multiple food items and addons"
+      },
+      "create_order_with_free_addon": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/v1/orders",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "userId": "1",
+          "restaurantId": "1",
+          "deliveryAddress": "789 Pine Road, City, Country",
+          "deliveryFee": 5.00,
+          "items": [
+            {
+              "foodId": "1",
+              "quantity": 1,
+              "addons": [
+                {
+                  "addonId": "2",
+                  "quantity": 1
+                }
+              ]
+            }
+          ]
+        },
+        "description": "Create an order with a free addon (quantity must be 1 for free addons)"
+      },
+      "get_all_orders": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/v1/orders?userId=1&status=PENDING&page=1&limit=20",
+        "description": "Get all orders with optional filters"
+      },
+      "get_single_order": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/v1/orders/1",
+        "description": "Get a single order with full details including addons"
+      },
+      "update_order_status": {
+        "method": "PUT",
+        "url": "http://localhost:3000/api/v1/orders/1/status",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "status": "CONFIRMED"
+        },
+        "description": "Update order status. Valid statuses: PENDING, CONFIRMED, PREPARING, READY, DELIVERED, CANCELLED"
+      },
+      "cancel_order": {
+        "method": "DELETE",
+        "url": "http://localhost:3000/api/v1/orders/1",
+        "description": "Cancel an order (cannot cancel DELIVERED or already CANCELLED orders)"
+      },
+      "get_user_orders": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/v1/orders/users/1?status=PENDING&page=1&limit=20",
+        "description": "Get all orders for a specific user"
+      }
+    }
+  },
+  "notes": {
+    "base_url": "Update the base URL (http://localhost:3000) to match your server",
+    "ids": "Replace all ID values (1, 2, etc.) with actual IDs from your database",
+    "important_headers": {
+      "content_type": "Always set Content-Type: application/json header for POST and PUT requests",
+      "postman_setup": "In Postman: Select 'Body' tab → Choose 'raw' → Select 'JSON' from dropdown (this automatically sets the header)"
+    },
+    "common_errors": {
+      "req_body_undefined": "If you get 'req.body is undefined' error, make sure Content-Type header is set to application/json",
+      "validation_errors": "Check that all required fields are provided and IDs are valid numbers",
+      "restaurant_mismatch": "Addon and food must belong to the same restaurant"
+    },
+    "order_statuses": [
+      "PENDING",
+      "CONFIRMED",
+      "PREPARING",
+      "READY",
+      "DELIVERED",
+      "CANCELLED"
+    ],
+    "payment_statuses": [
+      "PENDING",
+      "PAID",
+      "FAILED",
+      "REFUNDED"
+    ],
+    "addon_notes": {
+      "free_addons": "Free addons have price = 0. Quantity is always 1 when ordering.",
+      "paid_addons": "Paid addons have price > 0. Quantity can be 1 to maxQuantity (if set).",
+      "maxQuantity": "maxQuantity in FoodAddon is optional. If not set, unlimited quantity is allowed for paid addons."
+    },
+    "order_notes": {
+      "addon_quantity": "For free addons, quantity must be exactly 1. For paid addons, quantity can be 1 to maxQuantity.",
+      "addon_pricing": "Addon prices are snapshotted at order creation time in OrderItemAddon.price",
+      "total_calculation": "Total = (food price × quantity) + (addon price × addon quantity × food quantity) + delivery fee",
+      "example_calculation": {
+        "food": "Food: $10, quantity: 2 = $20",
+        "paid_addon": "Paid Addon: $2.50, quantity: 2, food quantity: 2 = $10 (2.50 × 2 × 2)",
+        "free_addon": "Free Addon: $0, quantity: 1, food quantity: 2 = $0",
+        "delivery": "Delivery Fee: $5",
+        "total": "Total: $35"
+      }
+    },
+    "testing_flow": {
+      "step_1": "1. Create addons (free and paid) using POST /addons",
+      "step_2": "2. Create food items (if needed) using existing food endpoints",
+      "step_3": "3. Assign addons to foods using POST /foods/{foodId}/addons",
+      "step_4": "4. Verify food addons using GET /foods/{foodId} or GET /foods/{foodId}/addons",
+      "step_5": "5. Create orders with food items and selected addons using POST /orders",
+      "step_6": "6. Manage orders (view, update status, cancel) using order endpoints"
+    }
+  }
+}
+

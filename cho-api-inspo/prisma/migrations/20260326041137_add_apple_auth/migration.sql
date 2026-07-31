@@ -1,0 +1,14 @@
+/*
+  Warnings:
+
+  - A unique constraint covering the columns `[apple_id]` on the table `users` will be added. If there are existing duplicate values, this will fail.
+
+*/
+-- AlterEnum
+ALTER TYPE "AuthProvider" ADD VALUE 'APPLE';
+
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "apple_id" VARCHAR(255);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_apple_id_key" ON "users"("apple_id");

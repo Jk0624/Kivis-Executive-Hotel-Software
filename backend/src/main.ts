@@ -3,6 +3,19 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
 
+const DEFAULT_CORS_ORIGINS = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+];
+
+const getCorsOrigins = () => {
+  const origins = process.env.CORS_ORIGIN?.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  return origins?.length ? origins : DEFAULT_CORS_ORIGINS;
+};
+
 async function bootstrap() {
   const app = await NestFactory.create(
     AppModule,
@@ -26,10 +39,14 @@ async function bootstrap() {
   // CORS
   // ==========================================
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    origin: getCorsOrigins(),
+    credentials: true,
   });
 
-  await app.listen(3001, '0.0.0.0');
+  const port = Number(process.env.PORT) || 3001;
+
+  await app.listen(port, '0.0.0.0');
+  console.log(`Kivis backend listening on port ${port}`);
 }
 
 bootstrap();

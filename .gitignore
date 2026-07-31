@@ -5,6 +5,7 @@
 # Environment files at the repository root
 .env
 .env.*
+!.env.example
 
 # Operating System files
 .DS_Store

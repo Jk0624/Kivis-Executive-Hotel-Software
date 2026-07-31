@@ -1,0 +1,1 @@
+-- Empty migration placeholder (file was missing)

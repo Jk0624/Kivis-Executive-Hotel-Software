@@ -38,18 +38,7 @@ function Rooms() {
     loadRooms();
   }, []);
 
-  const availableRooms = rooms.filter(
-  (room) => room.status === "AVAILABLE"
-).length;
-
-const occupiedRooms = rooms.filter(
-  (room) => room.status === "OCCUPIED"
-).length;
-
-const reservedRooms = rooms.filter(
-  (room) => room.status === "RESERVED"
-).length;
-
+  
   return (
     <ReceptionistLayout>
 
@@ -83,22 +72,10 @@ const reservedRooms = rooms.filter(
 
     </div>
 
-    <div className="flex flex-wrap gap-3">
+    <div className="flex items-center">
 
-  <div className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700">
-    {rooms.length} Rooms
-  </div>
-
-  <div className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-    {availableRooms} Available
-  </div>
-
-  <div className="rounded-full bg-red-100 px-4 py-2 text-sm font-semibold text-red-700">
-    {occupiedRooms} Occupied
-  </div>
-
-  <div className="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-700">
-    {reservedRooms} Reserved
+  <div className="rounded-full bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-700">
+    {rooms.length} Room{rooms.length !== 1 ? "s" : ""}
   </div>
 
 </div>

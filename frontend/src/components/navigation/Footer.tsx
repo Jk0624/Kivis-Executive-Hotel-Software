@@ -123,7 +123,7 @@ function Footer() {
 
             <div className="flex items-start gap-3">
               <Phone className="mt-1 h-5 w-5 text-yellow-400" />
-              <p>+233 XX XXX XXXX</p>
+              <p>0594944797</p>
             </div>
 
             <div className="flex items-start gap-3">

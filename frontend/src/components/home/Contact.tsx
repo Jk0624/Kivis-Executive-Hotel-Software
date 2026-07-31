@@ -169,7 +169,7 @@ function Contact() {
                 </h3>
 
                 <p className="mt-2 text-sm text-slate-600 sm:text-base">
-                  +233 XX XXX XXXX
+                  +233 59 494 4797
                 </p>
               </div>
             </div>
@@ -183,7 +183,7 @@ function Contact() {
                 </h3>
 
                 <p className="mt-2 text-sm text-slate-600 sm:text-base">
-                  info@kivizhotel.com
+                  ce.groupwork.5@gmail.com
                 </p>
               </div>
             </div>

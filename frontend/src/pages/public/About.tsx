@@ -432,7 +432,7 @@ function About() {
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:mt-12 sm:flex-row sm:gap-5">
             <Link
-              to="/rooms"
+              to="/guest/rooms"
               className="w-full rounded-2xl bg-yellow-500 px-8 py-4 text-center font-semibold text-slate-900 transition duration-300 hover:-translate-y-1 hover:bg-yellow-400 sm:w-auto"
             >
               Explore Our Rooms

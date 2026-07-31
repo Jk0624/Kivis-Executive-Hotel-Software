@@ -95,50 +95,34 @@ function AccessDevices() {
     devices.length;
 
   const handleDisable = async (
-    id: string
-  ) => {
-    if (
-      !window.confirm(
-        "Disable this access device?"
-      )
-    ) {
-      return;
-    }
+  id: string
+) => {
+  try {
+    await api.patch(
+      `/admin/access-devices/${id}/disable`
+    );
 
-    try {
-      await api.patch(
-        `/admin/access-devices/${id}/disable`
-      );
-
-      fetchDevices();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to disable device.");
-    }
-  };
+    fetchDevices();
+  } catch (error) {
+    console.error(error);
+    alert("Failed to disable device.");
+  }
+};
 
   const handleEnable = async (
-    id: string
-  ) => {
-    if (
-      !window.confirm(
-        "Enable this access device?"
-      )
-    ) {
-      return;
-    }
+  id: string
+) => {
+  try {
+    await api.patch(
+      `/admin/access-devices/${id}/enable`
+    );
 
-    try {
-      await api.patch(
-        `/admin/access-devices/${id}/enable`
-      );
-
-      fetchDevices();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to enable device.");
-    }
-  };
+    fetchDevices();
+  } catch (error) {
+    console.error(error);
+    alert("Failed to enable device.");
+  }
+};
 
   return (
     <AdminLayout>
